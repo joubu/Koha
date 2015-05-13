@@ -1,7 +1,5 @@
 #!/usr/bin/perl
 
-# Copyright 2007 Liblime
-# Parts copyright 2010 BibLibre
 # Parts copyright 2014 ByWater Solutions
 #
 # This file is part of Koha.
@@ -30,11 +28,13 @@ my $matchpoint;
 my $overwrite_cardnumber;
 my %defaults;
 my $ext_preserve = 0;
+my $confirm;
 my $verbose      = 0;
 my $help;
 
 GetOptions(
-    'c|csv=s'                       => \$csv_file,
+    'c|confirm'                     => \$confirm,
+    'f|file=s'                      => \$csv_file,
     'm|matchpoint=s'                => \$matchpoint,
     'd|default=s'                   => \%defaults,
     'o|overwrite'                   => \$overwrite_cardnumber,
@@ -43,7 +43,7 @@ GetOptions(
     'h|help|?'                      => \$help,
 );
 
-print_help() if ( $help || !$csv_file || !$matchpoint );
+print_help() if ( $help || !$csv_file || !$matchpoint || !$confirm );
 
 my $handle;
 open( $handle, "<", $csv_file ) or die $!;
@@ -89,8 +89,9 @@ if ($verbose > 2 ) {
 
 sub print_help {
     print <<_USAGE_;
-import_borrowers.pl -c /path/to/borrowers.csv -m cardnumber
-    -c --csv                            Path to the CSV file of patrons  to import
+import_patrons.pl -c /path/to/patrons.csv -m cardnumber
+    -c --confirm                        Confirms you really want to import these patrons, otherwise prints this help
+    -f --file                           Path to the CSV file of patrons to import
     -m --matchpoint                     Field on which to match incoming patrons to existing patrons
     -d --default                        Set defaults to patron fields, repeatable e.g. --default branchcode=MPL --default categorycode=PT
     -p --preserve-extended-atributes    Retain extended patron attributes for existing patrons being overwritten
