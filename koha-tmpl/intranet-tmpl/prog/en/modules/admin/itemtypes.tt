@@ -125,7 +125,7 @@ Item types administration
       </li>
   [% END %]
       <li>
-          <label for="description" class="required">Description: </label><input type="text" id="description" name="description" size="48" value="[% description |html %]" required="required" /> <span class="required">Required</span>
+          <label for="description" class="required">Description: </label><input type="text" id="description" name="description" size="48" value="[% description %]" required="required" /> <span class="required">Required</span>
           <a href="/cgi-bin/koha/admin/localization.pl?entity=itemtypes&code=[% itemtype %]" title="Translate item type [% itemtype %]" rel="gb_page_center[600,500]"><i class="icon-edit"></i> Translate into other languages</a>
       </li>
       <li>
@@ -317,7 +317,7 @@ Item types administration
     <tr>
    [% UNLESS ( noItemTypeImages ) %] <td>[% IF ( loo.imageurl ) %]<img src="[% loo.imageurl %]" alt="" />[% ELSE %]&nbsp;[% END %]</td>[% END %]
     <td>
-      <a href="[% loo.script_name %]?op=add_form&amp;itemtype=[% loo.itemtype |html %]">
+      <a href="[% loo.script_name %]?op=add_form&amp;itemtype=[% loo.itemtype %]">
         [% loo.itemtype %]
       </a>
     </td>
@@ -346,8 +346,8 @@ Item types administration
     </td>
     <td>[% loo.checkinmsg | html_line_break %]</td>
     <td>
-      <a href="[% loo.script_name %]?op=add_form&amp;itemtype=[% loo.itemtype |html %]">Edit</a>
-      <a href="[% loo.script_name %]?op=delete_confirm&amp;itemtype=[% loo.itemtype |html %]">Delete</a>
+      <a href="[% loo.script_name %]?op=add_form&amp;itemtype=[% loo.itemtype %]">Edit</a>
+      <a href="[% loo.script_name %]?op=delete_confirm&amp;itemtype=[% loo.itemtype %]">Delete</a>
     </td>
   </tr>
   [% END %]
