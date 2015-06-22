@@ -355,7 +355,7 @@ Item types administration
 <div class="dialog message">There are no itemtypes defined</div>
 [% END %]
 
-<div class="pages">[% pagination_bar %]</div>
+<div class="pages">[% pagination_bar.raw %]</div>
 
 [% END %]
 
