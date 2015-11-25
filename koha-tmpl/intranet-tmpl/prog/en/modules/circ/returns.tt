@@ -250,7 +250,7 @@ $(document).ready(function () {
     [% IF ( diffbranch ) %]
 		<!-- diffbranch -->
         <div id="transfer-needed" class="dialog message audio-alert-action">
-		<h3>Hold needing transfer found: <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% itembiblionumber %]">[% title %]</a></h3>
+        <h3>Hold needing transfer found: <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% itembiblionumber %]">[% title %]</a></h3>
                 <h4>Hold for: </h4>
                     <ul>
                         <li><a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% borrowernumber %]">[% borsurname %], [% borfirstname %]</a> ([% borcnum %])</li>
