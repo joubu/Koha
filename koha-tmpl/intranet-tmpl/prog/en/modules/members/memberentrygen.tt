@@ -34,6 +34,8 @@
             }
         [% END %]
         $("#dateofbirth").datepicker({ maxDate: "-1D", yearRange: "c-120:" });
+        dateformat = $("#dateofbirth").siblings(".hint").first().html();
+        CalculateAge();
         $("#entryform").validate({
             rules: {
                 email: {
@@ -144,8 +146,6 @@
 
         return 0;
     }
-
-
 
         var MSG_SEPARATOR = _("Separator must be / in field %s");
         var MSG_INCORRECT_DAY = _("Invalid day entered in field %s");
@@ -343,11 +343,7 @@
                 [% END %]
                 Date of birth: </label>
 
-        [% IF ( dateformat == "metric" ) %]
-                <input type="text" id="dateofbirth" name="dateofbirth" size="20" onchange="CheckDate(document.form.dateofbirth);" value="[% UNLESS opduplicate %][% dateofbirth %][% END %]" />
-        [% ELSE %]
-                <input type="text" id="dateofbirth" name="dateofbirth" size="20" value="[% UNLESS opduplicate %][% dateofbirth %][% END %]" />
-        [% END %]
+                <input type="text" id="dateofbirth" name="dateofbirth" size="20" onchange="CalculateAge();" value="[% UNLESS opduplicate %][% dateofbirth %][% END %]" />
 
         [% IF ( mandatorydateofbirth ) %]<span class="required">Required</span>[% END %]
         [% IF ( ERROR_dateofbirth ) %]<span class="required">(Error)</span>[% END %]
