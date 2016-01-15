@@ -153,6 +153,11 @@ __PACKAGE__->table("issuingrules");
   default_value: 0
   is_nullable: 1
 
+=head2 no_auto_renewal_after
+
+  data_type: 'integer'
+  is_nullable: 1
+
 =head2 reservesallowed
 
   data_type: 'smallint'
@@ -245,6 +250,8 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_nullable => 1 },
   "auto_renew",
   { data_type => "tinyint", default_value => 0, is_nullable => 1 },
+  "no_auto_renewal_after",
+  { data_type => "integer", is_nullable => 1 },
   "reservesallowed",
   { data_type => "smallint", default_value => 0, is_nullable => 0 },
   "branchcode",
@@ -276,8 +283,8 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("branchcode", "categorycode", "itemtype");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2015-12-31 15:26:16
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:K/8SKpDjba5CM4+WPZtWPw
+# Created by DBIx::Class::Schema::Loader v0.07042 @ 2016-01-15 11:51:25
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:IluzURuro4z+ZaH0jfjH5Q
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration
