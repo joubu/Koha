@@ -81,6 +81,12 @@ __PACKAGE__->table("old_issues");
   default_value: 0
   is_nullable: 1
 
+=head2 auto_renew_error
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 32
+
 =head2 timestamp
 
   data_type: 'timestamp'
@@ -135,6 +141,8 @@ __PACKAGE__->add_columns(
   { data_type => "tinyint", is_nullable => 1 },
   "auto_renew",
   { data_type => "tinyint", default_value => 0, is_nullable => 1 },
+  "auto_renew_error",
+  { data_type => "varchar", is_nullable => 1, size => 32 },
   "timestamp",
   {
     data_type => "timestamp",
@@ -207,8 +215,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07039 @ 2015-04-23 13:04:51
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:9GdzytyInRcFZns/q0qb3Q
+# Created by DBIx::Class::Schema::Loader v0.07042 @ 2016-04-26 17:45:37
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:st1nw6s5av9YpGu5WndwFw
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration
