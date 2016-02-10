@@ -122,7 +122,7 @@ sub GetLetterTemplates {
     my $dbh       = C4::Context->dbh;
     my $letters   = $dbh->selectall_hashref(
         q|
-            SELECT module, code, branchcode, name, is_html, title, content, message_transport_type
+            SELECT module, code, branchcode, name, is_html, title, content, message_transport_type, is_tt
             FROM letter
             WHERE module = ?
             AND code = ?
@@ -640,89 +640,104 @@ sub GetPreparedLetter {
         or warn( "No $module $letter_code letter transported by " . $mtt ),
             return;
 
-    my $tables = $params{tables};
+    my $tables     = $params{tables};
     my $substitute = $params{substitute};
-    my $repeat = $params{repeat};
+    my $repeat     = $params{repeat};
+
     $tables || $substitute || $repeat
       or carp( "ERROR: nothing to substitute - both 'tables' and 'substitute' are empty" ),
          return;
-    my $want_librarian = $params{want_librarian};
 
-    if ($substitute) {
-        while ( my ($token, $val) = each %$substitute ) {
-            if ( $token eq 'items.content' ) {
-                $val =~ s|\n|<br/>|g if $letter->{is_html};
-            }
+    my $userenv = C4::Context->userenv;
 
-            $letter->{title} =~ s/<<$token>>/$val/g;
-            $letter->{content} =~ s/<<$token>>/$val/g;
-       }
-    }
-
-    my $OPACBaseURL = C4::Context->preference('OPACBaseURL');
-    $letter->{content} =~ s/<<OPACBaseURL>>/$OPACBaseURL/go;
-
-    if ($want_librarian) {
-        # parsing librarian name
-        my $userenv = C4::Context->userenv;
-        $letter->{content} =~ s/<<LibrarianFirstname>>/$userenv->{firstname}/go;
-        $letter->{content} =~ s/<<LibrarianSurname>>/$userenv->{surname}/go;
-        $letter->{content} =~ s/<<LibrarianEmailaddress>>/$userenv->{emailaddress}/go;
-    }
-
-    my ($repeat_no_enclosing_tags, $repeat_enclosing_tags);
-
-    if ($repeat) {
-        if (ref ($repeat) eq 'ARRAY' ) {
-            $repeat_no_enclosing_tags = $repeat;
-        } else {
-            $repeat_enclosing_tags = $repeat;
-        }
-    }
-
-    if ($repeat_enclosing_tags) {
-        while ( my ($tag, $tag_tables) = each %$repeat_enclosing_tags ) {
-            if ( $letter->{content} =~ m!<$tag>(.*)</$tag>!s ) {
-                my $subcontent = $1;
-                my @lines = map {
-                    my %subletter = ( title => '', content => $subcontent );
-                    _substitute_tables( \%subletter, $_ );
-                    $subletter{content};
-                } @$tag_tables;
-                $letter->{content} =~ s!<$tag>.*</$tag>!join( "\n", @lines )!se;
-            }
-        }
-    }
-
-    if ($tables) {
-        _substitute_tables( $letter, $tables );
-    }
-
-    if ($repeat_no_enclosing_tags) {
-        if ( $letter->{content} =~ m/[^\n]*<<.*>>[^\n]*/so ) {
-            my $line = $&;
-            my $i = 1;
-            my @lines = map {
-                my $c = $line;
-                $c =~ s/<<count>>/$i/go;
-                foreach my $field ( keys %{$_} ) {
-                    $c =~ s/(<<[^\.]+.$field>>)/$_->{$field}/;
+    if ( $letter->{is_tt} ) {
+        $letter->{content} = _process_tt(
+            {
+                content => $letter->{content},
+                tables  => $tables,
+                tt_params  => {
+                    today     => dt_from_string(),
+                    librarian => {
+                        firstname    => $userenv->{firstname},
+                        surname      => $userenv->{surname},
+                        emailaddress => $userenv->{emailaddress},
+                    },
                 }
-                $i++;
-                $c;
-            } @$repeat_no_enclosing_tags;
-
-            my $replaceby = join( "\n", @lines );
-            $letter->{content} =~ s/\Q$line\E/$replaceby/s;
-        }
+            }
+        );
     }
+    else {
+        my $want_librarian = $params{want_librarian};
 
-    $letter->{content} = _process_tt(
-        {
-            content => $letter->{content},
-            tables  => $tables,
+        if ($substitute) {
+            while ( my ($token, $val) = each %$substitute ) {
+                if ( $token eq 'items.content' ) {
+                    $val =~ s|\n|<br/>|g if $letter->{is_html};
+                }
+
+                $letter->{title} =~ s/<<$token>>/$val/g;
+                $letter->{content} =~ s/<<$token>>/$val/g;
+           }
         }
-    );
+
+        my $OPACBaseURL = C4::Context->preference('OPACBaseURL');
+        $letter->{content} =~ s/<<OPACBaseURL>>/$OPACBaseURL/go;
+
+        if ($want_librarian) {
+            # parsing librarian name
+            $letter->{content} =~ s/<<LibrarianFirstname>>/$userenv->{firstname}/go;
+            $letter->{content} =~ s/<<LibrarianSurname>>/$userenv->{surname}/go;
+            $letter->{content} =~ s/<<LibrarianEmailaddress>>/$userenv->{emailaddress}/go;
+        }
+
+        my ($repeat_no_enclosing_tags, $repeat_enclosing_tags);
+
+        if ($repeat) {
+            if (ref ($repeat) eq 'ARRAY' ) {
+                $repeat_no_enclosing_tags = $repeat;
+            } else {
+                $repeat_enclosing_tags = $repeat;
+            }
+        }
+
+        if ($repeat_enclosing_tags) {
+            while ( my ($tag, $tag_tables) = each %$repeat_enclosing_tags ) {
+                if ( $letter->{content} =~ m!<$tag>(.*)</$tag>!s ) {
+                    my $subcontent = $1;
+                    my @lines = map {
+                        my %subletter = ( title => '', content => $subcontent );
+                        _substitute_tables( \%subletter, $_ );
+                        $subletter{content};
+                    } @$tag_tables;
+                    $letter->{content} =~ s!<$tag>.*</$tag>!join( "\n", @lines )!se;
+                }
+            }
+        }
+
+        if ($tables) {
+            _substitute_tables( $letter, $tables );
+        }
+
+        if ($repeat_no_enclosing_tags) {
+            if ( $letter->{content} =~ m/[^\n]*<<.*>>[^\n]*/so ) {
+                my $line = $&;
+                my $i = 1;
+                my @lines = map {
+                    my $c = $line;
+                    $c =~ s/<<count>>/$i/go;
+                    foreach my $field ( keys %{$_} ) {
+                        $c =~ s/(<<[^\.]+.$field>>)/$_->{$field}/;
+                    }
+                    $i++;
+                    $c;
+                } @$repeat_no_enclosing_tags;
+
+                my $replaceby = join( "\n", @lines );
+                $letter->{content} =~ s/\Q$line\E/$replaceby/s;
+            }
+        }
+
+    }
 
     $letter->{content} =~ s/<<\S*>>//go; #remove any stragglers
 
@@ -1385,8 +1400,9 @@ sub _set_message_status {
 sub _process_tt {
     my ( $params ) = @_;
 
-    my $content = $params->{content};
-    my $tables = $params->{tables};
+    my $content   = $params->{content};
+    my $tables    = $params->{tables};
+    my $tt_params = $params->{tt_params};
 
     my $use_template_cache = C4::Context->config('template_cache_dir') && defined $ENV{GATEWAY_INTERFACE};
     my $template           = Template->new(
@@ -1401,7 +1417,8 @@ sub _process_tt {
         }
     ) or die Template->error();
 
-    my $tt_params = _get_tt_params( $tables );
+    my $tt_objects = _get_tt_params( $tables );
+    $tt_params = { %$tt_params, %$tt_objects };
 
     my $output;
     $template->process( \$content, $tt_params, \$output ) || croak "ERROR PROCESSING TEMPLATE: " . $template->error();
@@ -1521,8 +1538,6 @@ sub _get_tt_params {
             croak "ERROR LOADING MODULE $module: $Module::Load::Conditional::ERROR";
         }
     }
-
-    $params->{today} = dt_from_string();
 
     return $params;
 }

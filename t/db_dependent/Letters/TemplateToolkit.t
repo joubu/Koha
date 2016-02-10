@@ -92,7 +92,7 @@ my $modification = Koha::Borrower::Modification->new( { verification_token => "T
 my $prepared_letter;
 
 my $sth =
-  $dbh->prepare(q{INSERT INTO letter (module, code, name, title, content) VALUES ('test',?,'Test','Test',?)});
+  $dbh->prepare(q{INSERT INTO letter (module, code, name, title, is_tt, content) VALUES ('test',?,'Test','Test',1,?)});
 
 $sth->execute( "TEST_PATRON", "[% borrower.id %]" );
 $prepared_letter = GetPreparedLetter(

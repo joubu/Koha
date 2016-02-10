@@ -391,11 +391,24 @@ $(document).ready(function() {
               <ol>
                 <li>
                   <input type="hidden" name="message_transport_type" value="[% letter.message_transport_type %]" />
+
                   <label for="is_html_[% letter.message_transport_type %]">HTML message:</label>
                   [% IF letter.is_html %]
                     <input type="checkbox" name="is_html_[% letter.message_transport_type %]" id="is_html_[% letter.message_transport_type %]" value="1" checked="checked" />
                   [% ELSE %]
                     <input type="checkbox" name="is_html_[% letter.message_transport_type %]" id="is_html_[% letter.message_transport_type %]" value="1" />
+                  [% END %]
+
+                  [% IF Koha.Preference('TemplateToolkitNotices') %]
+                      <br />
+
+                      <label for="is_tt_[% letter.message_transport_type %]">Template Toolkit:</label>
+                      [% IF letter.is_tt %]
+                        <input type="checkbox" name="is_tt_[% letter.message_transport_type %]" id="is_tt_[% letter.message_transport_type %]" value="1" checked="checked" />
+                      [% ELSE %]
+                        <input type="checkbox" name="is_tt_[% letter.message_transport_type %]" id="is_tt_[% letter.message_transport_type %]" value="1" />
+                      [% END %]
+                      <i>Enables the use of the new experimental Template Toolkit syntax parser instead of the current syntax parser.</i>
                   [% END %]
                 </li>
                 <li>

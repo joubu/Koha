@@ -170,6 +170,7 @@ sub add_form {
             push @letter_loop, {
                 message_transport_type => $mtt,
                 is_html    => $letters->{$mtt}{is_html},
+                is_tt      => $letters->{$mtt}{is_tt},
                 title      => $letters->{$mtt}{title},
                 content    => $letters->{$mtt}{content}//'',
             };
@@ -259,6 +260,7 @@ sub add_validate {
     my @content       = $input->param('content');
     for my $mtt ( @mtt ) {
         my $is_html = $input->param("is_html_$mtt");
+        my $is_tt = $input->param("is_tt_$mtt");
         my $title   = shift @title;
         my $content = shift @content;
         my $letter = C4::Letters::getletter( $oldmodule, $code, $branchcode, $mtt);
@@ -277,18 +279,18 @@ sub add_validate {
             $dbh->do(
                 q{
                     UPDATE letter
-                    SET branchcode = ?, module = ?, name = ?, is_html = ?, title = ?, content = ?
+                    SET branchcode = ?, module = ?, name = ?, is_html = ?, title = ?, content = ?, is_tt = ?
                     WHERE branchcode = ? AND module = ? AND code = ? AND message_transport_type = ?
                 },
                 undef,
-                $branchcode || '', $module, $name, $is_html || 0, $title, $content,
+                $branchcode || '', $module, $name, $is_html || 0, $title, $content, $is_tt,
                 $branchcode, $oldmodule, $code, $mtt
             );
         } else {
             $dbh->do(
-                q{INSERT INTO letter (branchcode,module,code,name,is_html,title,content,message_transport_type) VALUES (?,?,?,?,?,?,?,?)},
+                q{INSERT INTO letter (branchcode,module,code,name,is_html,title,content,message_transport_type,is_tt) VALUES (?,?,?,?,?,?,?,?,?)},
                 undef,
-                $branchcode || '', $module, $code, $name, $is_html || 0, $title, $content, $mtt
+                $branchcode || '', $module, $code, $name, $is_html || 0, $title, $content, $mtt, $is_tt
             );
         }
     }

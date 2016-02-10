@@ -1429,6 +1429,7 @@ CREATE TABLE `letter` ( -- table for all notice templates in Koha
   `title` varchar(200) NOT NULL default '', -- subject line of the notice
   `content` text, -- body text for the notice or slip
   `message_transport_type` varchar(20) NOT NULL DEFAULT 'email', -- transport type for this notice
+  `is_tt` TINYINT(1) NOT NULL DEFAULT 0, -- controls if notice should be processed as template toolkit syntax
   PRIMARY KEY  (`module`,`code`, `branchcode`, `message_transport_type`),
   CONSTRAINT `message_transport_type_fk` FOREIGN KEY (`message_transport_type`)
   REFERENCES `message_transport_types` (`message_transport_type`) ON DELETE CASCADE ON UPDATE CASCADE
