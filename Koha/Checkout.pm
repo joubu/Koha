@@ -39,7 +39,7 @@ Koha::Checkout - Koha Checkout object class
 
 =cut
 
-sub type {
+sub _type {
     return 'Issue';
 }
 

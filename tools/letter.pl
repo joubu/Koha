@@ -260,7 +260,7 @@ sub add_validate {
     my @content       = $input->param('content');
     for my $mtt ( @mtt ) {
         my $is_html = $input->param("is_html_$mtt");
-        my $is_tt = $input->param("is_tt_$mtt");
+        my $is_tt = $input->param("is_tt_$mtt") ? 1 : 0;
         my $title   = shift @title;
         my $content = shift @content;
         my $letter = C4::Letters::getletter( $oldmodule, $code, $branchcode, $mtt);

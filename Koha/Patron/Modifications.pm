@@ -312,7 +312,7 @@ sub GetModifications {
     return $data;
 }
 
-sub type {
+sub _type {
     return 'BorrowerModification';
 }
 

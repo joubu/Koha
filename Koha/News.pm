@@ -41,7 +41,7 @@ Koha::News - Koha News object set class
 
 =cut
 
-sub type {
+sub _type {
     return 'OpacNews';
 }
 

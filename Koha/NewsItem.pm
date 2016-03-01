@@ -41,7 +41,7 @@ Koha::NewsItem represents a single piece of news from the opac_news table
 
 =cut
 
-sub type {
+sub _type {
     return 'OpacNews';
 }
 

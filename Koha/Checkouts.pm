@@ -41,7 +41,7 @@ Koha::Checkouts - Koha Checkout object set class
 
 =cut
 
-sub type {
+sub _type {
     return 'Issue';
 }
 

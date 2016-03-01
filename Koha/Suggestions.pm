@@ -41,7 +41,7 @@ Koha::Suggestions - Koha Suggestion object set class
 
 =cut
 
-sub type {
+sub _type {
     return 'Suggestion';
 }
 

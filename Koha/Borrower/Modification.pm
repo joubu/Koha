@@ -39,7 +39,7 @@ Koha::Item - Koha Item object class
 
 =cut
 
-sub type {
+sub _type {
     return 'BorrowerModification';
 }
 
