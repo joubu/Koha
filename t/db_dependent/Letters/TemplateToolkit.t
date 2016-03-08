@@ -38,7 +38,7 @@ use Koha::Serial;
 use Koha::Subscription;
 use Koha::Suggestion;
 use Koha::Checkout;
-use Koha::Borrower::Modification;
+use Koha::Patron::Modification;
 
 my $schema = Koha::Database->schema;
 $schema->storage->txn_begin();
@@ -87,7 +87,7 @@ my $serial       = Koha::Serial->new()->store();
 my $subscription = Koha::Subscription->new()->store();
 my $suggestion   = Koha::Suggestion->new()->store();
 my $checkout     = Koha::Checkout->new( { itemnumber => $item->id() } )->store();
-my $modification = Koha::Borrower::Modification->new( { verification_token => "TEST" } )->store();
+my $modification = Koha::Patron::Modification->new( { verification_token => "TEST" } )->store();
 
 my $prepared_letter;
 

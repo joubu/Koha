@@ -1438,8 +1438,8 @@ sub _get_tt_params {
             plural   => 'biblios',
             pk       => 'biblionumber',
         },
-        borrowers => { #FIXME: Bug 15548 will require this to be updated
-            module   => 'Koha::Borrowers', # to Koha::Patrons
+        borrowers => {
+            module   => 'Koha::Patrons',
             singular => 'borrower',
             plural   => 'borrowers',
             pk       => 'borrowernumber',
@@ -1493,7 +1493,7 @@ sub _get_tt_params {
             fk       => 'itemnumber',
         },
         borrower_modifications => {
-            module   => 'Koha::Borrower::Modifications',
+            module   => 'Koha::Patron::Modifications',
             singular => 'patron_modification',
             plural   => 'patron_modifications',
             fk       => 'verification_token',

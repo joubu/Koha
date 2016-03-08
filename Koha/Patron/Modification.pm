@@ -1,4 +1,4 @@
-package Koha::Borrower::Modification;
+package Koha::Patron::Modification;
 
 # Copyright ByWater Solutions 2014
 #

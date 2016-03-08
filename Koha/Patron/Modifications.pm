@@ -321,7 +321,7 @@ sub _type {
 =cut
 
 sub object_class {
-    return 'Koha::Borrower::Modification';
+    return 'Koha::Patron::Modification';
 }
 
 1;
