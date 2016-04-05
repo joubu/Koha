@@ -22,6 +22,7 @@ use Text::CSV;
 
 use C4::Members;
 use C4::Branch;
+use Koha::DateUtils;
 
 sub import_patrons {
     my ($params) = @_;
@@ -71,11 +72,9 @@ sub import_patrons {
     }
 
     push @feedback, { feedback => 1, name => 'headerrow', value => join( ', ', @csvcolumns ) };
-    my $today_iso = C4::Dates->new()->output('iso');
+    my $today_iso = output_pref( { dt => dt_from_string, dateonly => 1, dateformat => 'iso' } );
     my @criticals = qw(surname branchcode categorycode);    # there probably should be others
     my @bad_dates;                                          # I've had a few.
-    my $date_re = C4::Dates->new->regexp('syspref');
-    my $iso_re  = C4::Dates->new->regexp('iso');
   LINE: while ( my $borrowerline = <$handle> ) {
         my %borrower;
         my @missing_criticals;
@@ -168,13 +167,10 @@ sub import_patrons {
         # Popular spreadsheet applications make it difficult to force date outputs to be zero-padded, but we require it.
         foreach (qw(dateofbirth dateenrolled dateexpiry)) {
             my $tempdate = $borrower{$_} or next;
-            if ( $tempdate =~ /$date_re/ ) {
-                $borrower{$_} = format_date_in_iso($tempdate);
-            }
-            elsif ( $tempdate =~ /$iso_re/ ) {
+            $tempdate = eval { output_pref( { dt => dt_from_string( $tempdate ), dateonly => 1, dateformat => 'iso' } ); };
+            if ($tempdate) {
                 $borrower{$_} = $tempdate;
-            }
-            else {
+            } else {
                 $borrower{$_} = '';
                 push @missing_criticals, { key => $_, line => $., lineraw => $borrowerline, bad_date => 1 };
             }
@@ -211,6 +207,13 @@ sub import_patrons {
               };
             $invalid++;
             next;
+        }
+
+        # generate a proper login if none provided
+        if ( $borrower{userid} eq '' || !Check_Userid( $borrower{userid} ) ) {
+            push @errors, { duplicate_userid => 1, userid => $borrower{userid} };
+            $invalid++;
+            next LINE;
         }
 
         if ($borrowernumber) {
@@ -280,7 +283,7 @@ sub import_patrons {
                     $patron_attributes = extended_attributes_merge( $old_attributes, $patron_attributes );
                 }
                 push @errors, { unknown_error => 1 }
-                  unless SetBorrowerAttributes( $borrower{'borrowernumber'}, $patron_attributes );
+                  unless SetBorrowerAttributes( $borrower{'borrowernumber'}, $patron_attributes, 'no_branch_limit' );
             }
             $overwritten++;
             push(
