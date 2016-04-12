@@ -22,7 +22,33 @@ use Text::CSV;
 
 use C4::Members;
 use C4::Branch;
+use C4::Members::Attributes qw(:all);
+
 use Koha::DateUtils;
+
+=head1 NAME
+
+Koha::Patrons::Import - Perl Module containing import_patrons method exported from import_borrowers script.
+
+=head1 SYNOPSIS
+
+use Koha::Patrons::Import;
+
+=head1 DESCRIPTION
+
+This module contains one method for importing patrons in bulk.
+
+=head1 FUNCTIONS
+
+=head2 import_patrons
+
+ my $return = Koha::Patrons::Import::import_patrons($params);
+
+Applies various checks and imports patrons in bulk from a csv file.
+
+Further pod documentation needed here.
+
+=cut
 
 sub import_patrons {
     my ($params) = @_;
@@ -33,8 +59,7 @@ sub import_patrons {
     my $ext_preserve         = $params->{preserve_extended_attributes};
     my $overwrite_cardnumber = $params->{overwrite_cardnumber};
 
-    carp("No file handle passed in!") && return unless $handle;
-
+    unless( $handle ) { carp("No file handle passed in!"); return; }
     my $extended            = C4::Context->preference('ExtendedPatronAttributes');
     my $set_messaging_prefs = C4::Context->preference('EnhancedMessagingPreferences');
 
@@ -159,8 +184,7 @@ sub import_patrons {
             $attr_str =~ s/\xe2\x80\x9c/"/g;    # fixup double quotes in case we are passed smart quotes
             $attr_str =~ s/\xe2\x80\x9d/"/g;
             push @feedback, { feedback => 1, name => 'attribute string', value => $attr_str };
-            delete $borrower{patron_attributes}
-              ;    # not really a field in borrowers, so we don't want to pass it to ModMember.
+            delete $borrower{patron_attributes}; # not really a field in borrowers, so we don't want to pass it to ModMember.
             $patron_attributes = extended_attributes_code_value_arrayref($attr_str);
         }
 
