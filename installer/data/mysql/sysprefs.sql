@@ -375,6 +375,7 @@ INSERT INTO systempreferences ( `variable`, `value`, `options`, `explanation`, `
 ('PatronSelfRegistrationBorrowerMandatoryField','surname|firstname',NULL,'Choose the mandatory fields for a patron\'s account, when registering via the OPAC.','free'),
 ('PatronSelfRegistrationBorrowerUnwantedField','',NULL,'Name the fields you don\'t want to display when registering a new patron via the OPAC.','free'),
 ('PatronSelfRegistrationDefaultCategory','','','A patron registered via the OPAC will receive a borrower category code set in this system preference.','free'),
+('PatronSelfRegistrationEmailMustBeUnique', '0', 'If set, the field borrowers.email will be considered as a unique field on self registering', NULL, 'YesNo'),
 ('PatronSelfRegistrationExpireTemporaryAccountsDelay','0',NULL,'If PatronSelfRegistrationDefaultCategory is enabled, this system preference controls how long a patron can have a temporary status before the account is deleted automatically. It is an integer value representing a number of days to wait before deleting a temporary patron account. Setting it to 0 disables the deleting of temporary accounts.','Integer'),
 ('PatronSelfRegistrationLibraryList','',NULL,'Only display libraries listed. If empty, all libraries are displayed.','Free'),
 ('PatronSelfRegistrationPrefillForm','1',NULL,'Display password and prefill login form after a patron has self registered','YesNo'),
