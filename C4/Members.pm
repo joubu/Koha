@@ -1754,6 +1754,7 @@ sub GetBorrowersToExpunge {
     my $params = shift;
     my $filterdate       = $params->{'not_borrowed_since'};
     my $filterexpiry     = $params->{'expired_before'};
+    my $filterlastseen   = $params->{'last_seen'};
     my $filtercategory   = $params->{'category_code'};
     my $filterbranch     = $params->{'branchcode'} ||
                         ((C4::Context->preference('IndependentBranches')
@@ -1793,6 +1794,10 @@ sub GetBorrowersToExpunge {
     if ( $filterexpiry ) {
         $query .= " AND dateexpiry < ? ";
         push( @query_params, $filterexpiry );
+    }
+    if ( $filterlastseen ) {
+        $query .= ' AND lastseen < ? ';
+        push @query_params, $filterlastseen;
     }
     if ( $filtercategory ) {
         $query .= " AND categorycode = ? ";
