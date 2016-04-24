@@ -1180,6 +1180,15 @@ sub checkauth {
                 -HttpOnly => 1
             );
         }
+
+        if ( $userid ) {
+            $dbh->do(q|
+                UPDATE borrowers
+                SET lastseen = NOW()
+                WHERE userid = ?
+            |, undef, $userid);
+        }
+
         return ( $userid, $cookie, $sessionID, $flags );
     }
 
