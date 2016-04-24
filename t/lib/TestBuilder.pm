@@ -111,7 +111,7 @@ sub build {
         if( ref( $col_values->{$col_name} ) eq 'HASH' ) {
             $fk_value = $col_values->{$col_name};
         }
-        elsif( defined( $col_values->{$col_name} ) ) {
+        elsif( exists $col_values->{$col_name} ) {
             next;
         }
 
@@ -166,7 +166,7 @@ sub _buildColumnValues {
                 column_name => $col_name,
                 value       => $original_value,
             });
-            $col_values->{$col_name} = $col_value if( defined( $col_value ) );
+            $col_values->{$col_name} = $col_value if defined( $col_value ) or exists $original_value->{$col_name};
         }
         $build_value = 0;
 

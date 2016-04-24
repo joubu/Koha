@@ -19,7 +19,7 @@
 
 use Modern::Perl;
 
-use Test::More tests => 41;
+use Test::More tests => 42;
 
 use Koha::Database;
 
@@ -273,6 +273,9 @@ subtest 'Auto-increment values tests' => sub {
     is( $ai_value + 1, $next_ai_value, "AI values are consecutive");
 
 };
+
+my $patron = $builder->build({ source => 'Borrower', value => { guarantorid => undef } });
+is( $patron->{guarantorid}, undef, 'TestBuilder should not populate a value the dev would like to keep undef' );
 
 $schema->storage->txn_rollback;
 
