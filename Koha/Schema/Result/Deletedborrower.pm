@@ -404,6 +404,12 @@ __PACKAGE__->table("deletedborrowers");
   default_value: 0
   is_nullable: 0
 
+=head2 lastseen
+
+  data_type: 'datetime'
+  datetime_undef_if_invalid: 1
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -561,11 +567,17 @@ __PACKAGE__->add_columns(
   { data_type => "integer", default_value => 1, is_nullable => 0 },
   "privacy_guarantor_checkouts",
   { data_type => "tinyint", default_value => 0, is_nullable => 0 },
+  "lastseen",
+  {
+    data_type => "datetime",
+    datetime_undef_if_invalid => 1,
+    is_nullable => 1,
+  },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2016-03-04 19:32:39
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:UqTaMlpDnOWlhfQyF5EjHA
+# Created by DBIx::Class::Schema::Loader v0.07042 @ 2016-04-24 17:32:24
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:CjM77u63lNdzWEb29TGTgA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

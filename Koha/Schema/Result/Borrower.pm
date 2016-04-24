@@ -407,6 +407,12 @@ __PACKAGE__->table("borrowers");
   default_value: 0
   is_nullable: 0
 
+=head2 lastseen
+
+  data_type: 'datetime'
+  datetime_undef_if_invalid: 1
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -576,6 +582,12 @@ __PACKAGE__->add_columns(
   { data_type => "integer", default_value => 1, is_nullable => 0 },
   "privacy_guarantor_checkouts",
   { data_type => "tinyint", default_value => 0, is_nullable => 0 },
+  "lastseen",
+  {
+    data_type => "datetime",
+    datetime_undef_if_invalid => 1,
+    is_nullable => 1,
+  },
 );
 
 =head1 PRIMARY KEY
@@ -1204,8 +1216,8 @@ Composing rels: L</aqorder_users> -> ordernumber
 __PACKAGE__->many_to_many("ordernumbers", "aqorder_users", "ordernumber");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2016-02-14 12:46:14
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:bI6qJYw+ulTUwA7XMCkkRw
+# Created by DBIx::Class::Schema::Loader v0.07042 @ 2016-04-24 17:32:24
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Lqnr1bMJDpGyjIj7brABHQ
 
 __PACKAGE__->belongs_to(
     "guarantor",
