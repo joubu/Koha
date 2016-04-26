@@ -366,6 +366,7 @@ for="tobranch"><strong>Clone these rules to:</strong></label> <input type="hidde
                       <th>No renewal before</th>
                       <th>Automatic renewal</th>
                       <th>No automatic renewal after</th>
+                       <th>No automatic renewal after (hard limit)</th>
                       <th>Holds allowed (count)</th>
                       <th>On shelf holds allowed</th>
                       <th>Item level holds</th>
