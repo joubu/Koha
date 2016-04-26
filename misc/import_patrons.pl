@@ -21,7 +21,8 @@ use Modern::Perl;
 
 use Getopt::Long;
 
-use Koha::Patrons::Import qw(import_patrons);
+use Koha::Patrons::Import;
+my $Import = Koha::Patrons::Import->new();
 
 my $csv_file;
 my $matchpoint;
@@ -48,7 +49,7 @@ print_help() if ( $help || !$csv_file || !$matchpoint || !$confirm );
 my $handle;
 open( $handle, "<", $csv_file ) or die $!;
 
-my $return = Koha::Patrons::Import::import_patrons(
+my $return = $Import->import_patrons(
     {
         file                         => $handle,
         defaults                     => \%defaults,

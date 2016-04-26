@@ -45,7 +45,8 @@ use Koha::DateUtils;
 use C4::Branch;
 use C4::Members;
 
-use Koha::Patrons::Import qw(import_patrons);
+use Koha::Patrons::Import;
+my $Import = Koha::Patrons::Import->new();
 
 use Text::CSV;
 
@@ -112,7 +113,7 @@ if ( $uploadborrowers && length($uploadborrowers) > 0 ) {
     my $handle   = $input->upload('uploadborrowers');
     my %defaults = $input->Vars;
 
-    my $return = Koha::Patrons::Import::import_patrons(
+    my $return = $Import->import_patrons(
         {
             file                         => $handle,
             defaults                     => \%defaults,
