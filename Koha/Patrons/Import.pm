@@ -16,6 +16,8 @@ package Koha::Patrons::Import;
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use Modern::Perl;
+use Moo;
+use namespace::clean;
 
 use Carp;
 use Text::CSV;
@@ -50,24 +52,32 @@ Further pod documentation needed here.
 
 =cut
 
-sub import_patrons {
-    my ($params) = @_;
+has 'today_iso' => (
+    is      => 'ro',
+    lazy    => 1,
+    default => sub { output_pref( { dt => dt_from_string(), dateonly => 1, dateformat => 'iso' } ); },
+  );
 
-    my $handle               = $params->{file};
+has 'text_csv' => (
+    is      => 'ro',
+    lazy    => 1,
+    default => sub { Text::CSV->new( { binary => 1 } ), },
+  );
+
+sub import_patrons {
+    my ($self, $params) = @_;
+
+    my $handle = $params->{file};
+    unless( $handle ) { carp('No file handle passed in!'); return; }
+
     my $matchpoint           = $params->{matchpoint};
     my $defaults             = $params->{defaults};
     my $ext_preserve         = $params->{preserve_extended_attributes};
     my $overwrite_cardnumber = $params->{overwrite_cardnumber};
+    my $extended             = C4::Context->preference('ExtendedPatronAttributes');
+    my $set_messaging_prefs  = C4::Context->preference('EnhancedMessagingPreferences');
 
-    unless( $handle ) { carp("No file handle passed in!"); return; }
-    my $extended            = C4::Context->preference('ExtendedPatronAttributes');
-    my $set_messaging_prefs = C4::Context->preference('EnhancedMessagingPreferences');
-
-    my @columnkeys = map { $_ ne 'borrowernumber' ? $_ : () } C4::Members::columns();
-    push( @columnkeys, 'patron_attributes' ) if $extended;
-
-    our $csv = Text::CSV->new( { binary => 1 } );    # binary needed for non-ASCII Unicode
-
+    my @columnkeys = set_column_keys($extended);
     my @feedback;
     my @errors;
 
@@ -79,9 +89,10 @@ sub import_patrons {
 
     # use header line to construct key to column map
     my $borrowerline = <$handle>;
-    my $status       = $csv->parse($borrowerline);
+    my $status       = $self->text_csv->parse($borrowerline);
     ($status) or push @errors, { badheader => 1, line => $., lineraw => $borrowerline };
-    my @csvcolumns = $csv->fields();
+
+    my @csvcolumns = $self->text_csv->fields();
     my %csvkeycol;
     my $col = 0;
     foreach my $keycol (@csvcolumns) {
@@ -91,21 +102,19 @@ sub import_patrons {
         $csvkeycol{$keycol} = $col++;
     }
 
-    #warn($borrowerline);
     if ($extended) {
         $matchpoint_attr_type = C4::Members::AttributeTypes->fetch($matchpoint);
     }
 
     push @feedback, { feedback => 1, name => 'headerrow', value => join( ', ', @csvcolumns ) };
-    my $today_iso = output_pref( { dt => dt_from_string, dateonly => 1, dateformat => 'iso' } );
-    my @criticals = qw(surname branchcode categorycode);    # there probably should be others
-    my @bad_dates;                                          # I've had a few.
+    my @criticals = qw( surname );    # there probably should be others - rm branchcode && categorycode
   LINE: while ( my $borrowerline = <$handle> ) {
+        my $line_number = $.;
         my %borrower;
         my @missing_criticals;
-        my $patron_attributes;
-        my $status  = $csv->parse($borrowerline);
-        my @columns = $csv->fields();
+
+        my $status  = $self->text_csv->parse($borrowerline);
+        my @columns = $self->text_csv->fields();
         if ( !$status ) {
             push @missing_criticals, { badparse => 1, line => $., lineraw => $borrowerline };
         }
@@ -139,35 +148,12 @@ sub import_patrons {
             }
         }
 
-        #warn join(':',%borrower);
-        if ( $borrower{categorycode} ) {
-            push @missing_criticals,
-              {
-                key          => 'categorycode',
-                line         => $.,
-                lineraw      => $borrowerline,
-                value        => $borrower{categorycode},
-                category_map => 1
-              }
-              unless GetBorrowercategory( $borrower{categorycode} );
-        }
-        else {
-            push @missing_criticals, { key => 'categorycode', line => $., lineraw => $borrowerline };
-        }
-        if ( $borrower{branchcode} ) {
-            push @missing_criticals,
-              {
-                key        => 'branchcode',
-                line       => $.,
-                lineraw    => $borrowerline,
-                value      => $borrower{branchcode},
-                branch_map => 1
-              }
-              unless GetBranchName( $borrower{branchcode} );
-        }
-        else {
-            push @missing_criticals, { key => 'branchcode', line => $., lineraw => $borrowerline };
-        }
+        # Checking if borrower category code exists and if it matches to a known category. Pushing error to missing_criticals otherwise.
+        check_borrower_category($borrower{categorycode}, $borrowerline, $line_number, \@missing_criticals);
+
+        # Checking if branch code exists and if it matches to a branch name. Pushing error to missing_criticals otherwise.
+        check_branch_code($borrower{branchcode}, $borrowerline, $line_number, \@missing_criticals);
+
         if (@missing_criticals) {
             foreach (@missing_criticals) {
                 $_->{borrowernumber} = $borrower{borrowernumber} || 'UNDEF';
@@ -179,32 +165,32 @@ sub import_patrons {
             # The first 25 errors are enough.  Keeping track of 30,000+ would destroy performance.
             next LINE;
         }
-        if ($extended) {
-            my $attr_str = $borrower{patron_attributes};
-            $attr_str =~ s/\xe2\x80\x9c/"/g;    # fixup double quotes in case we are passed smart quotes
-            $attr_str =~ s/\xe2\x80\x9d/"/g;
-            push @feedback, { feedback => 1, name => 'attribute string', value => $attr_str };
-            delete $borrower{patron_attributes}; # not really a field in borrowers, so we don't want to pass it to ModMember.
-            $patron_attributes = extended_attributes_code_value_arrayref($attr_str);
-        }
+
+        # Setting patron attributes if extended.
+        my $patron_attributes = set_patron_attributes($extended, $borrower{patron_attributes}, \@feedback);
+
+        # Not really a field in borrowers, so we don't want to pass it to ModMember.
+        if ($extended) { delete $borrower{patron_attributes}; }
 
         # Popular spreadsheet applications make it difficult to force date outputs to be zero-padded, but we require it.
         foreach (qw(dateofbirth dateenrolled dateexpiry)) {
             my $tempdate = $borrower{$_} or next;
+
             $tempdate = eval { output_pref( { dt => dt_from_string( $tempdate ), dateonly => 1, dateformat => 'iso' } ); };
+
             if ($tempdate) {
                 $borrower{$_} = $tempdate;
             } else {
                 $borrower{$_} = '';
-                push @missing_criticals, { key => $_, line => $., lineraw => $borrowerline, bad_date => 1 };
+                push @missing_criticals, { key => $_, line => $line_number, lineraw => $borrowerline, bad_date => 1 };
             }
         }
-        $borrower{dateenrolled} = $today_iso unless $borrower{dateenrolled};
-        $borrower{dateexpiry} = GetExpiryDate( $borrower{categorycode}, $borrower{dateenrolled} )
-          unless $borrower{dateexpiry};
+        $borrower{dateenrolled} = $self->today_iso() unless $borrower{dateenrolled};
+        $borrower{dateexpiry} = GetExpiryDate( $borrower{categorycode}, $borrower{dateenrolled} ) unless $borrower{dateexpiry};
+
         my $borrowernumber;
         my $member;
-        if ( ( $matchpoint eq 'cardnumber' ) && ( $borrower{'cardnumber'} ) ) {
+        if ( defined($matchpoint) && ( $matchpoint eq 'cardnumber' ) && ( $borrower{'cardnumber'} ) ) {
             $member = GetMember( 'cardnumber' => $borrower{'cardnumber'} );
             if ($member) {
                 $borrowernumber = $member->{'borrowernumber'};
@@ -384,11 +370,99 @@ sub import_patrons {
     };
 }
 
-END { }    # module clean-up code here (global destructor)
+=head2 set_column_keys
+
+ my @columnkeys = set_column_keys($extended);
+
+Returns an array of borrowers' table columns.
+
+=cut
+
+sub set_column_keys {
+    my ($extended) = @_;
+
+    my @columnkeys = map { $_ ne 'borrowernumber' ? $_ : () } C4::Members::columns();
+    push( @columnkeys, 'patron_attributes' ) if $extended;
+
+    return @columnkeys;
+}
+
+=head2 set_patron_attributes
+
+ my $patron_attributes = set_patron_attributes($extended, $borrower{patron_attributes}, $feedback);
+
+Returns a reference to array of hashrefs data structure as expected by SetBorrowerAttributes.
+
+=cut
+
+sub set_patron_attributes {
+    my ($extended, $patron_attributes, $feedback) = @_;
+
+    unless($extended) { return; }
+    unless( defined($patron_attributes) ) { return; }
+
+    # Fixup double quotes in case we are passed smart quotes
+    $patron_attributes =~ s/\xe2\x80\x9c/"/g;
+    $patron_attributes =~ s/\xe2\x80\x9d/"/g;
+
+    push (@$feedback, { feedback => 1, name => 'attribute string', value => $patron_attributes });
+
+    my $result = extended_attributes_code_value_arrayref($patron_attributes);
+
+    return $result;
+}
+
+=head2 check_branch_code
+
+ check_branch_code($borrower{branchcode}, $borrowerline, $line_number, \@missing_criticals);
+
+Pushes a 'missing_criticals' error entry if no branch code or branch code does not map to a branch name.
+
+=cut
+
+sub check_branch_code {
+    my ($branchcode, $borrowerline, $line_number, $missing_criticals) = @_;
+
+    # No branch code
+    unless( $branchcode ) {
+        push (@$missing_criticals, { key => 'branchcode', line => $line_number, lineraw => $borrowerline, });
+        return;
+    }
+
+    # look for branch code
+    my $branch_name = GetBranchName( $branchcode );
+    unless( $branch_name ) {
+        push (@$missing_criticals, { key => 'branchcode', line => $line_number, lineraw => $borrowerline,
+                                     value => $branchcode, branch_map => 1, });
+    }
+}
+
+=head2 check_borrower_category
+
+ check_borrower_category($borrower{categorycode}, $borrowerline, $line_number, \@missing_criticals);
+
+Pushes a 'missing_criticals' error entry if no category code or category code does not map to a known category.
+
+=cut
+
+sub check_borrower_category {
+    my ($categorycode, $borrowerline, $line_number, $missing_criticals) = @_;
+
+    # No branch code
+    unless( $categorycode ) {
+        push (@$missing_criticals, { key => 'categorycode', line => $line_number, lineraw => $borrowerline, });
+        return;
+    }
+
+    # Looking for borrower category
+    my $category = GetBorrowercategory( $categorycode );
+    unless( $category ) {
+        push (@$missing_criticals, { key => 'categorycode', line => $line_number, lineraw => $borrowerline,
+                                     value => $categorycode, category_map => 1, });
+    }
+}
 
 1;
-
-__END__
 
 =head1 AUTHOR
 
