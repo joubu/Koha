@@ -25,6 +25,7 @@ use Text::CSV;
 use C4::Members;
 use C4::Branch;
 use C4::Members::Attributes qw(:all);
+use C4::Members::AttributeTypes;
 
 use Koha::DateUtils;
 
@@ -52,17 +53,11 @@ Further pod documentation needed here.
 
 =cut
 
-has 'today_iso' => (
-    is      => 'ro',
-    lazy    => 1,
-    default => sub { output_pref( { dt => dt_from_string(), dateonly => 1, dateformat => 'iso' } ); },
-  );
+has 'today_iso' => ( is => 'ro', lazy => 1,
+    default => sub { output_pref( { dt => dt_from_string(), dateonly => 1, dateformat => 'iso' } ); }, );
 
-has 'text_csv' => (
-    is      => 'ro',
-    lazy    => 1,
-    default => sub { Text::CSV->new( { binary => 1 } ), },
-  );
+has 'text_csv' => ( is => 'rw', lazy => 1,
+    default => sub { Text::CSV->new( { binary => 1, } ); },  );
 
 sub import_patrons {
     my ($self, $params) = @_;
@@ -77,7 +72,7 @@ sub import_patrons {
     my $extended             = C4::Context->preference('ExtendedPatronAttributes');
     my $set_messaging_prefs  = C4::Context->preference('EnhancedMessagingPreferences');
 
-    my @columnkeys = set_column_keys($extended);
+    my @columnkeys = $self->set_column_keys($extended);
     my @feedback;
     my @errors;
 
@@ -85,28 +80,14 @@ sub import_patrons {
     my $alreadyindb = 0;
     my $overwritten = 0;
     my $invalid     = 0;
-    my $matchpoint_attr_type;
+    my $matchpoint_attr_type = $self->set_attribute_types({ extended => $extended, matchpoint => $matchpoint, });
 
-    # use header line to construct key to column map
-    my $borrowerline = <$handle>;
-    my $status       = $self->text_csv->parse($borrowerline);
-    ($status) or push @errors, { badheader => 1, line => $., lineraw => $borrowerline };
-
-    my @csvcolumns = $self->text_csv->fields();
+    # Use header line to construct key to column map
     my %csvkeycol;
-    my $col = 0;
-    foreach my $keycol (@csvcolumns) {
+    my $borrowerline = <$handle>;
+    my @csvcolumns   = $self->prepare_columns({headerrow => $borrowerline, keycol => \%csvkeycol, errors => \@errors, });
+    push(@feedback, { feedback => 1, name => 'headerrow', value => join( ', ', @csvcolumns ) });
 
-        # columnkeys don't contain whitespace, but some stupid tools add it
-        $keycol =~ s/ +//g;
-        $csvkeycol{$keycol} = $col++;
-    }
-
-    if ($extended) {
-        $matchpoint_attr_type = C4::Members::AttributeTypes->fetch($matchpoint);
-    }
-
-    push @feedback, { feedback => 1, name => 'headerrow', value => join( ', ', @csvcolumns ) };
     my @criticals = qw( surname );    # there probably should be others - rm branchcode && categorycode
   LINE: while ( my $borrowerline = <$handle> ) {
         my $line_number = $.;
@@ -116,7 +97,7 @@ sub import_patrons {
         my $status  = $self->text_csv->parse($borrowerline);
         my @columns = $self->text_csv->fields();
         if ( !$status ) {
-            push @missing_criticals, { badparse => 1, line => $., lineraw => $borrowerline };
+            push @missing_criticals, { badparse => 1, line => $line_number, lineraw => $borrowerline };
         }
         elsif ( @columns == @columnkeys ) {
             @borrower{@columnkeys} = @columns;
@@ -148,11 +129,15 @@ sub import_patrons {
             }
         }
 
-        # Checking if borrower category code exists and if it matches to a known category. Pushing error to missing_criticals otherwise.
-        check_borrower_category($borrower{categorycode}, $borrowerline, $line_number, \@missing_criticals);
+        # Check if borrower category code exists and if it matches to a known category. Pushing error to missing_criticals otherwise.
+        $self->check_borrower_category($borrower{categorycode}, $borrowerline, $line_number, \@missing_criticals);
 
-        # Checking if branch code exists and if it matches to a branch name. Pushing error to missing_criticals otherwise.
-        check_branch_code($borrower{branchcode}, $borrowerline, $line_number, \@missing_criticals);
+        # Check if branch code exists and if it matches to a branch name. Pushing error to missing_criticals otherwise.
+        $self->check_branch_code($borrower{branchcode}, $borrowerline, $line_number, \@missing_criticals);
+
+        # Popular spreadsheet applications make it difficult to force date outputs to be zero-padded, but we require it.
+        $self->format_dates({borrower => \%borrower, lineraw => $borrowerline, line => $line_number, missing_criticals => \@missing_criticals, });
+
 
         if (@missing_criticals) {
             foreach (@missing_criticals) {
@@ -166,25 +151,11 @@ sub import_patrons {
             next LINE;
         }
 
-        # Setting patron attributes if extended.
-        my $patron_attributes = set_patron_attributes($extended, $borrower{patron_attributes}, \@feedback);
+        # Set patron attributes if extended.
+        my $patron_attributes = $self->set_patron_attributes($extended, $borrower{patron_attributes}, \@feedback);
+        if( $extended ) { delete $borrower{patron_attributes}; } # Not really a field in borrowers.
 
-        # Not really a field in borrowers, so we don't want to pass it to ModMember.
-        if ($extended) { delete $borrower{patron_attributes}; }
-
-        # Popular spreadsheet applications make it difficult to force date outputs to be zero-padded, but we require it.
-        foreach (qw(dateofbirth dateenrolled dateexpiry)) {
-            my $tempdate = $borrower{$_} or next;
-
-            $tempdate = eval { output_pref( { dt => dt_from_string( $tempdate ), dateonly => 1, dateformat => 'iso' } ); };
-
-            if ($tempdate) {
-                $borrower{$_} = $tempdate;
-            } else {
-                $borrower{$_} = '';
-                push @missing_criticals, { key => $_, line => $line_number, lineraw => $borrowerline, bad_date => 1 };
-            }
-        }
+        # Default date enrolled and date expiry if not already set.
         $borrower{dateenrolled} = $self->today_iso() unless $borrower{dateenrolled};
         $borrower{dateexpiry} = GetExpiryDate( $borrower{categorycode}, $borrower{dateenrolled} ) unless $borrower{dateexpiry};
 
@@ -370,6 +341,53 @@ sub import_patrons {
     };
 }
 
+=head2 prepare_columns
+
+ my @csvcolumns = $self->prepare_columns({headerrow => $borrowerline, keycol => \%csvkeycol, errors => \@errors, });
+
+Returns an array of all column key and populates a hash of colunm key positions.
+
+=cut
+
+sub prepare_columns {
+    my ($self, $params) = @_;
+
+    my $status = $self->text_csv->parse($params->{headerrow});
+    unless( $status ) {
+        push( @{$params->{errors}}, { badheader => 1, line => 1, lineraw => $params->{headerrow} });
+        return;
+    }
+
+    my @csvcolumns = $self->text_csv->fields();
+    my $col = 0;
+    foreach my $keycol (@csvcolumns) {
+        # columnkeys don't contain whitespace, but some stupid tools add it
+        $keycol =~ s/ +//g;
+        $params->{keycol}->{$keycol} = $col++;
+    }
+
+    return @csvcolumns;
+}
+
+=head2 set_attribute_types
+
+ my $matchpoint_attr_type = $self->set_attribute_types({ extended => $extended, matchpoint => $matchpoint, });
+
+Returns an attribute type based on matchpoint parameter.
+
+=cut
+
+sub set_attribute_types {
+    my ($self, $params) = @_;
+
+    my $attribute_types;
+    if( $params->{extended} ) {
+        $attribute_types = C4::Members::AttributeTypes->fetch($params->{matchpoint});
+    }
+
+    return $attribute_types;
+}
+
 =head2 set_column_keys
 
  my @columnkeys = set_column_keys($extended);
@@ -379,7 +397,7 @@ Returns an array of borrowers' table columns.
 =cut
 
 sub set_column_keys {
-    my ($extended) = @_;
+    my ($self, $extended) = @_;
 
     my @columnkeys = map { $_ ne 'borrowernumber' ? $_ : () } C4::Members::columns();
     push( @columnkeys, 'patron_attributes' ) if $extended;
@@ -396,9 +414,9 @@ Returns a reference to array of hashrefs data structure as expected by SetBorrow
 =cut
 
 sub set_patron_attributes {
-    my ($extended, $patron_attributes, $feedback) = @_;
+    my ($self, $extended, $patron_attributes, $feedback) = @_;
 
-    unless($extended) { return; }
+    unless( $extended ) { return; }
     unless( defined($patron_attributes) ) { return; }
 
     # Fixup double quotes in case we are passed smart quotes
@@ -421,7 +439,7 @@ Pushes a 'missing_criticals' error entry if no branch code or branch code does n
 =cut
 
 sub check_branch_code {
-    my ($branchcode, $borrowerline, $line_number, $missing_criticals) = @_;
+    my ($self, $branchcode, $borrowerline, $line_number, $missing_criticals) = @_;
 
     # No branch code
     unless( $branchcode ) {
@@ -446,7 +464,7 @@ Pushes a 'missing_criticals' error entry if no category code or category code do
 =cut
 
 sub check_borrower_category {
-    my ($categorycode, $borrowerline, $line_number, $missing_criticals) = @_;
+    my ($self, $categorycode, $borrowerline, $line_number, $missing_criticals) = @_;
 
     # No branch code
     unless( $categorycode ) {
@@ -459,6 +477,31 @@ sub check_borrower_category {
     unless( $category ) {
         push (@$missing_criticals, { key => 'categorycode', line => $line_number, lineraw => $borrowerline,
                                      value => $categorycode, category_map => 1, });
+    }
+}
+
+=head2 format_dates
+
+ format_dates({borrower => \%borrower, lineraw => $lineraw, line => $line_number, missing_criticals => \@missing_criticals, });
+
+Pushes a 'missing_criticals' error entry for each of the 3 date types dateofbirth, dateenrolled and dateexpiry if it can not
+be formatted to the chosen date format. Populates the correctly formatted date otherwise.
+
+=cut
+
+sub format_dates {
+    my ($self, $params) = @_;
+
+    foreach my $date_type (qw(dateofbirth dateenrolled dateexpiry)) {
+        my $tempdate = $params->{borrower}->{$date_type} or next();
+        my $formatted_date = eval { output_pref( { dt => dt_from_string( $tempdate ), dateonly => 1, dateformat => 'iso' } ); };
+
+        if ($formatted_date) {
+            $params->{borrower}->{$date_type} = $formatted_date;
+        } else {
+            $params->{borrower}->{$date_type} = '';
+            push (@{$params->{missing_criticals}}, { key => $date_type, line => $params->{line}, lineraw => $params->{lineraw}, bad_date => 1 });
+        }
     }
 }
 
