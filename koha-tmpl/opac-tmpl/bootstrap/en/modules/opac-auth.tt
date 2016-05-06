@@ -84,7 +84,11 @@
 
                             [% END # / IF casAuthentication %]
 
-                            <form action="[% url %]" name="auth" id="auth" method="post">
+                            [% IF SCO_login %]
+                                <form action="/cgi-bin/koha/sco/sco-main.pl" name="auth" id="auth" method="post">
+                            [% ELSE %]
+                                <form action="[% script_name %]" name="auth" id="auth" method="post">
+                            [% END %]
                                 <input type="hidden" name="koha_login_context" value="opac" />
                                 <fieldset class="brief">
                                     [% FOREACH INPUT IN INPUTS %]
