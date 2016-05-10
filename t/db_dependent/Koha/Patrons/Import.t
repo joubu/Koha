@@ -19,8 +19,9 @@
 
 use Modern::Perl;
 use Test::More tests => 122;
-use Test::MockModule;
 
+# To be replaced by t::lib::Mock
+use Test::MockModule;
 use Koha::Database;
 
 use File::Temp qw(tempfile tempdir);
@@ -73,6 +74,14 @@ my $result_0 = $patrons_import->import_patrons($params_0);
 is($result_0, undef, 'Got the expected undef from import_patrons with no file handle');
 
 # Given ... a file handle to file with headers only.
+my $ExtendedPatronAttributes = 0;
+my $context = Test::MockModule->new('C4::Context'); # Necessary mocking for consistent test results.
+$context->mock('preference', sub { my ($mod, $meth) = @_;
+                                    if ( $meth eq 'ExtendedPatronAttributes' ) { return $ExtendedPatronAttributes; }
+                                    if ( $meth eq 'dateformat' ) { return 'us'; }
+                                });
+
+
 my $csv_headers  = 'cardnumber,surname,firstname,title,othernames,initials,streetnumber,streettype,address,address2,city,state,zipcode,country,email,phone,mobile,fax,dateofbirth,branchcode,categorycode,dateenrolled,dateexpiry,userid,password';
 my $res_header   = 'cardnumber, surname, firstname, title, othernames, initials, streetnumber, streettype, address, address2, city, state, zipcode, country, email, phone, mobile, fax, dateofbirth, branchcode, categorycode, dateenrolled, dateexpiry, userid, password';
 my $csv_one_line = '1000,Nancy,Jenkins,Dr,,NJ,78,Circle,Bunting,El Paso,Henderson,Texas,79984,United States,ajenkins0@sourceforge.net,7-(388)559-6763,3-(373)151-4471,8-(509)286-4001,10/16/1965,CPL,PT,12/28/2014,07/01/2015,jjenkins0,DPQILy';
@@ -144,11 +153,7 @@ is($result_3->{invalid}, 1, 'Got the expected 1 invalid result from import_patro
 is($result_3->{overwritten}, 0, 'Got the expected 0 overwritten result from import_patrons with duplicate userid');
 
 # Given ... a new input and mocked C4::Context
-my $context = Test::MockModule->new('C4::Context');
-$context->mock('preference', sub { my ($mod, $meth) = @_;
-                                    if ( $meth eq 'ExtendedPatronAttributes' ) { return 1; }
-                                    if ( $meth eq 'dateformat' ) { return 'us'; }
-                                });
+$ExtendedPatronAttributes = 1; # Updates mocked C4::Preferences result.
 
 my $new_input_line = '1001,Donna,Sullivan,Mrs,Henry,DS,59,Court,Burrows,Reading,Salt Lake City,Pennsylvania,19605,United States,hsullivan1@purevolume.com,3-(864)009-3006,7-(291)885-8423,1-(879)095-5038,09/19/1970,LPL,PT,03/04/2015,07/01/2015,hsullivan1,8j6P6Dmap';
 my $filename_4 = make_csv($temp_dir, $csv_headers, $new_input_line);

@@ -138,7 +138,6 @@ sub import_patrons {
         # Popular spreadsheet applications make it difficult to force date outputs to be zero-padded, but we require it.
         $self->format_dates({borrower => \%borrower, lineraw => $borrowerline, line => $line_number, missing_criticals => \@missing_criticals, });
 
-
         if (@missing_criticals) {
             foreach (@missing_criticals) {
                 $_->{borrowernumber} = $borrower{borrowernumber} || 'UNDEF';
@@ -190,11 +189,13 @@ sub import_patrons {
             next;
         }
 
-        # generate a proper login if none provided
-        if ( $borrower{userid} eq '' || !Check_Userid( $borrower{userid} ) ) {
-            push @errors, { duplicate_userid => 1, userid => $borrower{userid} };
-            $invalid++;
-            next LINE;
+        # Check if the userid provided does not exist yet
+        if (  exists $borrower{userid}
+                 and $borrower{userid}
+             and not Check_Userid( $borrower{userid}, $borrower{borrowernumber} ) ) {
+             push @errors, { duplicate_userid => 1, userid => $borrower{userid} };
+             $invalid++;
+             next LINE;
         }
 
         if ($borrowernumber) {
@@ -224,6 +225,7 @@ sub import_patrons {
                     $borrower{$col} = $member->{$col} if ( $member->{$col} );
                 }
             }
+
             unless ( ModMember(%borrower) ) {
                 $invalid++;
 
