@@ -18,7 +18,8 @@
 # along with Koha; if not, see <http://www.gnu.org/licenses>.
 
 use Modern::Perl;
-use Test::More tests => 122;
+use Test::More tests => 124;
+use Test::Warn;
 
 # To be replaced by t::lib::Mock
 use Test::MockModule;
@@ -63,14 +64,20 @@ subtest 'test_attributes' => sub {
 
 # Tests for Koha::Patrons::Import::import_patrons()
 # Given ... nothing much. When ... Then ...
-my $result = $patrons_import->import_patrons(undef);
+my $result;
+warning_is { $result = $patrons_import->import_patrons(undef) }
+           { carped => 'No file handle passed in!' },
+           " Koha::Patrons::Import->import_patrons carps if no file handle is passed";
 is($result, undef, 'Got the expected undef from import_patrons with nothing much');
 
 # Given ... some params but no file handle.
 my $params_0 = { some_stuff => 'random stuff', };
 
 # When ... Then ...
-my $result_0 = $patrons_import->import_patrons($params_0);
+my $result_0;
+warning_is { $result_0 = $patrons_import->import_patrons($params_0) }
+           { carped => 'No file handle passed in!' },
+           " Koha::Patrons::Import->import_patrons carps if no file handle is passed";
 is($result_0, undef, 'Got the expected undef from import_patrons with no file handle');
 
 # Given ... a file handle to file with headers only.
