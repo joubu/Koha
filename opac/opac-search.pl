@@ -52,9 +52,9 @@ use C4::Tags qw(get_tags);
 use C4::SocialData;
 use C4::External::OverDrive;
 
-use Koha::LibraryCategories;
 use Koha::Ratings;
 use Koha::Virtualshelves;
+use Koha::Library::Groups;
 
 use POSIX qw(ceil floor strftime);
 use URI::Escape;
@@ -213,8 +213,8 @@ if ($cgi->cookie("search_path_code")) {
     }
 }
 
-my $library_categories = Koha::LibraryCategories->search( { categorytype => 'searchdomain' }, { order_by => [ 'categorytype', 'categorycode' ] } );
-$template->param( searchdomainloop => $library_categories );
+my $search_groups = Koha::Library::Groups->get_search_groups();
+$template->param( search_groups => $search_groups );
 
 # load the language limits (for search)
 my $languages_limit_loop = getLanguages($lang, 1);
@@ -489,8 +489,8 @@ if (@searchCategories > 0) {
 @limits = map { uri_unescape($_) } @limits;
 
 if($params->{'multibranchlimit'}) {
-    my $library_category = Koha::LibraryCategories->find( $params->{multibranchlimit} );
-    my @libraries = $library_category->libraries;
+    my $search_group = Koha::Library::Groups->find( $params->{multibranchlimit} );
+    my @libraries = $search_group->libraries;
     my $multibranch = '('.join( " or ", map { 'branch: ' . $_->id } @libraries ) .')';
     push @limits, $multibranch if ($multibranch ne  '()');
 }
