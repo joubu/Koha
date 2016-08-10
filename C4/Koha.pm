@@ -28,6 +28,7 @@ use C4::Branch; # Can be removed?
 use Koha::Cache;
 use Koha::DateUtils qw(dt_from_string);
 use Koha::Libraries;
+use Koha::MarcSubfieldStructures;
 use DateTime::Format::MySQL;
 use Business::ISBN;
 use autouse 'Data::cselectall_arrayref' => qw(Dumper);
@@ -54,6 +55,7 @@ BEGIN {
 		&getitemtypeimagelocation
 		&GetAuthorisedValues
 		&GetKohaAuthorisedValues
+        GetKohaAuthorisedValuesFromField
     &GetKohaAuthorisedValuesMapping
     &GetKohaAuthorisedValueLib
     &GetAuthorisedValueByCode
@@ -1112,12 +1114,15 @@ sub GetKohaAuthorisedValuesFromField {
           ( defined $subfield ? ( tagsubfield => $subfield ) : () ),
       }
   );
-  if ( $subfield->count and $subfield->next->authorised_value ) {
+  if ( $subfield->count ) {
+        my $avcode = $subfield->next->authorised_value;
+        return unless $avcode;
 	my $sth = $dbh->prepare("select authorised_value, lib, lib_opac from authorised_values where category=? ");
    	$sth->execute($avcode);
 	while ( my ($val, $lib, $lib_opac) = $sth->fetchrow_array ) { 
 		$values{$val} = ($opac && $lib_opac) ? $lib_opac : $lib;
    	}
+    use Data::Dumper;warn Dumper \%values;
    	return \%values;
   } else {
 	return;
