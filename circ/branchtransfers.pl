@@ -33,6 +33,8 @@ use C4::Branch; # GetBranches
 use C4::Koha;
 use C4::Members;
 
+use Koha::AuthorisedValues;
+
 ###############################################
 #  Getting state
 
@@ -130,7 +132,8 @@ if ($barcode) {
         $item{'itemtype'}              = $iteminformation->{'itemtype'};
         $item{'ccode'}                 = $iteminformation->{'ccode'};
         $item{'itemcallnumber'}        = $iteminformation->{'itemcallnumber'};
-        $item{'location'}              = GetKohaAuthorisedValueLib("LOC",$iteminformation->{'location'});
+        my $av = Koha::AuthorisedValues->search({ category => 'LOC', authorised_value => $iteminformation->{location} });
+        $item{'location'}              = $av->count ? $av->next->lib;
         $item{'frbrname'}              = $branches->{$frbranchcd}->{'branchname'};
         $item{'tobrname'}              = $branches->{$tobranchcd}->{'branchname'};
 #         }
@@ -163,7 +166,8 @@ foreach ( $query->param ) {
     $item{'itemtype'}              = $iteminformation->{'itemtype'};
     $item{'ccode'}                 = $iteminformation->{'ccode'};
     $item{'itemcallnumber'}        = $iteminformation->{'itemcallnumber'};
-    $item{'location'}              = GetKohaAuthorisedValueLib("LOC",$iteminformation->{'location'});
+    my $av = Koha::AuthorisedValues->search({ category => 'LOC', authorised_value => $iteminformation->{location} });
+    $item{'location'}              = $av->count ? $av->next->lib;
     $item{'frbrname'}              = $branches->{$frbcd}->{'branchname'};
     $item{'tobrname'}              = $branches->{$tobcd}->{'branchname'};
     push( @trsfitemloop, \%item );

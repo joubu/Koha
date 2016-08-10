@@ -31,6 +31,7 @@ use C4::Branch;
 use C4::Reserves;    # GetReserveStatus
 use C4::Debug;
 use C4::Charset;
+use Koha::AuthorisedValues;
 use Koha::Libraries;
 use YAML;
 use URI::Escape;
@@ -575,9 +576,9 @@ sub getRecords {
 
                # also, if it's a location code, use the name instead of the code
                                 if ( $link_value =~ /location/ ) {
-                                    $facet_label_value =
-                                      GetKohaAuthorisedValueLib( 'LOC',
-                                        $one_facet, $opac );
+                                    # TODO Retrieve all authorised values at once, instead of 1 query per entry
+                                    my $av = Koha::AuthorisedValues->search({ category => 'LOC', authorised_value => $one_facet });
+                                    $facet_label_value = $av->count ? $av->next->opac_description : '';
                                 }
 
                 # but we're down with the whole label being in the link's title.
