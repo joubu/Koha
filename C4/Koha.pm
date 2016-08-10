@@ -54,7 +54,6 @@ BEGIN {
 		&getitemtypeimagelocation
 		&GetAuthorisedValues
 		&GetKohaAuthorisedValues
-		&GetKohaAuthorisedValuesFromField
     &GetKohaAuthorisedValuesMapping
     &GetKohaAuthorisedValueLib
     &GetAuthorisedValueByCode
@@ -971,30 +970,6 @@ sub GetAuthValCode {
 	return $authvalcode;
 }
 
-=head2 GetAuthValCodeFromField
-
-  $authvalcode = GetAuthValCodeFromField($field,$subfield,$frameworkcode);
-
-C<$subfield> can be undefined
-
-=cut
-
-sub GetAuthValCodeFromField {
-	my ($field,$subfield,$fwcode) = @_;
-	my $dbh = C4::Context->dbh;
-	$fwcode='' unless $fwcode;
-	my $sth;
-	if (defined $subfield) {
-	    $sth = $dbh->prepare('select authorised_value from marc_subfield_structure where tagfield=? and tagsubfield=? and frameworkcode=?');
-	    $sth->execute($field,$subfield,$fwcode);
-	} else {
-	    $sth = $dbh->prepare('select authorised_value from marc_tag_structure where tagfield=? and frameworkcode=?');
-	    $sth->execute($field,$fwcode);
-	}
-	my ($authvalcode) = $sth->fetchrow_array;
-	return $authvalcode;
-}
-
 =head2 GetAuthorisedValues
 
   $authvalues = GetAuthorisedValues([$category]);
@@ -1131,8 +1106,13 @@ sub GetKohaAuthorisedValuesFromField {
   $fwcode='' unless $fwcode;
   my %values;
   my $dbh = C4::Context->dbh;
-  my $avcode = GetAuthValCodeFromField($field, $subfield, $fwcode);
-  if ($avcode) {  
+  my $subfield = Koha::MarcSubfieldStructures->search(
+      {   frameworkcode => $fwcode,
+          tagfield      => $field,
+          ( defined $subfield ? ( tagsubfield => $subfield ) : () ),
+      }
+  );
+  if ( $subfield->count and $subfield->next->authorised_value ) {
 	my $sth = $dbh->prepare("select authorised_value, lib, lib_opac from authorised_values where category=? ");
    	$sth->execute($avcode);
 	while ( my ($val, $lib, $lib_opac) = $sth->fetchrow_array ) { 
