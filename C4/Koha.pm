@@ -55,7 +55,6 @@ BEGIN {
 		&getitemtypeimagelocation
 		&GetAuthorisedValues
 		&GetKohaAuthorisedValues
-        GetKohaAuthorisedValuesFromField
     &GetKohaAuthorisedValuesMapping
     &GetKohaAuthorisedValueLib
     &GetAuthorisedValueByCode
@@ -1084,45 +1083,6 @@ sub GetKohaAuthorisedValues {
 	while ( my ($val, $lib, $lib_opac) = $sth->fetchrow_array ) { 
 		$values{$val} = ($opac && $lib_opac) ? $lib_opac : $lib;
    	}
-   	return \%values;
-  } else {
-	return;
-  }
-}
-
-=head2 GetKohaAuthorisedValuesFromField
-
-Takes $field, $subfield, $fwcode as parameters.
-
-If $opac parameter is set to a true value, displays OPAC descriptions rather than normal ones when they exist.
-$subfield can be undefined
-
-Returns hashref of Code => description
-
-Returns undef if no authorised value category is defined for the given field and subfield 
-
-=cut
-
-sub GetKohaAuthorisedValuesFromField {
-  my ($field, $subfield, $fwcode,$opac) = @_;
-  $fwcode='' unless $fwcode;
-  my %values;
-  my $dbh = C4::Context->dbh;
-  my $subfield = Koha::MarcSubfieldStructures->search(
-      {   frameworkcode => $fwcode,
-          tagfield      => $field,
-          ( defined $subfield ? ( tagsubfield => $subfield ) : () ),
-      }
-  );
-  if ( $subfield->count ) {
-        my $avcode = $subfield->next->authorised_value;
-        return unless $avcode;
-	my $sth = $dbh->prepare("select authorised_value, lib, lib_opac from authorised_values where category=? ");
-   	$sth->execute($avcode);
-	while ( my ($val, $lib, $lib_opac) = $sth->fetchrow_array ) { 
-		$values{$val} = ($opac && $lib_opac) ? $lib_opac : $lib;
-   	}
-    use Data::Dumper;warn Dumper \%values;
    	return \%values;
   } else {
 	return;
