@@ -133,7 +133,7 @@ if ($barcode) {
         $item{'ccode'}                 = $iteminformation->{'ccode'};
         $item{'itemcallnumber'}        = $iteminformation->{'itemcallnumber'};
         my $av = Koha::AuthorisedValues->search({ category => 'LOC', authorised_value => $iteminformation->{location} });
-        $item{'location'}              = $av->count ? $av->next->lib;
+        $item{'location'}              = $av != 0 ? $av->next->lib : undef;
         $item{'frbrname'}              = $branches->{$frbranchcd}->{'branchname'};
         $item{'tobrname'}              = $branches->{$tobranchcd}->{'branchname'};
 #         }
@@ -167,7 +167,7 @@ foreach ( $query->param ) {
     $item{'ccode'}                 = $iteminformation->{'ccode'};
     $item{'itemcallnumber'}        = $iteminformation->{'itemcallnumber'};
     my $av = Koha::AuthorisedValues->search({ category => 'LOC', authorised_value => $iteminformation->{location} });
-    $item{'location'}              = $av->count ? $av->next->lib;
+    $item{'location'}              = $av != 0 ? $av->next->lib : undef;
     $item{'frbrname'}              = $branches->{$frbcd}->{'branchname'};
     $item{'tobrname'}              = $branches->{$tobcd}->{'branchname'};
     push( @trsfitemloop, \%item );

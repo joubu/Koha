@@ -188,7 +188,7 @@ foreach my $suggestion(@$suggestions_loop) {
     }
     if($suggestion->{'patronreason'}){
         my $av = Koha::AuthorisedValues->search({ category => 'OPAC_SUG', authorised_value => $suggestion->{patronreason} });
-        $suggestion->{'patronreason'} = $av->count ? $av->next->opac_description : '';
+        $suggestion->{'patronreason'} = $av != 0 ? $av->next->opac_description : '';
     }
 }
 

@@ -578,7 +578,7 @@ sub getRecords {
                                 if ( $link_value =~ /location/ ) {
                                     # TODO Retrieve all authorised values at once, instead of 1 query per entry
                                     my $av = Koha::AuthorisedValues->search({ category => 'LOC', authorised_value => $one_facet });
-                                    $facet_label_value = $av->count ? $av->next->opac_description : '';
+                                    $facet_label_value = $av != 0 ? $av->next->opac_description : '';
                                 }
 
                 # but we're down with the whole label being in the link's title.
@@ -1852,7 +1852,8 @@ sub searchResults {
     my $shelflocations =GetKohaAuthorisedValues('items.location','');
 
     # get notforloan authorised value list (see $shelflocations  FIXME)
-    my $notforloan_authorised_value = GetAuthValCode('items.notforloan','');
+    my $av = Koha::MarcSubfieldStructures->search({ frameworkcode => '', kohafield => 'items.notforloan' });
+    my $notforloan_authorised_value = $av != 0 ? $av->next->authorised_value: undef;
 
     #Get itemtype hash
     my %itemtypes = %{ GetItemTypes() };

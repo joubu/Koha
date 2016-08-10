@@ -83,7 +83,8 @@ $frameworks->{''} = {frameworkcode => ''}; # Add the default framework
 
 for my $fwk (keys %$frameworks){
   my $fwkcode = $frameworks->{$fwk}->{'frameworkcode'};
-  my $authcode = GetAuthValCode('items.location', $fwkcode);
+  my $mss = Koha::MarcSubfieldStructure->search({ frameworkcode => $fwkcode, kohafield => 'items.location' });
+  my $authcode = $mss->count ? $mss->next->authorised_value : undef;
     if ($authcode && $authorisedvalue_categories!~/\b$authcode\W/){
       $authorisedvalue_categories.="$authcode ";
       my $data=GetAuthorisedValues($authcode);
@@ -98,7 +99,8 @@ my $statuses = [];
 for my $statfield (qw/items.notforloan items.itemlost items.withdrawn items.damaged/){
     my $hash = {};
     $hash->{fieldname} = $statfield;
-    $hash->{authcode} = GetAuthValCode($statfield);
+    my $mss = Koha::MarcSubfieldStructure->search({ frameworkcode => '', kohafield => $statfield });
+    $hash->{authcode} = $mss->count ? $mss->next->authorised_value : undef;
     if ($hash->{authcode}){
         my $arr = GetAuthorisedValues($hash->{authcode});
         $hash->{values} = $arr;

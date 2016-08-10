@@ -1377,27 +1377,22 @@ sub GetItemsInfo {
 
         $serial ||= $data->{'serial'};
 
+        my $av;
         # get notforloan complete status if applicable
-        if ( my $code = C4::Koha::GetAuthValCode( 'items.notforloan', $data->{frameworkcode} ) ) {
-            my $av = Koha::AuthorisedValues->search({ category => $code, authorised_value => $data->{itemnotforloan} });
-            $av = $av->count ? $av->next : undef;
-            $data->{notforloanvalue}     = $av ? $av->lib : '';
-            $data->{notforloanvalueopac} = $av ? $av->opac_description : '';
-        }
+        $av = Koha::AuthorisedValues->search_by_koha_field({frameworkcode => $data->{frameworkcode}, kohafield => 'items.notforloan', authorised_value => $data->{itemnotforloan} });
+        $av = $av != 0 ? $av->next : undef;
+        $data->{notforloanvalue}     = $av ? $av->lib : '';
+        $data->{notforloanvalueopac} = $av ? $av->opac_description : '';
 
         # get restricted status and description if applicable
-        if ( my $code = C4::Koha::GetAuthValCode( 'items.restricted', $data->{frameworkcode} ) ) {
-            my $av = Koha::AuthorisedValues->search({ category => $code, authorised_value => $data->{restricted} });
-            $av = $av->count ? $av->next : undef;
-            $data->{restricted}     = $av ? $av->lib : '';
-            $data->{restrictedopac} = $av ? $av->opac_description : '';
-        }
+        $av = Koha::AuthorisedValues->search_by_koha_field({frameworkcode => $data->{frameworkcode}, kohafield => 'items.restricted', authorised_value => $data->{restricted} });
+        $av = $av != 0 ? $av->next : undef;
+        $data->{restricted}     = $av ? $av->lib : '';
+        $data->{restrictedopac} = $av ? $av->opac_description : '';
 
         # my stack procedures
-        if ( my $code = C4::Koha::GetAuthValCode( 'items.stack', $data->{frameworkcode} ) ) {
-            my $av = Koha::AuthorisedValues->search({ category => $code, authorised_value => $data->{stack} });
-            $data->{stack}          = $av->count ? $av->next->lib : '';
-        }
+        $av = Koha::AuthorisedValues->search_by_koha_field({frameworkcode => $data->{frameworkcode}, kohafield => 'items.stack', authorised_value => $data->{stack} });
+        $data->{stack}          = $av != 0 ? $av->next->lib : '';
 
         # Find the last 3 people who borrowed this item.
         my $sth2 = $dbh->prepare("SELECT * FROM old_issues,borrowers
@@ -1481,8 +1476,8 @@ sub GetItemsLocationInfo {
         $sth->execute($biblionumber);
 
         while ( my $data = $sth->fetchrow_hashref ) {
-             my $av = Koha::AuthorisedValues->search({ category => 'LOC', authorised_value => $item->{location} });
-             my $av = $av->count ? $av->next : undef;
+             my $av = Koha::AuthorisedValues->search({ category => 'LOC', authorised_value => $data->{location} });
+             $av = $av != 0 ? $av->next : undef;
              $data->{location_intranet} = $av ? $av->lib : '';
              $data->{location_opac}     = $av ? $av->opac_description : '';
 	     push @results, $data;

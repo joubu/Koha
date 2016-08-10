@@ -28,6 +28,7 @@ use C4::Biblio;
 use C4::Branch;
 use C4::Koha;
 
+use Koha::AuthorisedValues;
 use Koha::Item::Search::Field qw(GetItemSearchFields);
 use Koha::ItemTypes;
 
@@ -87,11 +88,11 @@ my ($template, $borrowernumber, $cookie) = get_template_and_user({
     flagsrequired   => { catalogue => 1 },
 });
 
-my $notforloan_avcode = GetAuthValCode('items.notforloan');
-my $notforloan_values = GetAuthorisedValues($notforloan_avcode);
+my $mss = Koha::MarcSubfieldStructure->search({ frameworkcode => '', kohafield => 'items.notforloan' });
+my $notforloan_values = $mss->count ? GetAuthorisedValues($mss->next->authorised_value) : [];
 
-my $location_avcode = GetAuthValCode('items.location');
-my $location_values = GetAuthorisedValues($location_avcode);
+$mss = Koha::MarcSubfieldStructure->search({ frameworkcode => '', kohafield => 'items.location' });
+my $location_values = $mss->count ? GetAuthorisedValues($mss->next->authorised_value) : [];
 
 if (scalar keys %params > 0) {
     # Parameters given, it's a search
@@ -269,7 +270,9 @@ if ($format eq 'html') {
             label => $itemtype->translated_description,
         };
     }
-    my $ccode_avcode = GetAuthValCode('items.ccode') || 'CCODE';
+
+    my $mss = Koha::MarcSubfieldStructure->search({ frameworkcode => '', kohafield => 'items.ccode' });
+    my $ccode_avcode = $mss->count ? $mss->next->authorised_value : 'CCODE';
     my $ccodes = GetAuthorisedValues($ccode_avcode);
     my @ccodes;
     foreach my $ccode (@$ccodes) {
