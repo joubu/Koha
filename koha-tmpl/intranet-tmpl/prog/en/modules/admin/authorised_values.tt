@@ -76,13 +76,13 @@ $(document).ready(function() {
 
     [% IF ( action_modify ) %]<div class="note"><i class="fa fa-exclamation"></i> <strong>NOTE:</strong> If you change an authorized value code, existing records using it won't be updated. Changes to value descriptions will show immediately.</div>[% END %]
 
- <form action="/cgi-bin/koha/admin/authorised_values.pl" name="Aform" method="post">
+ <form action="/cgi-bin/koha/admin/authorised_values.pl" name="Aform" method="post" class="validated">
         <fieldset class="rows"><ol>
         [% IF action_add_category %]
             <li>
-                <label for="category">Category: </label>
+                <label for="category" class="required">Category: </label>
                 <input type="hidden" name="op" value="add_category" />
-                <input type="text" name="category"  id="category" size="32" maxlength="32" class="focus" />
+                <input type="text" name="category"  id="category" size="32" maxlength="32" class="focus" required="required" class="required" />
             </li>
         [% ELSE %]
             <li>
