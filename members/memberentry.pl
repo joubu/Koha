@@ -39,6 +39,7 @@ use C4::Log;
 use C4::Letters;
 use C4::Branch; # GetBranches
 use C4::Form::MessagingPreferences;
+use Koha::AuthorisedValues;
 use Koha::Patron::Debarments;
 use Koha::Cities;
 use Koha::DateUtils;
@@ -774,7 +775,8 @@ sub patron_attributes_form {
         }
     }
     while ( my ($class, @items) = each %items_by_class ) {
-        my $lib = GetAuthorisedValueByCode( 'PA_CLASS', $class ) || $class;
+        my $av = Koha::AuthorisedValues->search({ category => 'PA_CLASS', authorised_value => $class });
+        my $lib = $av != 0 ? $av->next->lib : $class;
         push @attribute_loop, {
             class => $class,
             items => @items,

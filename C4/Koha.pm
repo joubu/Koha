@@ -56,7 +56,6 @@ BEGIN {
 		&getitemtypeimagelocation
 		&GetAuthorisedValues
 		&GetKohaAuthorisedValues
-    &GetAuthorisedValueByCode
 		&GetNormalizedUPC
 		&GetNormalizedISBN
 		&GetNormalizedEAN
@@ -1018,27 +1017,6 @@ sub GetAuthorisedValues {
 
     $cache->set_in_cache( $cache_key, \@results, { deepcopy => 1, expiry => 5 } );
     return \@results;
-}
-
-=head2 GetAuthorisedValueByCode
-
-$authorised_value = GetAuthorisedValueByCode( $category, $authvalcode, $opac );
-
-Return the lib attribute from authorised_values from the row identified
-by the passed category and code
-
-=cut
-
-sub GetAuthorisedValueByCode {
-    my ( $category, $authvalcode, $opac ) = @_;
-
-    my $field = $opac ? 'lib_opac' : 'lib';
-    my $dbh = C4::Context->dbh;
-    my $sth = $dbh->prepare("SELECT $field FROM authorised_values WHERE category=? AND authorised_value =?");
-    $sth->execute( $category, $authvalcode );
-    while ( my $data = $sth->fetchrow_hashref ) {
-        return $data->{ $field };
-    }
 }
 
 =head2 GetKohaAuthorisedValues

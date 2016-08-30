@@ -35,14 +35,12 @@ use C4::Message;
 use C4::Debug;
 use C4::Branch; # GetBranches
 use C4::Log; # logaction
-use C4::Koha qw(
-    GetAuthorisedValueByCode
-);
 use C4::Overdues qw(CalcFine UpdateFine get_chargeable_units);
 use C4::RotatingCollections qw(GetCollectionItemBranches);
 use Algorithm::CheckDigits;
 
 use Data::Dumper;
+use Koha::AuthorisedValues;
 use Koha::DateUtils;
 use Koha::Calendar;
 use Koha::Items;
@@ -998,7 +996,8 @@ sub CanBookBeIssued {
         $issuingimpossible{RESTRICTED} = 1;
     }
     if ( $item->{'itemlost'} && C4::Context->preference("IssueLostItem") ne 'nothing' ) {
-        my $code = GetAuthorisedValueByCode( 'LOST', $item->{'itemlost'} );
+        my $av = Koha::AuthorisedValues->search({ category => 'LOST', authorised_value => $item->{itemlost} });
+        my $code = $av != 0 ? $av->next->lib : '';
         $needsconfirmation{ITEM_LOST} = $code if ( C4::Context->preference("IssueLostItem") eq 'confirm' );
         $alerts{ITEM_LOST} = $code if ( C4::Context->preference("IssueLostItem") eq 'alert' );
     }
