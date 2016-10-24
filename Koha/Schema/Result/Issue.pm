@@ -86,7 +86,7 @@ __PACKAGE__->table("issues");
 
   data_type: 'varchar'
   is_nullable: 1
-  size: 16
+  size: 32
 
 =head2 timestamp
 
@@ -143,7 +143,7 @@ __PACKAGE__->add_columns(
   "auto_renew",
   { data_type => "tinyint", default_value => 0, is_nullable => 1 },
   "auto_renew_error",
-  { data_type => "varchar", is_nullable => 1, size => 16 },
+  { data_type => "varchar", is_nullable => 1, size => 32 },
   "timestamp",
   {
     data_type => "timestamp",
@@ -230,8 +230,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2016-01-29 15:31:46
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:/T5nt8qhlT6ocUG6A9JNIw
+# Created by DBIx::Class::Schema::Loader v0.07042 @ 2016-10-24 17:18:39
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:IP7zKRDCujJqX5JCsaJBeA
 
 __PACKAGE__->belongs_to(
     "borrower",
