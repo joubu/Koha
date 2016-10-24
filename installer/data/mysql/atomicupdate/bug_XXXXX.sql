@@ -1,5 +1,5 @@
-ALTER TABLE issues ADD COLUMN auto_renew_error VARCHAR(16) DEFAULT NULL AFTER auto_renew;
-ALTER TABLE old_issues ADD COLUMN auto_renew_error VARCHAR(16) DEFAULT NULL AFTER auto_renew;
+ALTER TABLE issues ADD COLUMN auto_renew_error VARCHAR(32) DEFAULT NULL AFTER auto_renew;
+ALTER TABLE old_issues ADD COLUMN auto_renew_error VARCHAR(32) DEFAULT NULL AFTER auto_renew;
 
 INSERT INTO letter (module, code, name, title, content, message_transport_type, is_tt) VALUES ('circulation', 'AUTO_RENEWALS', 'notification on auto renewing', 'Auto renewals',
 "Dear [% borrower.firstname %] [% borrower.surname %],
