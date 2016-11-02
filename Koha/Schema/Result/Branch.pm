@@ -480,6 +480,21 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 library_groups
+
+Type: has_many
+
+Related object: L<Koha::Schema::Result::LibraryGroup>
+
+=cut
+
+__PACKAGE__->has_many(
+  "library_groups",
+  "Koha::Schema::Result::LibraryGroup",
+  { "foreign.branchcode" => "self.branchcode" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 opac_news
 
 Type: has_many
@@ -551,8 +566,8 @@ Composing rels: L</branchrelations> -> categorycode
 __PACKAGE__->many_to_many("categorycodes", "branchrelations", "categorycode");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2017-03-23 13:30:04
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:r12VO55fG0lzxkz7fVDmAA
+# Created by DBIx::Class::Schema::Loader v0.07042 @ 2016-11-02 13:23:16
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:/kNNkq3bkqqg3fzTuYekFQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
