@@ -25,14 +25,13 @@ use JSON qw/encode_json/;
 use URI::Escape;
 use CGI::Session;
 
-require Exporter;
 use C4::Context;
 use C4::Templates;    # to get the template
-use C4::Languages;
+use C4::Languages qw( getlanguage );
 use C4::Search::History;
 use Koha;
 use Koha::Caches;
-use Koha::AuthUtils qw(get_script_name hash_password);
+use Koha::AuthUtils qw( get_script_name hash_password );
 use Koha::Libraries;
 use Koha::LibraryCategories;
 use Koha::Patrons;
@@ -41,8 +40,8 @@ use List::MoreUtils qw/ any /;
 use Encode qw( encode is_utf8);
 
 # use utf8;
-use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $debug $ldap $cas $caslogout $shib $shib_login);
-
+use vars qw($debug $ldap $cas $caslogout $shib $shib_login);
+our (@ISA, @EXPORT_OK);
 BEGIN {
     sub psgi_env { any { /^psgi\./ } keys %ENV }
 
@@ -51,13 +50,28 @@ BEGIN {
         else            { exit }
     }
 
-    $debug     = $ENV{DEBUG};
-    @ISA       = qw(Exporter);
-    @EXPORT    = qw(&checkauth &get_template_and_user &haspermission &get_user_subpermissions);
-    @EXPORT_OK = qw(&check_api_auth &get_session &check_cookie_auth &checkpw &checkpw_internal &checkpw_hash
-      &get_all_subpermissions &get_user_subpermissions
+    require Exporter;
+    @ISA = qw(Exporter);
+    @EXPORT_OK = qw(
+        psgi_env
+        safe_exit
+        get_template_and_user
+        haspermission
+        checkauth
+        check_api_auth
+        check_cookie_auth
+        get_session
+        checkpw
+        checkpw_internal
+        checkpw_hash
+        getuserflags
+        get_user_subpermissions
+        get_all_subpermissions
+        haspermission
+        getborrowernumber
     );
-    %EXPORT_TAGS = ( EditPermissions => [qw(get_all_subpermissions get_user_subpermissions)] );
+
+    $debug     = $ENV{DEBUG};
     $ldap      = C4::Context->config('useldapserver') || 0;
     $cas       = C4::Context->preference('casAuthentication');
     $shib      = C4::Context->config('useshibboleth') || 0;

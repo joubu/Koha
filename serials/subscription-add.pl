@@ -20,19 +20,17 @@ use warnings;
 
 use CGI qw ( -utf8 );
 use Date::Calc qw(Today Day_of_Year Week_of_Year Add_Delta_Days Add_Delta_YM);
-use C4::Koha;
-use C4::Biblio;
-use C4::Auth;
+use C4::Koha qw( GetAuthorisedValues );
+use C4::Biblio qw( GetMarcBiblio );
+use C4::Auth qw( get_template_and_user );
 use C4::Acquisition;
-use C4::Output;
+use C4::Output qw( output_html_with_http_headers );
 use C4::Context;
-use C4::Serials;
-use C4::Serials::Frequency;
-use C4::Serials::Numberpattern;
-use C4::Letters;
+use C4::Serials qw( GetSubscription GetNextExpected GetSerials NewSubscription ModNextExpected ModSubscription );
+use C4::Letters qw( GetLetters );
 use Koha::AdditionalField;
 use Koha::Biblios;
-use Koha::DateUtils;
+use Koha::DateUtils qw( output_pref );
 use Koha::ItemTypes;
 use Carp;
 

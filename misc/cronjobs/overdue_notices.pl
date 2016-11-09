@@ -35,11 +35,11 @@ use DateTime;
 use DateTime::Duration;
 
 use C4::Context;
-use C4::Letters;
-use C4::Overdues qw(GetFine GetOverdueMessageTransportTypes parse_overdues_letter);
-use C4::Log;
-use Koha::Patron::Debarments qw(AddUniqueDebarment);
-use Koha::DateUtils;
+use C4::Letters qw( getletter EnqueueLetter );
+use C4::Overdues qw( GetBranchcodesWithOverdueRules GetOverdueMessageTransportTypes parse_overdues_letter );
+use C4::Log qw( logaction cronlogaction );
+use Koha::Patron::Debarments qw( AddUniqueDebarment );
+use Koha::DateUtils qw( dt_from_string output_pref );
 use Koha::Calendar;
 use Koha::Libraries;
 use Koha::Acquisition::Currencies;

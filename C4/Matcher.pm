@@ -23,7 +23,35 @@ use MARC::Record;
 
 use Koha::SearchEngine;
 use Koha::SearchEngine::Search;
-use Koha::Util::Normalize qw/legacy_default remove_spaces upper_case lower_case/;
+use Koha::Util::Normalize qw( remove_spaces upper_case lower_case legacy_default );
+
+our (@ISA, @EXPORT_OK);
+BEGIN {
+
+    require Exporter;
+    @ISA = qw( Exporter );
+
+    @EXPORT_OK = qw(
+        GetMatcherList
+        GetMatcherId
+        new
+        fetch
+        store
+        delete
+        record_type
+        threshold
+        code
+        description
+        add_matchpoint
+        add_simple_matchpoint
+        add_required_check
+        add_simple_required_check
+        get_matches
+        dump
+        valid_normalization_routines
+    );
+};
+
 
 =head1 NAME
 

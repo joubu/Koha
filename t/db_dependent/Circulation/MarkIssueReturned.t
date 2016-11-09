@@ -24,7 +24,6 @@ use t::lib::Mocks;
 use t::lib::TestBuilder;
 
 use C4::Circulation;
-use C4::Members;
 use Koha::Library;
 
 my $schema = Koha::Database->schema;

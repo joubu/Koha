@@ -19,8 +19,8 @@ use Modern::Perl;
 
 use Carp;
 
-use C4::Koha;
-use C4::Languages;
+use C4::Koha qw( getitemtypeimagelocation );
+use C4::Languages qw( getlanguage );
 use Koha::Database;
 use Koha::Localizations;
 

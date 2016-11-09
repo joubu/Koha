@@ -25,7 +25,7 @@ use IO::File;
 use CGI qw ( -utf8 );
 use CGI::Session;
 use C4::Context;
-use C4::Auth qw/check_cookie_auth/;
+use C4::Auth qw( check_cookie_auth );
 use C4::BackgroundJob;
 use CGI::Cookie; # need to check cookies before
                  # having CGI parse the POST request

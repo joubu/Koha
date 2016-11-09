@@ -20,7 +20,7 @@
 use strict;
 use warnings;
 use C4::Templates;
-use C4::Output;
+use C4::Output qw( output_html_with_http_headers );
 # use C4::Auth;
 use C4::Context;
 use CGI qw ( -utf8 );

@@ -28,10 +28,12 @@ use HTTP::Request::Common;
 use LWP::Authen::Basic;
 use LWP::UserAgent;
 
+our (@ISA, @EXPORT_OK);
 BEGIN {
+
     require Exporter;
-    our @ISA = qw( Exporter ) ;
-    our @EXPORT = qw(
+    @ISA = qw( Exporter );
+    @EXPORT_OK = qw(
         IsOverDriveEnabled
         GetOverDriveToken
     );

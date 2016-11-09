@@ -28,27 +28,26 @@ use MARC::Record; # marc2marcxml, marcxml2marc, changeEncoding
 use MARC::File::XML; # marc2marcxml, marcxml2marc, changeEncoding
 use Biblio::EndnoteStyle;
 use Unicode::Normalize; # _entity_encode
-use C4::Biblio; #marc2bibtex
+use C4::Biblio qw( GetXmlBiblio GetMarcBiblio EmbedItemsInMarcBiblio GetFrameworkCode );
 use C4::Koha; #marc2csv
-use C4::XSLT ();
+use C4::XSLT qw( engine );
 use YAML; #marcrecords2csv
 use Template;
 use Text::CSV::Encoded; #marc2csv
 use Koha::Items;
-use Koha::SimpleMARC qw(read_field);
+use Koha::SimpleMARC qw( delete_field read_field );
 use Koha::XSLT_Handler;
 use Koha::CsvProfiles;
 use Koha::AuthorisedValues;
 use Carp;
 
-use vars qw(@ISA @EXPORT);
+our ( @ISA, @EXPORT_OK );
 
+BEGIN {
 
-@ISA = qw(Exporter);
-
-# only export API methods
-
-@EXPORT = qw(
+    require Exporter;
+    @ISA       = qw( Exporter );
+    @EXPORT_OK = qw(
   &marc2endnote
   &marc2marc
   &marc2marcxml

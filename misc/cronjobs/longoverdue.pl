@@ -34,10 +34,10 @@ BEGIN {
     eval { require "$FindBin::Bin/../kohalib.pl" };
 }
 use C4::Context;
-use C4::Items;
-use C4::Circulation qw/LostItem/;
+use C4::Items qw( ModItem );
+use C4::Circulation qw( LostItem );
 use Getopt::Long;
-use C4::Log;
+use C4::Log qw( logaction cronlogaction );
 use Pod::Usage;
 use Koha::Patrons;
 

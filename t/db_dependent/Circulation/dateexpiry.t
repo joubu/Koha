@@ -20,7 +20,6 @@ use Modern::Perl;
 use DateTime;
 use Time::HiRes qw/gettimeofday time/;
 use Test::More tests => 2;
-use C4::Members;
 use Koha::DateUtils;
 use Koha::Database;
 use C4::Calendar;

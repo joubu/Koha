@@ -3,7 +3,6 @@
 use Modern::Perl;
 
 use C4::Context;
-use C4::Members;
 use Koha::Database;
 use Koha::Patrons;
 

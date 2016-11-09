@@ -12,15 +12,15 @@ BEGIN {
 use CGI qw( utf8 ); # NOT a CGI script, this is just to keep C4::Templates::gettemplate happy
 use C4::Context;
 use C4::Debug;
-use C4::Letters;
+use C4::Letters qw( GetPrintMessages _set_message_status );
 use C4::Templates;
 use File::Spec;
 use Pod::Usage;
 use Getopt::Long;
-use C4::Log;
+use C4::Log qw( logaction cronlogaction );
 
 use File::Basename qw( dirname );
-use Koha::DateUtils;
+use Koha::DateUtils qw( dt_from_string output_pref );
 use MIME::Lite;
 
 my (

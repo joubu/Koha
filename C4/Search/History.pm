@@ -4,7 +4,7 @@ use Modern::Perl;
 
 use C4::Auth qw( get_session );
 use C4::Context;
-use Koha::DateUtils;
+use Koha::DateUtils qw( dt_from_string output_pref );
 
 use JSON qw( encode_json decode_json );
 use URI::Escape;

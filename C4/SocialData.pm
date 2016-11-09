@@ -19,7 +19,19 @@ use Modern::Perl;
 
 use C4::Context;
 use Business::ISBN;
-use C4::Koha;
+use C4::Koha qw( GetNormalizedISBN );
+
+our (@ISA, @EXPORT_OK);
+BEGIN {
+    require Exporter;
+    @ISA = qw( Exporter );
+
+    @EXPORT_OK = qw(
+        get_data
+        update_data
+        get_report
+    );
+}:
 
 =head1 NAME
 

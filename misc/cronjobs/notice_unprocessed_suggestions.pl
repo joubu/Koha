@@ -6,6 +6,7 @@ use Pod::Usage;
 use Getopt::Long;
 
 use C4::Budgets qw( GetBudget );
+use C4::Members qw( GetNoticeEmailAddress );
 use C4::Suggestions qw( GetUnprocessedSuggestions );
 use Koha::Libraries;
 use Koha::Patrons;

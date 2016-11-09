@@ -19,11 +19,11 @@ use MARC::Batch;
 use MARC::Charset;
 
 use C4::Context;
-use C4::Biblio;
+use C4::Biblio qw( GetMarcFromKohaField ModBiblio GetFrameworkCode AddBiblio _strip_item_fields ModBiblioMarc );
 use C4::Koha;
 use C4::Debug;
-use C4::Charset;
-use C4::Items;
+use C4::Charset qw( MarcToUTF8Record SetUTF8Flag );
+use C4::Items qw( AddItem AddItemBatchFromMarc );
 use YAML;
 use Unicode::Normalize;
 use Time::HiRes qw(gettimeofday);

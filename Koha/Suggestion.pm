@@ -22,7 +22,7 @@ use Modern::Perl;
 use Carp;
 
 use Koha::Database;
-use Koha::DateUtils qw(dt_from_string);
+use Koha::DateUtils qw( dt_from_string );
 
 use base qw(Koha::Object);
 

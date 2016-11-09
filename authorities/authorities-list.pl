@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use C4::Context;
-use C4::AuthoritiesMarc;
+use C4::AuthoritiesMarc qw( GetAuthority );
 use utf8;
 use open qw[ :std :encoding(utf8) ];
 use Koha::SearchEngine;

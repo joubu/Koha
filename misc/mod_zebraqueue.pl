@@ -23,7 +23,7 @@ use Modern::Perl;
 use Getopt::Long;
 use Pod::Usage;
 
-use C4::Biblio;
+use C4::Biblio qw( ModZebra );
 
 my @biblios;
 my @authorities;

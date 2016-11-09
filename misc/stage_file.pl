@@ -29,8 +29,8 @@ BEGIN {
 }
 
 use C4::Context;
-use C4::ImportBatch;
-use C4::Matcher;
+use C4::ImportBatch qw( RecordsFromISO2709File RecordsFromMARCXMLFile BatchStageMarcRecords SetImportBatchMatcher SetImportBatchOverlayAction SetImportBatchNoMatchAction SetImportBatchItemAction BatchFindDuplicates );
+use C4::Matcher qw( record_type _id fetch new add_simple_matchpoint add_simple_required_check );
 use Getopt::Long;
 
 $| = 1;

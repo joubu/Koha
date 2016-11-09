@@ -25,8 +25,8 @@ BEGIN {
     use FindBin;
     eval { require "$FindBin::Bin/../kohalib.pl" };
 }
-use C4::Letters;
-use C4::Log;
+use C4::Letters qw( SendQueuedMessages );
+use C4::Log qw( logaction cronlogaction );
 use Getopt::Long;
 
 my $username = undef;

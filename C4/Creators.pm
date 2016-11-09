@@ -17,10 +17,13 @@ package C4::Creators;
 # You should have received a copy of the GNU General Public License
 # along with Koha; if not, see <http://www.gnu.org/licenses>.
 
+our (@ISA, @EXPORT_OK);
 BEGIN {
-    use vars qw(@EXPORT @ISA);
-    @ISA = qw(Exporter);
-    our @EXPORT = qw(get_all_templates
+
+    require Exporter;
+    @ISA = qw( Exporter );
+    @EXPORT_OK = qw(
+                     get_all_templates
                      get_all_layouts
                      get_all_profiles
                      get_all_image_names

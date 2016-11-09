@@ -28,7 +28,6 @@ use Digest::MD5 qw( md5_base64 md5_hex );
 use Try::Tiny;
 
 use C4::Context;
-use C4::Members;
 use C4::Members::Attributes qw( GetBorrowerAttributes );
 use Koha::Patrons;
 use Koha::Patron::Attribute;

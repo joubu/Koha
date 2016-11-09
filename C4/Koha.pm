@@ -25,7 +25,7 @@ use strict;
 
 use C4::Context;
 use Koha::Caches;
-use Koha::DateUtils qw(dt_from_string);
+use Koha::DateUtils qw( dt_from_string );
 use Koha::AuthorisedValues;
 use Koha::Libraries;
 use Koha::MarcSubfieldStructures;
@@ -34,38 +34,37 @@ use Business::ISBN;
 use Business::ISSN;
 use autouse 'Data::cselectall_arrayref' => qw(Dumper);
 use DBI qw(:sql_types);
-use vars qw(@ISA @EXPORT @EXPORT_OK $DEBUG);
-
+our (@ISA, @EXPORT_OK);
 BEGIN {
 	require Exporter;
 	@ISA    = qw(Exporter);
-	@EXPORT = qw(
-        &GetPrinters &GetPrinter
-        &GetItemTypesCategorized
-        &getallthemes
-        &getFacets
-        &getnbpages
-		&getitemtypeimagedir
-		&getitemtypeimagesrc
-		&getitemtypeimagelocation
-		&GetAuthorisedValues
-		&GetNormalizedUPC
-		&GetNormalizedISBN
-		&GetNormalizedEAN
-		&GetNormalizedOCLCNumber
-        &xml_escape
-
-        &GetVariationsOfISBN
-        &GetVariationsOfISBNs
-        &NormalizeISBN
-        &GetVariationsOfISSN
-        &GetVariationsOfISSNs
-        &NormalizeISSN
-
-		$DEBUG
-	);
-	$DEBUG = 0;
-@EXPORT_OK = qw( GetDailyQuote );
+    @EXPORT_OK = qw(
+        GetItemTypesCategorized
+        getitemtypeimagedir
+        getitemtypeimagesrc
+        getitemtypeimagelocation
+        getImageSets
+        GetPrinters
+        GetPrinter
+        getnbpages
+        getallthemes
+        getFacets
+        GetAuthorisedValues
+        xml_escape
+        display_marc_indicators
+        GetNormalizedUPC
+        GetNormalizedISBN
+        GetNormalizedEAN
+        GetNormalizedOCLCNumber
+        GetDailyQuote
+        NormalizeISBN
+        GetVariationsOfISBN
+        GetVariationsOfISBNs
+        NormalizeISSN
+        GetVariationsOfISSN
+        GetVariationsOfISSNs
+        IsKohaFieldLinked
+    );
 }
 
 =head1 NAME
@@ -255,7 +254,6 @@ sub getImageSets {
     my @imagesets = (); # list of hasrefs of image set data to pass to template
     my @subdirectories = _getSubdirectoryNames( $paths->{'staff'}{'filesystem'} );
     foreach my $imagesubdir ( @subdirectories ) {
-    warn $imagesubdir if $DEBUG;
         my @imagelist     = (); # hashrefs of image info
         my @imagenames = _getImagesFromDirectory( File::Spec->catfile( $paths->{'staff'}{'filesystem'}, $imagesubdir ) );
         my $imagesetactive = 0;

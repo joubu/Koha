@@ -24,16 +24,18 @@ require Exporter;
 use Carp;
 use C4::Context;
 use C4::Debug;
-use vars qw(@ISA @EXPORT);
 
 our $debug;
-
+our (@ISA, @EXPORT_OK);
 BEGIN {
-	@ISA    = qw(Exporter);
-	@EXPORT = qw(
-		&UpdateStats
-		&TotalPaid
-	);
+
+    require Exporter;
+    @ISA = qw( Exporter );
+
+    @EXPORT_OK = qw(
+        &UpdateStats
+        &TotalPaid
+    );
 }
 
 

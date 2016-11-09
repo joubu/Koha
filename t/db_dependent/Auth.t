@@ -16,7 +16,6 @@ use t::lib::Mocks;
 use t::lib::TestBuilder;
 
 use C4::Auth qw(checkpw);
-use C4::Members;
 use Koha::AuthUtils qw/hash_password/;
 use Koha::Database;
 use Koha::Patrons;

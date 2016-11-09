@@ -13,7 +13,6 @@ use Data::Dumper;
 
 use C4::Calendar;
 use C4::Context;
-use C4::Members;
 use Koha::Database;
 use Koha::DateUtils;
 use Koha::Items;

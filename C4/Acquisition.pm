@@ -23,8 +23,8 @@ use Carp;
 use C4::Context;
 use C4::Debug;
 use C4::Suggestions;
-use C4::Biblio;
-use C4::Contract;
+use C4::Biblio qw( GetMarcFromKohaField DelBiblio GetMarcStructure IsMarcStructureInternal );
+use C4::Contract qw( GetContract );
 use C4::Debug;
 use C4::Templates qw(gettemplate);
 use Koha::DateUtils qw( dt_from_string output_pref );
@@ -44,61 +44,71 @@ use MARC::Record;
 
 use Time::localtime;
 
-use vars qw(@ISA @EXPORT);
-
+our (@ISA, @EXPORT_OK);
 BEGIN {
+
     require Exporter;
-    @ISA    = qw(Exporter);
-    @EXPORT = qw(
-        &GetBasket &NewBasket &CloseBasket &ReopenBasket &DelBasket &ModBasket
-        &GetBasketAsCSV &GetBasketGroupAsCSV
-        &GetBasketsByBookseller &GetBasketsByBasketgroup
-        &GetBasketsInfosByBookseller
+    @ISA = qw( Exporter );
 
-        &GetBasketUsers &ModBasketUsers
-        &CanUserManageBasket
-
-        &ModBasketHeader
-
-        &ModBasketgroup &NewBasketgroup &DelBasketgroup &GetBasketgroup &CloseBasketgroup
-        &GetBasketgroups &ReOpenBasketgroup
-
-        &DelOrder &ModOrder &GetOrder &GetOrders &GetOrdersByBiblionumber
-        &GetLateOrders &GetOrderFromItemnumber
-        &SearchOrders &GetHistory &GetRecentAcqui
-        &ModReceiveOrder &CancelReceipt
-        &TransferOrder
-        &GetLastOrderNotReceivedFromSubscriptionid &GetLastOrderReceivedFromSubscriptionid
-        &ModItemOrder
-
-        &GetParcels
-
-        &GetInvoices
-        &GetInvoice
-        &GetInvoiceDetails
-        &AddInvoice
-        &ModInvoice
-        &CloseInvoice
-        &ReopenInvoice
-        &DelInvoice
-        &MergeInvoices
-
-        &GetItemnumbersFromOrder
-
-        &AddClaim
-        &GetBiblioCountByBasketno
-
-        &GetOrderUsers
-        &ModOrderUsers
-        &NotifyOrderUsers
-
-        &FillWithDefaultValues
+    @EXPORT_OK = qw(
+        GetOrderFromItemnumber
+        GetItemnumbersFromOrder
+        GetBasket
+        NewBasket
+        CloseBasket
+        ReopenBasket
+        GetBasketAsCSV
+        GetBasketGroupAsCSV
+        CloseBasketgroup
+        ReOpenBasketgroup
+        DelBasket
+        ModBasket
+        ModBasketHeader
+        GetBasketsByBookseller
+        GetBasketsInfosByBookseller
+        GetBasketUsers
+        ModBasketUsers
+        CanUserManageBasket
+        GetBasketsByBasketgroup
+        NewBasketgroup
+        ModBasketgroup
+        DelBasketgroup
+        GetBasketgroup
+        GetBasketgroups
+        GetOrders
+        GetOrdersByBiblionumber
+        GetOrder
+        GetLastOrderNotReceivedFromSubscriptionid
+        GetLastOrderReceivedFromSubscriptionid
+        ModOrder
+        ModItemOrder
+        ModReceiveOrder
+        CancelReceipt
+        SearchOrders
+        DelOrder
+        TransferOrder
+        GetParcels
+        GetLateOrders
+        GetHistory
+        GetRecentAcqui
+        AddClaim
+        GetInvoices
+        GetInvoice
+        GetInvoiceDetails
+        AddInvoice
+        ModInvoice
+        CloseInvoice
+        ReopenInvoice
+        DelInvoice
+        MergeInvoices
+        GetBiblioCountByBasketno
+        populate_order_with_prices
+        GetOrderUsers
+        ModOrderUsers
+        NotifyOrderUsers
+        FillWithDefaultValues
     );
 }
-
-
-
-
 
 sub GetOrderFromItemnumber {
     my ($itemnumber) = @_;

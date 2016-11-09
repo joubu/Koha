@@ -5,8 +5,8 @@ use MARC::File::XML;
 use MARC::File::USMARC;
 
 use C4::AuthoritiesMarc;
-use C4::Biblio;
-use C4::Record;
+use C4::Biblio qw( RemoveAllNsb GetMarcBiblio EmbedItemsInMarcBiblio GetMarcFromKohaField GetFrameworkCode );
+use C4::Record qw( marc2csv );
 use Koha::CsvProfiles;
 use Koha::Logger;
 

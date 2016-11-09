@@ -23,9 +23,9 @@ use Carp;
 use Data::Dumper qw(Dumper);
 
 use C4::Context qw(preference);
-use C4::Log;
+use C4::Log qw( logaction );
 
-use Koha::DateUtils qw(dt_from_string output_pref);
+use Koha::DateUtils qw( dt_from_string );
 use Koha::Patrons;
 use Koha::Biblios;
 use Koha::Items;

@@ -26,12 +26,12 @@ use HTTP::Request::Common;
 use strict;
 use warnings;
 
-use vars qw(@ISA @EXPORT);
-
+our (@ISA, @EXPORT_OK);
 BEGIN {
+
     require Exporter;
-    @ISA = qw(Exporter);
-    @EXPORT = qw(
+    @ISA = qw( Exporter );
+    @EXPORT_OK = qw(
         &get_syndetics_index
         &get_syndetics_summary
         &get_syndetics_toc

@@ -10,7 +10,7 @@ BEGIN {
 }
 
 use C4::Context;
-use C4::ImportBatch;
+use C4::ImportBatch qw( GetImportBatch GetAllImportBatches BatchCommitRecords BatchRevertRecords );
 use Getopt::Long;
 
 $| = 1;

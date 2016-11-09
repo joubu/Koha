@@ -23,18 +23,18 @@ use strict;
 use C4::Context;
 use Koha::Database;
 
-use vars qw(@ISA @EXPORT);
-
+our (@ISA, @EXPORT_OK);
 BEGIN {
+
     require Exporter;
-	@ISA    = qw(Exporter);
-	@EXPORT = qw(
+    @ISA = qw( Exporter );
+    @EXPORT_OK = qw(
         &GetContracts
         &GetContract
         &AddContract
         &ModContract
         &DelContract
-	);
+    );
 }
 
 =head1 NAME

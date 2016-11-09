@@ -22,19 +22,17 @@ use strict;
 
 use CGI qw ( -utf8 );
 
-use C4::Auth;
-use C4::Koha;
-use C4::Circulation;
-use C4::Reserves;
-use C4::Members;
-use C4::Members::AttributeTypes;
-use C4::Members::Attributes qw/GetBorrowerAttributeValue/;
-use C4::Output;
-use C4::Biblio;
+use C4::Auth qw( get_template_and_user );
+use C4::Koha qw( getitemtypeimagelocation GetNormalizedISBN GetNormalizedUPC );
+use C4::Circulation qw( CanBookBeRenewed GetRenewCount GetSoonestRenewDate );
+use C4::Reserves qw( GetReserveStatus );
+use C4::Members qw( GetMemberAccountRecords GetPendingIssues );
+use C4::Output qw( output_html_with_http_headers );
+use C4::Biblio qw( GetMarcBiblio GetRecordValue GetFrameworkCode );
 use C4::Items;
-use C4::Letters;
+use C4::Letters qw( getalert findrelatedto );
 use Koha::Libraries;
-use Koha::DateUtils;
+use Koha::DateUtils qw( output_pref );
 use Koha::Holds;
 use Koha::Database;
 use Koha::ItemTypes;

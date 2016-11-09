@@ -20,7 +20,6 @@
 use Modern::Perl;
 
 use C4::Context;
-use C4::Members;
 use C4::Members::AttributeTypes;
 use Koha::Database;
 use t::lib::TestBuilder;

@@ -27,14 +27,15 @@ use C4::Debug;
 
 use Modern::Perl;
 
-use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $VERSION);
+use vars qw(%EXPORT_TAGS $VERSION);
+our (@ISA, @EXPORT_OK);
 
 BEGIN {
-	require Exporter;
-	@ISA = qw(Exporter);
+    require Exporter;
+    @ISA = qw(Exporter);
     $VERSION = 3.07.00.049;
-	@EXPORT_OK = qw(&availability &content_cafe &image_url &link_url &http_jacket_link);
-	%EXPORT_TAGS = (all=>\@EXPORT_OK);
+    @EXPORT_OK = qw(&availability &content_cafe &image_url &link_url &http_jacket_link);
+#	%EXPORT_TAGS = (all=>\@EXPORT_OK);
 }
 
 # These variables are plack safe: they are initialized each time

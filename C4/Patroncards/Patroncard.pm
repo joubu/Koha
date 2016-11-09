@@ -26,7 +26,7 @@ use Text::Wrap qw(wrap);
 
 use C4::Creators::Lib qw(get_font_types);
 use C4::Creators::PDF qw(StrWidth);
-use C4::Patroncards::Lib qw(unpack_UTF8 text_alignment leading box get_borrower_attributes);
+use C4::Patroncards::Lib qw( box get_borrower_attributes text_alignment leading );
 
 
 sub new {

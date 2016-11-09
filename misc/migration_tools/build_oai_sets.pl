@@ -43,9 +43,9 @@ use List::MoreUtils qw/uniq/;
 use Getopt::Std;
 
 use C4::Context;
-use C4::Charset qw/StripNonXmlChars/;
-use C4::Biblio;
-use C4::OAI::Sets;
+use C4::Charset qw( StripNonXmlChars );
+use C4::Biblio qw( EmbedItemsInMarcBiblio );
+use C4::OAI::Sets qw( GetOAISets GetOAISet GetOAISetsMappings GetOAISetBySpec CalcOAISetsBiblio ModOAISet ModOAISetsBiblios AddOAISet AddOAISetsBiblios );
 
 my %opts;
 $Getopt::Std::STANDARD_HELP_VERSION = 1;

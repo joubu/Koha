@@ -78,7 +78,7 @@ use strict;
 use warnings;
 use LWP::UserAgent;
 use HTTP::Request;
-use C4::Biblio;
+use C4::Biblio qw( GetMarcBiblio );
 
 
 

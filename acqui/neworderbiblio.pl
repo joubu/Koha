@@ -58,13 +58,13 @@ the basket number to know on which basket this script have to add a new order.
 use strict;
 #use warnings; FIXME - Bug 2505
 
-use C4::Search;
+use C4::Search qw( new_record_from_zebra );
 use CGI qw ( -utf8 );
-use C4::Biblio;
-use C4::Auth;
-use C4::Output;
-use C4::Koha;
-use C4::Budgets qw/ GetBudgetHierarchy /;
+use C4::Biblio qw( TransformMarcToKoha );
+use C4::Auth qw( get_template_and_user );
+use C4::Output qw( output_html_with_http_headers pagination_bar );
+use C4::Koha qw( getnbpages );
+use C4::Budgets qw( GetBudgetHierarchy GetBudget );
 
 use Koha::Acquisition::Booksellers;
 use Koha::SearchEngine;

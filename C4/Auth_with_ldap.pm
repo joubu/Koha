@@ -23,23 +23,29 @@ use Carp;
 
 use C4::Debug;
 use C4::Context;
-use C4::Members qw(AddMember);
-use C4::Members::Attributes;
-use C4::Members::AttributeTypes;
-use C4::Members::Messaging;
-use C4::Auth qw(checkpw_internal);
+use C4::Members qw( AddMember );
+use C4::Auth qw( checkpw checkpw_internal );
 use Koha::Patrons;
-use Koha::AuthUtils qw(hash_password);
+use Koha::AuthUtils qw( hash_password );
 use List::MoreUtils qw( any );
 use Net::LDAP;
 use Net::LDAP::Filter;
 
-use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $debug);
-
+use vars qw($debug);
+our (@ISA, @EXPORT_OK);
 BEGIN {
 	require Exporter;
 	@ISA    = qw(Exporter);
-	@EXPORT = qw( checkpw_ldap );
+    @EXPORT_OK = qw(
+        ldapserver_error
+        description
+        search_method
+        checkpw_ldap
+        ldap_entry_2_hash
+        exists_local
+        _do_changepassword
+        update_local
+    );
 }
 
 # Redefine checkpw_ldap:

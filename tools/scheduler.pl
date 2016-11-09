@@ -20,12 +20,12 @@
 use strict;
 #use warnings; FIXME - Bug 2505
 use C4::Context;
-use C4::Scheduler;
-use C4::Reports::Guided;
-use C4::Auth;
+use C4::Scheduler qw( add_at_job remove_at_job get_jobs );
+use C4::Reports::Guided qw( get_saved_reports get_saved_report );
+use C4::Auth qw( get_template_and_user );
 use CGI qw ( -utf8 );
-use C4::Output;
-use Koha::DateUtils;;
+use C4::Output qw( output_html_with_http_headers );
+use Koha::DateUtils qw( dt_from_string output_pref );
 
 use vars qw($debug);
 

@@ -36,11 +36,10 @@ See http://www.lanekortet.no/ for more information (in Norwegian).
 
 use Modern::Perl;
 use CGI;
-use C4::Auth;
+use C4::Auth qw( get_template_and_user );
 use C4::Context;
-use C4::Output;
-use C4::Members;
-use C4::Members::Attributes qw( SetBorrowerAttributes );
+use C4::Output qw( output_html_with_http_headers );
+use C4::Members qw( AddMember );
 use C4::Utils::DataTables::Members;
 use Koha::NorwegianPatronDB qw( NLCheckSysprefs NLSearch NLDecodePin NLGetFirstname NLGetSurname NLSync );
 use Koha::Database;

@@ -25,12 +25,12 @@
 use Modern::Perl;
 
 use CGI qw ( -utf8 );
-use C4::Auth;
+use C4::Auth qw( get_template_and_user );
 use C4::Context;
-use C4::Members;
-use C4::Members::Statistics;
-use C4::Members::Attributes qw(GetBorrowerAttributes);
-use C4::Output;
+use C4::Output qw( output_html_with_http_headers );
+use C4::Members::Statistics qw( get_fields GetPrecedentStateByBorrower GetTotalIssuesTodayByBorrower GetTotalIssuesReturnedTodayByBorrower );
+use C4::Members::Attributes qw( GetBorrowerAttributes );
+use C4::Output qw( output_html_with_http_headers );
 use Koha::Patrons;
 
 my $input = new CGI;

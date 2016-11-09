@@ -25,7 +25,6 @@ use Modern::Perl;
 use CGI qw ( -utf8 );
 use C4::Auth qw( check_api_auth );
 use C4::Context;
-use C4::Members;
 use Koha::Patron::Images;
 
 $|=1;

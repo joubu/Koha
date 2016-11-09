@@ -22,9 +22,9 @@ use strict;
 use warnings;
 
 use CGI qw ( -utf8 );
-use C4::Auth;
-use C4::Circulation;
-use Koha::DateUtils;
+use C4::Auth qw( check_api_auth check_cookie_auth );
+use C4::Circulation qw( AddOfflineOperation ProcessOfflineOperation );
+use Koha::DateUtils qw( dt_from_string );
 use DateTime::TimeZone;
 
 my $cgi = CGI->new;

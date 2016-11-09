@@ -1,7 +1,6 @@
 #!/usr/bin/perl
 use Modern::Perl;
 
-use C4::Members;
 use C4::Circulation;
 use Koha::Database;
 use Koha::Patrons;

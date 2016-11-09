@@ -52,10 +52,10 @@ use Modern::Perl;
 use Pod::Usage;
 use Getopt::Long;
 
-use C4::Circulation;
+use C4::Circulation qw( CanBookBeRenewed AddRenewal );
 use C4::Context;
-use C4::Log;
-use C4::Letters;
+use C4::Log qw( logaction cronlogaction );
+use C4::Letters qw( GetPreparedLetter EnqueueLetter );
 use Koha::Checkouts;
 use Koha::Libraries;
 use Koha::Patrons;

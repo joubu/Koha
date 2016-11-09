@@ -24,7 +24,6 @@ use Test::More tests => 3;
 use MARC::Record;
 use C4::Biblio;
 use C4::Items;
-use C4::Members;
 use C4::Reserves;
 
 use Koha::Libraries;

@@ -29,7 +29,7 @@ BEGIN {
 use C4::Context;
 use Getopt::Long;
 use Pod::Usage;
-use Koha::DateUtils;
+use Koha::DateUtils qw( dt_from_string output_pref );
 
 =head1 NAME
 

@@ -21,12 +21,12 @@ use strict;
 use warnings;
 use C4::Context;
 use MARC::Record;
-use C4::Biblio;
-use C4::Search;
+use C4::Biblio qw( ModZebra GetMarcBiblio ModBiblio GetFrameworkCode );
+use C4::Search qw( FindDuplicate new_record_from_zebra );
 use C4::AuthoritiesMarc::MARC21;
 use C4::AuthoritiesMarc::UNIMARC;
-use C4::Charset;
-use C4::Log;
+use C4::Charset qw( SetUTF8Flag );
+use C4::Log qw( logaction );
 use Koha::MetadataRecord::Authority;
 use Koha::Authorities;
 use Koha::Authority::MergeRequest;
@@ -35,37 +35,37 @@ use Koha::Authority;
 use Koha::SearchEngine;
 use Koha::SearchEngine::Search;
 
-use vars qw(@ISA @EXPORT);
-
+our (@ISA, @EXPORT_OK);
 BEGIN {
 
-	require Exporter;
-	@ISA = qw(Exporter);
-	@EXPORT = qw(
-	    &GetTagsLabels
-    	&GetAuthMARCFromKohaField 
-
-    	&AddAuthority
-    	&ModAuthority
-    	&DelAuthority
-    	&GetAuthority
-    	&GetAuthorityXML
-
-    	&CountUsage
-    	&CountUsageChildren
-    	&SearchAuthorities
-    
-        &BuildSummary
-        &BuildAuthHierarchies
-        &BuildAuthHierarchy
-        &GenerateHierarchy
-    
-    	&merge
-    	&FindDuplicateAuthority
-
-        &GuessAuthTypeCode
-        &GuessAuthId
- 	);
+    require Exporter;
+    @ISA = qw( Exporter );
+    @EXPORT_OK = qw(
+        GetAuthMARCFromKohaField
+        SearchAuthorities
+        CountUsage
+        CountUsageChildren
+        GuessAuthTypeCode
+        GuessAuthId
+        GetTagsLabels
+        AddAuthority
+        DelAuthority
+        ModAuthority
+        GetAuthorityXML
+        GetAuthority
+        FindDuplicateAuthority
+        BuildSummary
+        GetAuthorizedHeading
+        BuildAuthHierarchies
+        BuildAuthHierarchy
+        BuildAuthHierarchyBranch
+        GenerateHierarchy
+        GetHeaderAuthority
+        AddAuthorityTrees
+        merge
+        append_fields_ordered
+        get_auth_type_location
+    );
 }
 
 

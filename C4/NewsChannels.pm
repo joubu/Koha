@@ -20,13 +20,15 @@ package C4::NewsChannels;
 
 use Modern::Perl;
 use C4::Context;
-use Koha::DateUtils;
+use Koha::DateUtils qw( dt_from_string output_pref );
 
-use vars qw(@ISA @EXPORT);
+our ( @ISA, @EXPORT_OK );
 
-BEGIN { 
-    @ISA = qw(Exporter);
-    @EXPORT = qw(
+BEGIN {
+
+    require Exporter;
+    @ISA       = qw( Exporter );
+    @EXPORT_OK = qw(
         &GetNewsToDisplay
         &add_opac_new &upd_opac_new &del_opac_new &get_opac_new &get_opac_news
     );

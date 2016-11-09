@@ -2,7 +2,6 @@
 use Modern::Perl;
 use C4::Context;
 use C4::Circulation;
-use C4::Members;
 use C4::Items;
 use Koha::DateUtils;
 use Koha::Patrons;

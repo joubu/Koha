@@ -25,9 +25,14 @@ use autouse 'Data::Dumper' => qw(Dumper);
 use C4::Context;
 use C4::Debug;
 
+our ( @ISA, @EXPORT_OK );
+
 BEGIN {
-    use base qw(Exporter);
-    our @EXPORT = qw(unpack_UTF8
+
+    require Exporter;
+    @ISA       = qw( Exporter );
+    @EXPORT_OK = qw(
+                     unpack_UTF8
                      text_alignment
                      leading
                      box

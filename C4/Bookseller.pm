@@ -21,11 +21,17 @@ package C4::Bookseller;
 use strict;
 use warnings;
 
-use base qw( Exporter );
+our (@ISA, @EXPORT_OK);
+BEGIN {
 
-our @EXPORT_OK = qw(
-  GetBooksellersWithLateOrders
-);
+    require Exporter;
+    @ISA = qw( Exporter );
+
+    @EXPORT_OK = qw(
+        GetBooksellersWithLateOrders
+    );
+};
+
 
 =head1 NAME
 

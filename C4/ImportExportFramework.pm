@@ -28,12 +28,11 @@ use C4::Context;
 use C4::Debug;
 
 
-use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
-
+our (@ISA, @EXPORT_OK);
 BEGIN {
     require Exporter;
     @ISA    = qw(Exporter);
-    @EXPORT = qw(
+    @EXPORT_OK = qw(
         &ExportFramework
         &ImportFramework
         &createODS

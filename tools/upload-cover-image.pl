@@ -44,11 +44,11 @@ use File::Temp;
 use CGI qw ( -utf8 );
 use GD;
 use C4::Context;
-use C4::Auth;
-use C4::Output;
-use C4::Images;
+use C4::Auth qw( get_template_and_user );
+use C4::Output qw( output_html_with_http_headers );
+use C4::Images qw( PutImage );
 use Koha::UploadedFiles;
-use C4::Log;
+use C4::Log qw( logaction );
 
 my $debug = 1;
 

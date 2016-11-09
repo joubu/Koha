@@ -24,7 +24,7 @@ use strict;
 use warnings;
 
 use C4::Context;
-use C4::AuthoritiesMarc;
+use C4::AuthoritiesMarc qw( DelAuthority );
 use Getopt::Long;
 
 use Koha::SearchEngine::Search;

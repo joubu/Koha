@@ -20,11 +20,11 @@
 
 use Modern::Perl;
 
-use C4::Reports::Guided; # 0.12
+use C4::Reports::Guided qw( store_results get_saved_report execute_query );
 use C4::Context;
-use C4::Log;
+use C4::Log qw( logaction cronlogaction );
 use Koha::Email;
-use Koha::DateUtils;
+use Koha::DateUtils qw( dt_from_string );
 
 use Getopt::Long qw(:config auto_help auto_version);
 use Pod::Usage;

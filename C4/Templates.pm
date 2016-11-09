@@ -32,7 +32,7 @@ use List::MoreUtils qw/ any uniq /;
 use base qw(Class::Accessor);
 use Template;
 use Template::Constants qw( :debug );
-use C4::Languages qw(getTranslatedLanguages get_bidi regex_lang_subtags language_get_description accept_language );
+use C4::Languages qw( regex_lang_subtags get_bidi getTranslatedLanguages getlanguage );
 
 use C4::Context;
 

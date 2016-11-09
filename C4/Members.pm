@@ -26,19 +26,17 @@ use C4::Context;
 use String::Random qw( random_string );
 use Scalar::Util qw( looks_like_number );
 use Date::Calc qw/Today check_date Date_to_Days/;
-use C4::Log; # logaction
-use C4::Overdues;
-use C4::Reserves;
+use C4::Log qw( logaction );
+use C4::Overdues qw( checkoverdues );
 use C4::Accounts;
-use C4::Biblio;
-use C4::Letters;
+use C4::Letters qw( GetPreparedLetter );
 use C4::Members::Attributes qw(SearchIdMatchingAttribute UpdateBorrowerAttribute);
-use C4::NewsChannels; #get slip news
+use C4::NewsChannels qw( GetNewsToDisplay );
 use DateTime;
 use Koha::Database;
-use Koha::DateUtils;
+use Koha::DateUtils qw( dt_from_string output_pref );
 use Text::Unaccent qw( unac_string );
-use Koha::AuthUtils qw(hash_password);
+use Koha::AuthUtils qw( hash_password );
 use Koha::Database;
 use Koha::Holds;
 use Koha::List::Patron;
@@ -46,58 +44,41 @@ use Koha::Patrons;
 use Koha::Patron::Categories;
 use Koha::Schema;
 
-our (@ISA,@EXPORT,@EXPORT_OK,$debug);
+our ($debug);
 
 use Module::Load::Conditional qw( can_load );
 if ( ! can_load( modules => { 'Koha::NorwegianPatronDB' => undef } ) ) {
    $debug && warn "Unable to load Koha::NorwegianPatronDB";
 }
 
-
+our (@ISA, @EXPORT_OK);
 BEGIN {
     $debug = $ENV{DEBUG} || 0;
     require Exporter;
     @ISA = qw(Exporter);
-    #Get data
-    push @EXPORT, qw(
-
-        &GetPendingIssues
-        &GetAllIssues
-
-        &GetFirstValidEmailAddress
-        &GetNoticeEmailAddress
-
-        &GetMemberAccountRecords
-        &GetBorNotifyAcctRecord
-
-        &GetBorrowersToExpunge
-
-        &IssueSlip
-
+    @EXPORT_OK = qw(
+        patronflags
+        ModMember
+        AddMember
+        Check_Userid
+        Generate_Userid
+        fixup_cardnumber
+        GetPendingIssues
+        GetAllIssues
+        GetMemberAccountRecords
+        GetMemberAccountBalance
+        GetBorNotifyAcctRecord
+        checkcardnumber
+        get_cardnumber_length
+        GetFirstValidEmailAddress
+        GetNoticeEmailAddress
+        GetBorrowersToExpunge
+        IssueSlip
+        AddMember_Auto
+        AddMember_Opac
+        DeleteExpiredOpacRegistrations
+        DeleteUnverifiedOpacRegistrations
         GetOverduesForPatron
-    );
-
-    #Modify data
-    push @EXPORT, qw(
-        &ModMember
-        &changepassword
-    );
-
-    #Insert data
-    push @EXPORT, qw(
-        &AddMember
-    &AddMember_Auto
-        &AddMember_Opac
-    );
-
-    #Check data
-    push @EXPORT, qw(
-        &checkuniquemember
-        &checkuserpassword
-        &Check_Userid
-        &Generate_Userid
-        &fixup_cardnumber
-        &checkcardnumber
     );
 }
 

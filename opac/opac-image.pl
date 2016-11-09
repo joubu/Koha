@@ -28,7 +28,7 @@ use warnings;
 
 use CGI qw ( -utf8 );
 use C4::Context;
-use C4::Images;
+use C4::Images qw( NoImage ListImagesForBiblio RetrieveImage );
 
 $| = 1;
 

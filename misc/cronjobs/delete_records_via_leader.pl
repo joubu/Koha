@@ -33,8 +33,8 @@ BEGIN {
 
 use Getopt::Long;
 
-use C4::Biblio;
-use C4::Items;
+use C4::Biblio qw( DelBiblio );
+use C4::Items qw( DelItem DelItemCheck );
 use Koha::Database;
 use Koha::Biblios;
 use Koha::Biblio::Metadatas;

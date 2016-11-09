@@ -22,7 +22,7 @@ use Modern::Perl;
 use base 'Class::Accessor';
 
 use C4::Charset qw( MarcToUTF8Record );
-use C4::Search qw(); # Purely for new_record_from_zebra
+use C4::Search qw( new_record_from_zebra );
 use DBIx::Class::ResultClass::HashRefInflator;
 use IO::Select;
 use Koha::Caches;

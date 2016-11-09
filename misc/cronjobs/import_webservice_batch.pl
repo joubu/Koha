@@ -31,7 +31,7 @@ BEGIN {
 
 use Getopt::Long;
 use Pod::Usage;
-use C4::ImportBatch;
+use C4::ImportBatch qw( GetStagedWebserviceBatches BatchCommitRecords );
 
 my ($help, $framework);
 

@@ -20,7 +20,6 @@
 use strict;
 use warnings;
 use C4::Service;
-use C4::Members;
 use Koha::Patron::Images;
 use Koha::Patrons;
 use Koha::Token;

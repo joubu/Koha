@@ -21,22 +21,21 @@
 use CGI qw ( -utf8 );
 use strict;
 #use warnings; FIXME - Bug 2505
-use C4::Auth;
-use C4::Output;
-use C4::Biblio;
-use C4::Items;
-use C4::Circulation;
+use C4::Auth qw( get_template_and_user haspermission );
+use C4::Output qw( output_html_with_http_headers );
+use C4::Biblio qw( GetMarcStructure GetMarcFromKohaField TransformHtmlToXml DelBiblio IsMarcStructureInternal GetAuthorisedValueDesc );
+use C4::Items qw( GetItem DelItem DelItemCheck Item2Marc ModItemFromMarc ModItem GetItemnumberFromBarcode GetItemsInfo );
+use C4::Circulation qw( LostItem IsItemIssued );
 use C4::Context;
 use C4::Koha;
 use C4::BackgroundJob;
-use C4::ClassSource;
+use C4::ClassSource qw( GetClassSources GetClassSource );
 use C4::Debug;
-use C4::Members;
 use MARC::File::XML;
 use List::MoreUtils qw/uniq/;
 
 use Koha::Biblios;
-use Koha::DateUtils;
+use Koha::DateUtils qw( dt_from_string );
 use Koha::Items;
 use Koha::ItemTypes;
 use Koha::Patrons;

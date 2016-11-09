@@ -25,14 +25,14 @@
 use strict;
 # use warnings; FIXME - Bug 2505
 use CGI qw ( -utf8 );
-use C4::Auth;
+use C4::Auth qw( get_template_and_user );
 use C4::Koha;
 use C4::Context;
-use C4::Output;
-use C4::NewsChannels;
-use C4::Languages qw(getTranslatedLanguages);
+use C4::Output qw( output_html_with_http_headers );
+use C4::NewsChannels qw( get_opac_new add_opac_new upd_opac_new del_opac_new get_opac_news );
+use C4::Languages qw( getTranslatedLanguages );
 use Date::Calc qw/Date_to_Days Today/;
-use Koha::DateUtils;
+use Koha::DateUtils qw( dt_from_string output_pref );
 
 my $cgi = new CGI;
 

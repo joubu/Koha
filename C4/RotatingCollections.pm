@@ -25,16 +25,13 @@ package C4::RotatingCollections;
 use Modern::Perl;
 
 use C4::Context;
-use C4::Circulation;
-use C4::Reserves qw(CheckReserves);
+use C4::Circulation qw( GetTransfers transferbook );
+use C4::Reserves qw( CheckReserves );
 use Koha::Database;
 
 use DBI;
 
 use Data::Dumper;
-
-use vars qw(@ISA @EXPORT);
-
 
 =head1 NAME
 
@@ -44,10 +41,13 @@ C4::RotatingCollections - Functions for managing rotating collections
 
 =cut
 
+our (@ISA, @EXPORT_OK);
 BEGIN {
+
     require Exporter;
-    @ISA    = qw( Exporter );
-    @EXPORT = qw(
+    @ISA = qw( Exporter );
+
+    @EXPORT_OK = qw(
       CreateCollection
       UpdateCollection
       DeleteCollection
@@ -62,6 +62,8 @@ BEGIN {
       TransferCollection
 
       GetCollectionItemBranches
+      isItemInThisCollection
+      isItemInAnyCollection
     );
 }
 

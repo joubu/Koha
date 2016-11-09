@@ -32,12 +32,13 @@ OAI Set description can be found L<here|http://www.openarchives.org/OAI/openarch
 use Modern::Perl;
 use C4::Context;
 
-use vars qw(@ISA @EXPORT);
+our ( @ISA, @EXPORT_OK );
 
 BEGIN {
+
     require Exporter;
-    @ISA = qw(Exporter);
-    @EXPORT = qw(
+    @ISA       = qw( Exporter );
+    @EXPORT_OK = qw(
         &GetOAISets &GetOAISet &GetOAISetBySpec &ModOAISet &DelOAISet &AddOAISet
         &GetOAISetsMappings &GetOAISetMappings &ModOAISetMappings
         &GetOAISetsBiblio &ModOAISetsBiblios &AddOAISetsBiblios

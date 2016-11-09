@@ -38,8 +38,8 @@ use C4::Context;
 use C4::Search;
 use C4::Search::History;
 use Getopt::Long;
-use C4::Log;
-use C4::Accounts;
+use C4::Log qw( logaction cronlogaction );
+use C4::Accounts qw( purge_zero_balance_fees );
 use Koha::UploadedFiles;
 
 sub usage {

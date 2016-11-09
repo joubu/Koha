@@ -20,7 +20,6 @@ use Modern::Perl;
 use Test::More tests => 50;
 
 use C4::Context;
-use C4::Members;
 
 use C4::Members::Attributes;
 use C4::Members::AttributeTypes;

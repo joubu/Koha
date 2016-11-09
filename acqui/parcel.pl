@@ -57,18 +57,18 @@ To filter the results list on this given date.
 use strict;
 use warnings;
 
-use C4::Auth;
-use C4::Acquisition;
-use C4::Budgets;
-use C4::Biblio;
-use C4::Items;
+use C4::Auth qw( get_template_and_user );
+use C4::Acquisition qw( CancelReceipt GetInvoice GetInvoiceDetails GetItemnumbersFromOrder SearchOrders );
+use C4::Budgets qw( GetBudget GetBudgetByOrderNumber GetBudgetName );
+use C4::Biblio qw( CountBiblioInOrders );
+use C4::Items qw( GetItem );
 use CGI qw ( -utf8 );
-use C4::Output;
+use C4::Output qw( output_html_with_http_headers );
 use C4::Suggestions;
 
 use Koha::Acquisition::Bookseller;
 use Koha::Biblios;
-use Koha::DateUtils;
+use Koha::DateUtils qw( dt_from_string );
 use Koha::Biblios;
 
 use JSON;

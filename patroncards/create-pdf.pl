@@ -21,7 +21,7 @@ use strict;
 use warnings;
 
 use CGI qw ( -utf8 );
-use C4::Auth;
+use C4::Auth qw( get_template_and_user );
 use Graphics::Magick;
 use XML::Simple;
 use POSIX qw(ceil);
@@ -31,7 +31,7 @@ use C4::Debug;
 use C4::Context;
 use C4::Creators;
 use C4::Patroncards;
-use Koha::List::Patron;
+use Koha::List::Patron qw( GetPatronLists );
 use Koha::Patrons;
 use Koha::Patron::Images;
 

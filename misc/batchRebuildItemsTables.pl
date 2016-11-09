@@ -9,8 +9,8 @@ use Pod::Usage;
 use Time::HiRes qw(gettimeofday);
 
 use C4::Context;
-use C4::Biblio;
-use C4::Items;
+use C4::Biblio qw( GetMarcFromKohaField GetMarcBiblio );
+use C4::Items qw( ModItemFromMarc ModItem );
 
 =head1 NAME
 

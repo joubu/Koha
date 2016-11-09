@@ -22,33 +22,32 @@ package C4::Circulation;
 use strict;
 #use warnings; FIXME - Bug 2505
 use DateTime;
-use Koha::DateUtils;
+use Koha::DateUtils qw( dt_from_string output_pref );
 use C4::Context;
-use C4::Stats;
-use C4::Reserves;
-use C4::Biblio;
-use C4::Items;
-use C4::Members;
-use C4::Accounts;
+use C4::Stats qw( UpdateStats );
+use C4::Reserves qw( CheckReserves CanItemBeReserved MoveReserve ModReserve ModReserveStatus IsItemOnHoldAndFound IsAvailableForItemLevelRequest );
+use C4::Biblio qw( GetBiblioItemData UpdateTotalIssues );
+use C4::Items qw( ModItem ModItemTransfer ModDateLastSeen GetItem CartToShelf ShelfToCart );
+use C4::Members qw( patronflags GetMemberAccountBalance GetMemberAccountRecords );
+use C4::Accounts qw( getnextacctno chargelostitem );
 use C4::ItemCirculationAlertPreference;
 use C4::Message;
 use C4::Debug;
-use C4::Log; # logaction
-use C4::Overdues qw(CalcFine UpdateFine get_chargeable_units);
-use C4::RotatingCollections qw(GetCollectionItemBranches);
+use C4::Log qw( logaction );
+use C4::Overdues qw( UpdateFine get_chargeable_units CalcFine );
+use C4::RotatingCollections qw( isItemInAnyCollection );
 use Algorithm::CheckDigits;
 
 use Data::Dumper;
 use Koha::Account;
 use Koha::AuthorisedValues;
 use Koha::Biblioitems;
-use Koha::DateUtils;
 use Koha::Calendar;
 use Koha::Checkouts;
 use Koha::IssuingRules;
 use Koha::Items;
 use Koha::Patrons;
-use Koha::Patron::Debarments;
+use Koha::Patron::Debarments qw( GetDebarments DelUniqueDebarment AddUniqueDebarment );
 use Koha::Database;
 use Koha::Libraries;
 use Koha::Holds;
@@ -66,65 +65,64 @@ use Date::Calc qw(
   Day_of_Week
   Add_Delta_Days
 );
-use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
-
+our (@ISA, @EXPORT_OK);
 BEGIN {
-	require Exporter;
-	@ISA    = qw(Exporter);
+    require Exporter;
+    @ISA = qw(Exporter);
 
-	# FIXME subs that should probably be elsewhere
-	push @EXPORT, qw(
-		&barcodedecode
-        &LostItem
-        &ReturnLostItem
-        &GetPendingOnSiteCheckouts
-	);
-
-	# subs to deal with issuing a book
-	push @EXPORT, qw(
-		&CanBookBeIssued
-		&CanBookBeRenewed
-		&AddIssue
-		&AddRenewal
-		&GetRenewCount
-        &GetSoonestRenewDate
-        &GetLatestAutoRenewDate
-		&GetIssuingCharges
-        &GetBranchBorrowerCircRule
-        &GetBranchItemRule
-		&GetBiblioIssues
-		&GetOpenIssue
-        &CheckIfIssuedToPatron
-        &IsItemIssued
+    # FIXME subs that should probably be elsewhere
+    push @EXPORT_OK, qw(
+        barcodedecode
+        decode
+        transferbook
+        TooMany
+        CanBookBeIssued
+        CanBookBeReturned
+        checkHighHolds
+        AddIssue
+        GetLoanLength
+        GetHardDueDate
+        GetBranchBorrowerCircRule
+        GetBranchItemRule
+        AddReturn
+        MarkIssueReturned
+        GetOpenIssue
+        GetBiblioIssues
+        GetUpcomingDueIssues
+        CanBookBeRenewed
+        AddRenewal
+        GetRenewCount
+        GetSoonestRenewDate
+        GetLatestAutoRenewDate
+        GetIssuingCharges
+        AddIssuingCharge
+        GetTransfers
+        GetTransfersFromTo
+        DeleteTransfer
+        SendCirculationAlert
+        updateWrongTransfer
+        UpdateHoldingbranch
+        CalcDateDue
+        CheckValidBarcode
+        IsBranchTransferAllowed
+        CreateBranchTransferLimit
+        DeleteBranchTransferLimits
+        ReturnLostItem
+        LostItem
+        GetOfflineOperations
+        GetOfflineOperation
+        AddOfflineOperation
+        DeleteOfflineOperation
+        ProcessOfflineOperation
+        ProcessOfflineReturn
+        ProcessOfflineIssue
+        ProcessOfflinePayment
+        TransferSlip
+        CheckIfIssuedToPatron
+        IsItemIssued
+        GetAgeRestriction
+        GetPendingOnSiteCheckouts
         GetTopIssues
-	);
-
-	# subs to deal with returns
-	push @EXPORT, qw(
-		&AddReturn
-        &MarkIssueReturned
-	);
-
-	# subs to deal with transfers
-	push @EXPORT, qw(
-		&transferbook
-		&GetTransfers
-		&GetTransfersFromTo
-		&updateWrongTransfer
-		&DeleteTransfer
-                &IsBranchTransferAllowed
-                &CreateBranchTransferLimit
-                &DeleteBranchTransferLimits
-        &TransferSlip
-	);
-
-    # subs to deal with offline circulation
-    push @EXPORT, qw(
-      &GetOfflineOperations
-      &GetOfflineOperation
-      &AddOfflineOperation
-      &DeleteOfflineOperation
-      &ProcessOfflineOperation
     );
 }
 

@@ -23,54 +23,53 @@ use C4::Context;
 use Koha::Database;
 use Koha::Patrons;
 use C4::Debug;
-use vars qw(@ISA @EXPORT);
 
+our (@ISA, @EXPORT_OK);
 BEGIN {
-	require Exporter;
-	@ISA    = qw(Exporter);
-	@EXPORT = qw(
 
-        &GetBudget
-        &GetBudgetByOrderNumber
-        &GetBudgetByCode
-        &GetBudgets
-        &BudgetsByActivity
-        &GetBudgetsReport
-        &GetBudgetReport
-        &GetBudgetHierarchy
-	    &AddBudget
-        &ModBudget
-        &DelBudget
-        &GetBudgetSpent
-        &GetBudgetOrdered
-        &GetBudgetName
-        &GetPeriodsCount
+    require Exporter;
+    @ISA = qw( Exporter );
+    @EXPORT_OK = qw(
+        HideCols
+        GetCols
+        CheckBudgetParentPerm
+        AddBudgetPeriod
+        GetPeriodsCount
+        CheckBudgetParent
+        BudgetHasChildren
+        GetBudgetChildren
+        SetOwnerToFundHierarchy
+        GetBudgetsPlanCell
+        ModBudgetPlan
+        GetBudgetSpent
+        GetBudgetOrdered
+        GetBudgetName
+        GetBudgetAuthCats
+        GetBudgetPeriods
+        GetBudgetPeriod
+        DelBudgetPeriod
+        ModBudgetPeriod
+        GetBudgetHierarchy
+        AddBudget
+        ModBudget
+        DelBudget
+        GetBudget
+        GetBudgetByOrderNumber
+        GetBudgetReport
+        GetBudgetsByActivity
+        GetBudgetsReport
+        GetBudgetByCode
         GetBudgetHierarchySpent
         GetBudgetHierarchyOrdered
-
-        &GetBudgetUsers
-        &ModBudgetUsers
-        &CanUserUseBudget
-        &CanUserModifyBudget
-
-	    &GetBudgetPeriod
-        &GetBudgetPeriods
-        &ModBudgetPeriod
-        &AddBudgetPeriod
-	    &DelBudgetPeriod
-
-        &ModBudgetPlan
-
-		&GetBudgetsPlanCell
-        &AddBudgetPlanValue
-        &GetBudgetAuthCats
-        &BudgetHasChildren
-        &CheckBudgetParent
-        &CheckBudgetParentPerm
-
-        &HideCols
-        &GetCols
-	);
+        GetBudgets
+        GetBudgetUsers
+        ModBudgetUsers
+        CanUserUseBudget
+        CanUserModifyBudget
+        CloneBudgetPeriod
+        CloneBudgetHierarchy
+        MoveOrders
+    );
 }
 
 # ----------------------------BUDGETS.PM-----------------------------";

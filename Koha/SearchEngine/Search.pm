@@ -45,7 +45,7 @@ Creates a new C<Search> of whatever the relevant type is.
 
 use Modern::Perl;
 use C4::Context;
-use C4::Biblio qw//;
+use C4::Biblio qw( GetMarcFromKohaField );
 
 sub new {
     my $engine = C4::Context->preference("SearchEngine") // 'Zebra';

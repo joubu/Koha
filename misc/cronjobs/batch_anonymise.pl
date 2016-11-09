@@ -36,7 +36,7 @@ use Date::Calc qw(
   Add_Delta_Days
 );
 use Getopt::Long;
-use C4::Log;
+use C4::Log qw( logaction cronlogaction );
 
 sub usage {
     print STDERR <<USAGE;

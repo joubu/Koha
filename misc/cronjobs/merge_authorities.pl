@@ -5,7 +5,7 @@ use Getopt::Long;
 use Pod::Usage;
 use Time::HiRes qw(gettimeofday);
 
-use C4::AuthoritiesMarc;
+use C4::AuthoritiesMarc qw( GetAuthority merge );
 use Koha::Authority::MergeRequests;
 
 use constant RESET_HOURS => 24;

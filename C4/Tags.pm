@@ -30,8 +30,7 @@ use Module::Load::Conditional qw/check_install/;
 use constant TAG_FIELDS => qw(tag_id borrowernumber biblionumber term language date_created);
 use constant TAG_SELECT => "SELECT " . join(',', TAG_FIELDS) . "\n FROM   tags_all\n";
 
-use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
-
+our (@ISA, @EXPORT_OK);
 BEGIN {
 	@ISA = qw(Exporter);
     @EXPORT_OK = qw(
@@ -49,7 +48,6 @@ BEGIN {
       &get_filters
       stratify_tags
     );
-	# %EXPORT_TAGS = ();
     my $ext_dict = C4::Context->preference('TagsExternalDictionary');
     if ( $ext_dict && ! check_install( module => 'Lingua::Ispell' ) ) {
         warn "Ignoring TagsExternalDictionary, because Lingua::Ispell is not installed.";

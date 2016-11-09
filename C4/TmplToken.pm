@@ -20,7 +20,7 @@ package C4::TmplToken;
 
 use strict;
 use warnings;
-use C4::TmplTokenType;
+use C4::TmplTokenType qw( DIRECTIVE TAG CDATA TEXT TEXT_PARAMETRIZED );
 
 =head1 NAME
 

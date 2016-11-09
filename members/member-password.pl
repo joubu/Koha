@@ -7,14 +7,12 @@
 use strict;
 use warnings;
 
-use C4::Auth;
-use Koha::AuthUtils;
-use C4::Output;
+use C4::Auth qw( get_template_and_user );
+use Koha::AuthUtils qw( hash_password );
+use C4::Output qw( output_html_with_http_headers );
 use C4::Context;
-use C4::Members;
 use C4::Circulation;
 use CGI qw ( -utf8 );
-use C4::Members::Attributes qw(GetBorrowerAttributes);
 use Koha::Token;
 
 use Koha::Patrons;

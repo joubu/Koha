@@ -98,7 +98,7 @@ use DateTime::TimeZone;
 use Module::Load::Conditional qw(can_load);
 use Carp;
 
-use C4::Boolean;
+use C4::Boolean qw( true_p );
 use C4::Debug;
 use Koha;
 use Koha::Config;

@@ -41,8 +41,8 @@ use strict;
 #use warnings; FIXME - Bug 2505
 use CGI qw ( -utf8 );
 use C4::Context;
-use C4::Output;
-use C4::Auth;
+use C4::Output qw( output_html_with_http_headers );
+use C4::Auth qw( get_template_and_user );
 
 sub StringSearch  {
 	my ($searchstring,$type)=@_;		# why bother with $type if we don't use it?!

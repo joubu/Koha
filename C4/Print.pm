@@ -21,12 +21,13 @@ use strict;
 #use warnings; FIXME - Bug 2505
 use C4::Context;
 
-use vars qw(@ISA @EXPORT);
+our ( @ISA, @EXPORT_OK );
 
 BEGIN {
-	require Exporter;
-	@ISA    = qw(Exporter);
-    @EXPORT = qw(&NetworkPrint);
+
+    require Exporter;
+    @ISA       = qw( Exporter );
+    @EXPORT_OK = qw(&NetworkPrint);
 }
 
 =head1 NAME

@@ -14,7 +14,7 @@ BEGIN {
 # Koha modules used
 
 use C4::Context;
-use C4::Biblio;
+use C4::Biblio qw( GetMarcBiblio _koha_marc_update_bib_ids ModBiblio ModBiblioMarc );
 
 
 my $dbh = C4::Context->dbh;

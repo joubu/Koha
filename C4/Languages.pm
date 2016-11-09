@@ -27,18 +27,22 @@ use CGI;
 use List::MoreUtils qw( any );
 use C4::Context;
 use Koha::Cache::Memory::Lite;
-use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $DEBUG);
-
+use vars qw($DEBUG);
+our (@ISA, @EXPORT_OK);
 BEGIN {
     require Exporter;
     @ISA    = qw(Exporter);
-    @EXPORT = qw(
-        &getFrameworkLanguages
-        &getTranslatedLanguages
-        &getLanguages
-        &getAllLanguages
+    @EXPORT_OK = qw(
+        getFrameworkLanguages
+        getTranslatedLanguages
+        getAllLanguages
+        getLanguages
+        language_get_description
+        regex_lang_subtags
+        get_bidi
+        accept_language
+        getlanguage
     );
-    @EXPORT_OK = qw(getFrameworkLanguages getTranslatedLanguages getAllLanguages getLanguages get_bidi regex_lang_subtags language_get_description accept_language getlanguage);
     $DEBUG = 0;
 }
 

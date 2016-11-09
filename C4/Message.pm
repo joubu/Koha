@@ -22,7 +22,7 @@ package C4::Message;
 use strict;
 use warnings;
 use C4::Context;
-use C4::Letters;
+use C4::Letters qw( GetPreparedLetter EnqueueLetter getletter );
 use YAML::Syck;
 use Carp;
 

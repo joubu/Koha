@@ -8,7 +8,7 @@ use C4::Output;
 use C4::Auth;
 use C4::Context;
 use Date::Manip;
-use C4::Stats;
+use C4::Stats qw( TotalPaid );
 use Text::CSV_XS;
 &Date_Init("DateFormat=non-US"); # set non-USA date, eg:19/08/2005
 

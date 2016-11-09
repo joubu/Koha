@@ -25,6 +25,19 @@ use JSON;
 
 use Koha::Libraries;
 
+our (@ISA, @EXPORT_OK);
+BEGIN {
+
+    require Exporter;
+    @ISA = qw( Exporter );
+
+    @EXPORT_OK = qw(
+        NeedUpdate
+        BuildReport
+        ReportToCommunity
+    );
+};
+
 =head1 NAME
 
 C4::UsageStats

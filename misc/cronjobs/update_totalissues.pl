@@ -31,8 +31,8 @@ BEGIN {
 use Getopt::Long;
 use Pod::Usage;
 use C4::Context;
-use C4::Biblio;
-use C4::Log;
+use C4::Biblio qw( UpdateTotalIssues );
+use C4::Log qw( logaction cronlogaction );
 use DateTime;
 use DateTime::Format::MySQL;
 use Time::HiRes qw/time/;

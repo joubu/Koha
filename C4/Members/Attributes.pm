@@ -24,16 +24,15 @@ use Text::CSV;      # Don't be tempted to use Text::CSV::Unicode -- even in bina
 use C4::Context;
 use C4::Members::AttributeTypes;
 
-use vars qw(@ISA @EXPORT_OK @EXPORT %EXPORT_TAGS);
 our ($csv, $AttributeTypes);
-
+our (@ISA, @EXPORT_OK);
 BEGIN {
     @ISA = qw(Exporter);
     @EXPORT_OK = qw(GetBorrowerAttributes GetBorrowerAttributeValue CheckUniqueness SetBorrowerAttributes
                     DeleteBorrowerAttribute UpdateBorrowerAttribute
                     extended_attributes_code_value_arrayref extended_attributes_merge
                     SearchIdMatchingAttribute);
-    %EXPORT_TAGS = ( all => \@EXPORT_OK );
+#    %EXPORT_TAGS = ( all => \@EXPORT_OK );
 }
 
 =head1 NAME

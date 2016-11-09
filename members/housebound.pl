@@ -26,12 +26,12 @@
 
 use Modern::Perl;
 use CGI;
-use C4::Auth;
+use C4::Auth qw( get_template_and_user );
 use C4::Context;
-use C4::Members::Attributes qw(GetBorrowerAttributes);
-use C4::Output;
+use C4::Members::Attributes qw( GetBorrowerAttributes );
+use C4::Output qw( output_html_with_http_headers );
 use DateTime;
-use Koha::DateUtils;
+use Koha::DateUtils qw( dt_from_string );
 use Koha::Libraries;
 use Koha::Patrons;
 use Koha::Patron::Categories;

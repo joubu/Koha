@@ -23,12 +23,12 @@
 use strict;
 use warnings;
 use CGI qw ( -utf8 );
-use C4::Auth;
+use C4::Auth qw( checkauth );
 use C4::Output;
 use C4::Context;
-use C4::Acquisition;
-use C4::Biblio;
-use C4::Items;
+use C4::Acquisition qw( GetInvoice GetOrder populate_order_with_prices ModReceiveOrder GetItemnumbersFromOrder );
+use C4::Biblio qw( GetFrameworkCode GetMarcFromKohaField TransformHtmlToXml );
+use C4::Items qw( GetMarcItem ModItemFromMarc ModItem AddItemFromMarc AddItem GetItem );
 use C4::Search;
 
 use Koha::Number::Price;

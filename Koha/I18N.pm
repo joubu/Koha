@@ -21,7 +21,7 @@ use Modern::Perl;
 use base qw(Locale::Maketext Exporter);
 
 use CGI;
-use C4::Languages;
+use C4::Languages qw( getlanguage );
 
 use Locale::Maketext::Lexicon {
     'en' => ['Auto'],
@@ -34,7 +34,16 @@ use Locale::Maketext::Lexicon {
     '_style' => 'gettext',
 };
 
-our @EXPORT = qw( gettext );
+our (@ISA, @EXPORT_OK);
+BEGIN {
+
+    require Exporter;
+    @ISA = qw( Exporter );
+
+    @EXPORT_OK = qw(
+        gettext
+    );
+}
 
 my %language_handles;
 

@@ -8,17 +8,16 @@ use strict;
 use warnings;
 
 use CGI qw ( -utf8 );
-use C4::Output;
-use C4::Auth qw(:DEFAULT :EditPermissions);
+use C4::Output qw( output_html_with_http_headers );
+use C4::Auth qw( get_template_and_user get_all_subpermissions get_user_subpermissions );
 use C4::Context;
-use C4::Members;
-use C4::Members::Attributes qw(GetBorrowerAttributes);
+use C4::Members qw( patronflags );
 #use C4::Acquisitions;
 
 use Koha::Patron::Categories;
 use Koha::Patrons;
 
-use C4::Output;
+use C4::Output qw( output_html_with_http_headers );
 use Koha::Patron::Images;
 use Koha::Token;
 

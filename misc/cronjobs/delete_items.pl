@@ -2,7 +2,7 @@
 
 use Getopt::Long;
 use C4::Context;
-use C4::Items;
+use C4::Items qw( ItemSafeToDelete DelItem DelItemCheck );
 use C4::Circulation;
 use Modern::Perl;
 use Pod::Usage;

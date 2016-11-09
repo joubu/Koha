@@ -22,9 +22,7 @@ use Test::MockModule;
 
 use t::lib::TestBuilder;
 
-use C4::Biblio;
 use C4::Items;
-use C4::Members;
 use C4::Circulation;
 use Koha::Library;
 use Koha::Patrons;

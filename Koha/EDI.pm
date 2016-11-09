@@ -27,10 +27,10 @@ use Business::ISBN;
 use DateTime;
 use C4::Context;
 use Koha::Database;
-use C4::Acquisition qw( NewBasket CloseBasket ModOrder);
+use C4::Acquisition qw( ModOrder NewBasket CloseBasket );
 use C4::Suggestions qw( ModSuggestion );
-use C4::Items qw(AddItem);
-use C4::Biblio qw( AddBiblio TransformKohaToMarc GetMarcBiblio );
+use C4::Items qw( AddItem );
+use C4::Biblio qw( AddBiblio TransformKohaToMarc );
 use Koha::Edifact::Order;
 use Koha::Edifact;
 use Log::Log4perl;
@@ -39,7 +39,7 @@ use Koha::Plugins::Handler;
 use Koha::Acquisition::Booksellers;
 
 our $VERSION = 1.1;
-our @EXPORT_OK =
+push @EXPORT_OK,
   qw( process_quote process_invoice process_ordrsp create_edi_order get_edifact_ean );
 
 sub create_edi_order {

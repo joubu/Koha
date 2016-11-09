@@ -27,10 +27,9 @@ BEGIN {
 }
 
 use C4::Context;
-use C4::Members;
 use Getopt::Long;
 use Pod::Usage;
-use C4::Log;
+use C4::Log qw( logaction cronlogaction );
 
 =head1 NAME
 

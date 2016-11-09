@@ -25,9 +25,12 @@ use strict;
 use warnings;
 
 use Carp;
-use base qw(Exporter);
-
-our    @EXPORT_OK = qw( true_p);
+our (@ISA, @EXPORT_OK);
+BEGIN {
+    require Exporter;
+    @ISA = qw( Exporter );
+    @EXPORT_OK = qw( true_p );
+};
 
 =head1 NAME
 

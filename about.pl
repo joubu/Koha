@@ -28,8 +28,8 @@ use LWP::Simple;
 use XML::Simple;
 use Config;
 
-use C4::Output;
-use C4::Auth;
+use C4::Output qw( output_html_with_http_headers );
+use C4::Auth qw( get_template_and_user get_user_subpermissions );
 use C4::Context;
 use C4::Installer;
 
@@ -38,7 +38,7 @@ use Koha::Acquisition::Currencies;
 use Koha::Patrons;
 use Koha::Caches;
 use Koha::Config::SysPrefs;
-use C4::Members::Statistics;
+use C4::Members::Statistics qw( get_fields );
 
 #use Smart::Comments '####';
 

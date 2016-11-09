@@ -29,7 +29,7 @@ BEGIN {
 # possible modules to use
 use Getopt::Long;
 use C4::Context;
-use C4::Items;
+use C4::Items qw( ModItem );
 use Pod::Usage;
 
 

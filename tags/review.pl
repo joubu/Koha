@@ -26,13 +26,13 @@ use POSIX;
 use CGI qw ( -utf8 );
 use CGI::Cookie; # need to check cookies before having CGI parse the POST request
 use URI::Escape;
-use C4::Auth qw(:DEFAULT check_cookie_auth);
+use C4::Auth qw( check_cookie_auth get_template_and_user );
 use C4::Context;
-use Koha::DateUtils;
+use Koha::DateUtils qw( dt_from_string output_pref );
 # use C4::Koha;
-use C4::Output qw(:html :ajax pagination_bar);
+use C4::Output qw( output_with_http_headers is_ajax pagination_bar output_html_with_http_headers );
 use C4::Debug;
-use C4::Tags qw(get_tags get_approval_rows approval_counts whitelist blacklist is_approved);
+use C4::Tags qw( is_approved whitelist blacklist approval_counts get_approval_rows );
 
 my $script_name = "/cgi-bin/koha/tags/review.pl";
 my $needed_flags = { tools => 'moderate_tags' };	# FIXME: replace when more specific permission is created.

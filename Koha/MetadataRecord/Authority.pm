@@ -36,7 +36,7 @@ use warnings;
 use C4::Context;
 use MARC::Record;
 use MARC::File::XML;
-use C4::Charset;
+use C4::Charset qw( StripNonXmlChars );
 use Koha::Util::MARC;
 
 use base qw(Koha::MetadataRecord);

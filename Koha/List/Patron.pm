@@ -31,9 +31,14 @@ use Carp;
 
 use Koha::Database;
 
-use base 'Exporter';
-our @EXPORT = (
-    qw(
+our (@ISA, @EXPORT_OK);
+BEGIN {
+
+    require Exporter;
+    @ISA = qw( Exporter );
+
+    @EXPORT_OK = qw(
+
       GetPatronLists
 
       DelPatronList
@@ -42,8 +47,8 @@ our @EXPORT = (
 
       AddPatronsToList
       DelPatronsFromList
-      )
-);
+    );
+};
 
 =head2 GetPatronLists
 

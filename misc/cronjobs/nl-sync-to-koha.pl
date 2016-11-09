@@ -12,8 +12,7 @@ nl-sync-to-koha.pl - Sync patrons from the Norwegian national patron database (N
 
 =cut
 
-use C4::Members;
-use C4::Members::Attributes qw( UpdateBorrowerAttribute );
+use C4::Members qw( ModMember );
 use Koha::NorwegianPatronDB qw( NLCheckSysprefs NLGetChanged );
 use Koha::Database;
 use Getopt::Long;

@@ -23,7 +23,7 @@ use Pod::Usage;
 
 use C4::Installer;
 use C4::Context;
-use C4::Members;
+use C4::Members qw( AddMember );
 
 use Koha::DateUtils;
 use Koha::Libraries;

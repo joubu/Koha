@@ -10,8 +10,8 @@ BEGIN {
 }
 
 use C4::Context;
-use C4::Biblio;
-use C4::Items;
+use C4::Biblio qw( GetMarcBiblio ModBiblio );
+use C4::Items qw( GetItem );
 use Koha::Items;
 use Getopt::Long;
 

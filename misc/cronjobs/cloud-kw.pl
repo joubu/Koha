@@ -26,7 +26,7 @@ use YAML::Syck;
 use Pod::Usage;
 use Getopt::Long;
 use C4::Context;
-use C4::Log;
+use C4::Log qw( logaction cronlogaction );
 
 my $verbose     = 0;
 my $help        = 0;

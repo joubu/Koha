@@ -21,21 +21,20 @@ use strict;
 use warnings;
 
 use C4::Context;
-use C4::Koha;
-use C4::Biblio;
-use C4::Items;
-use C4::Charset;
-use C4::AuthoritiesMarc;
-use C4::MarcModificationTemplates;
+use C4::Koha qw( GetNormalizedISBN );
+use C4::Biblio qw( AddBiblio ModBiblio GetMarcFromKohaField GetXmlBiblio GetFrameworkCode TransformMarcToKoha DelBiblio );
+use C4::Items qw( AddItem GetItem GetItemnumberFromBarcode ModItemFromMarc ModItem AddItemFromMarc DelItem DelItemCheck );
+use C4::Charset qw( SetUTF8Flag StripNonXmlChars MarcToUTF8Record );
+use C4::AuthoritiesMarc qw( ModAuthority GuessAuthTypeCode AddAuthority GetAuthorityXML GetAuthority DelAuthority GetAuthorizedHeading );
+use C4::MarcModificationTemplates qw( ModifyRecordWithTemplate );
 use Koha::Plugins::Handler;
 use Koha::Logger;
 
-use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
-
+our (@ISA, @EXPORT_OK);
 BEGIN {
 	require Exporter;
 	@ISA    = qw(Exporter);
-	@EXPORT = qw(
+	@EXPORT_OK = qw(
     GetZ3950BatchId
     GetWebserviceBatchId
     GetImportRecordMarc
@@ -975,7 +974,7 @@ ascending order by import_batch_id.
 
 =cut
 
-sub  GetAllImportBatches {
+sub GetAllImportBatches {
     my $dbh = C4::Context->dbh;
     my $sth = $dbh->prepare_cached("SELECT * FROM import_batches
                                     WHERE batch_type IN ('batch', 'webservice')
@@ -1004,7 +1003,7 @@ SELECT import_batch_id FROM import_batches
 WHERE batch_type = 'webservice'
 AND import_status = 'staged'
 EOQ
-sub  GetStagedWebserviceBatches {
+sub GetStagedWebserviceBatches {
     my $dbh = C4::Context->dbh;
     return $dbh->selectcol_arrayref($PENDING_WEBSERVICE_BATCHES_QRY);
 }

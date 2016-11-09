@@ -21,7 +21,7 @@ use Modern::Perl;
 use Pod::Usage;
 use Getopt::Long;
 use C4::Context;
-use C4::Biblio;
+use C4::Biblio qw( GetMarcBiblio );
 use AnyEvent;
 use AnyEvent::HTTP;
 

@@ -23,7 +23,7 @@ use Carp;
 
 use Koha::Database;
 
-use C4::Log;
+use C4::Log qw( logaction );
 
 use base qw(Koha::Object);
 

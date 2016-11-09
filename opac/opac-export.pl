@@ -19,13 +19,13 @@
 
 use Modern::Perl;
 
-use C4::Record;
+use C4::Record qw( marc2endnote marc2marc marc2marcxml marc2modsxml marc2bibtex marc2dcxml changeEncoding );
 use C4::Auth;
 use C4::Output;
-use C4::Biblio;
+use C4::Biblio qw( GetMarcBiblio GetFrameworkCode GetISBDView );
 use CGI qw ( -utf8 );
 use C4::Auth;
-use C4::Ris;
+use C4::Ris qw( marc2ris );
 use Koha::RecordProcessor;
 
 my $query = CGI->new;

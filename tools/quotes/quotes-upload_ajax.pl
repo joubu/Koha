@@ -25,7 +25,7 @@ use JSON;
 use URI::Escape;
 use autouse 'Data::Dumper' => qw(Dumper);
 
-use C4::Auth;
+use C4::Auth qw( check_api_auth );
 use C4::Koha;
 use C4::Context;
 use C4::Output;

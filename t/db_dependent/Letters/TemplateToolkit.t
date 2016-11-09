@@ -28,7 +28,6 @@ use t::lib::TestBuilder;
 
 use C4::Circulation;
 use C4::Letters;
-use C4::Members;
 use C4::Biblio;
 use Koha::Database;
 use Koha::DateUtils;

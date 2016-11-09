@@ -25,11 +25,10 @@ use strict;
 use warnings;
 
 use CGI qw ( -utf8 );
-use C4::Circulation;
-use C4::Auth;
+use C4::Circulation qw( CanBookBeRenewed GetOpenIssue AddRenewal );
+use C4::Auth qw( get_template_and_user );
 use C4::Context;
-use C4::Items;
-use C4::Members;
+use C4::Items qw( GetItem );
 use Koha::Patrons;
 use Date::Calc qw( Today Date_to_Days );
 my $query = new CGI;

@@ -23,10 +23,10 @@ use Modern::Perl;
 use Carp;
 
 use C4::Context;
-use C4::Log;
+use C4::Log qw( logaction );
 use Koha::Checkouts;
 use Koha::Database;
-use Koha::DateUtils;
+use Koha::DateUtils qw( dt_from_string );
 use Koha::Holds;
 use Koha::Old::Checkouts;
 use Koha::Patron::Categories;

@@ -20,7 +20,7 @@
 
 use Modern::Perl;
 use C4::Context;
-use C4::Auth qw(checkauth);
+use C4::Auth qw( checkauth );
 use Koha::Linktracker;
 use CGI qw ( -utf8 );
 

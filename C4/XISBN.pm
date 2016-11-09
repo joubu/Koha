@@ -19,10 +19,10 @@ package C4::XISBN;
 
 use XML::Simple;
 #use LWP::Simple;
-use C4::Biblio;
-use C4::Koha;
-use C4::Search;
-use C4::External::Syndetics qw(get_syndetics_editions);
+use C4::Biblio qw( get_koha_field_from_marc );
+use C4::Koha qw( GetNormalizedISBN );
+use C4::Search qw( new_record_from_zebra );
+use C4::External::Syndetics qw( get_syndetics_editions );
 use LWP::UserAgent;
 use HTTP::Request::Common;
 
@@ -32,12 +32,12 @@ use Koha::SearchEngine::Search;
 
 use strict;
 #use warnings; FIXME - Bug 2505
-use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
+our (@ISA, @EXPORT_OK);
 BEGIN {
 	require Exporter;
 	@ISA = qw(Exporter);
-	@EXPORT_OK = qw(
+    @EXPORT_OK = qw(
 		&get_xisbns
         &get_biblionumber_from_isbn
 	);

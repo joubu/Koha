@@ -33,25 +33,23 @@ use URI::Escape;
 use C4::Context;
 use C4::Templates;
 
-use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
+our (@ISA, @EXPORT_OK);
 
 BEGIN {
     require Exporter;
 
- @ISA    = qw(Exporter);
-    @EXPORT_OK = qw(&is_ajax ajax_fail); # More stuff should go here instead
-    %EXPORT_TAGS = ( all =>[qw(setlanguagecookie pagination_bar parametrized_url
-                                &output_with_http_headers &output_ajax_with_http_headers &output_html_with_http_headers)],
-                    ajax =>[qw(&output_with_http_headers &output_ajax_with_http_headers is_ajax)],
-                    html =>[qw(&output_with_http_headers &output_html_with_http_headers)]
-                );
-    push @EXPORT, qw(
+    @ISA    = qw(Exporter);
+    push @EXPORT_OK, qw(
+        is_ajax
+        ajax_fail
         setlanguagecookie getlanguagecookie pagination_bar parametrized_url
+        output_html_with_http_headers output_ajax_with_http_headers output_with_http_headers
     );
-    push @EXPORT, qw(
-        &output_html_with_http_headers &output_ajax_with_http_headers &output_with_http_headers
-    );
-
+#    %EXPORT_TAGS = ( all =>[qw(setlanguagecookie pagination_bar parametrized_url
+#                                &output_with_http_headers &output_ajax_with_http_headers &output_html_with_http_headers)],
+#                    ajax =>[qw(&output_with_http_headers &output_ajax_with_http_headers is_ajax)],
+#                    html =>[qw(&output_with_http_headers &output_html_with_http_headers)]
+#                );
 }
 
 =head1 NAME

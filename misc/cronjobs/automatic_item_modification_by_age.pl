@@ -7,7 +7,7 @@ use Pod::Usage;
 use JSON;
 
 use C4::Context;
-use C4::Items;
+use C4::Items qw( ToggleNewStatus );
 
 # Getting options
 my ( $verbose, $help, $confirm );

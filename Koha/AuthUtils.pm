@@ -23,10 +23,13 @@ use Encode qw( encode is_utf8 );
 use Fcntl qw/O_RDONLY/; # O_RDONLY is used in generate_salt
 use List::MoreUtils qw/ any /;
 
-use base 'Exporter';
 
-our @EXPORT_OK   = qw(hash_password get_script_name);
-
+our (@ISA, @EXPORT_OK);
+BEGIN {
+    require Exporter;
+    @ISA = qw(Exporter);
+    @EXPORT_OK = qw(hash_password get_script_name);
+};
 =head1 NAME
 
 Koha::AuthUtils - utility routines for authentication

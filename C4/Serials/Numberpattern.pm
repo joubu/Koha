@@ -22,13 +22,13 @@ use warnings;
 
 use C4::Context;
 
-use vars qw(@ISA @EXPORT);
-
+our (@ISA, @EXPORT_OK);
 BEGIN {
 
     require Exporter;
-    @ISA    = qw(Exporter);
-    @EXPORT = qw(
+    @ISA = qw( Exporter );
+
+    @EXPORT_OK = qw(
         &GetSubscriptionNumberpatterns
         &GetSubscriptionNumberpattern
         &GetSubscriptionNumberpatternByName

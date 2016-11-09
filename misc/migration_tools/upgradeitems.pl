@@ -3,8 +3,8 @@
 use strict;
 #use warnings; FIXME - Bug 2505
 use  C4::Context;
-use C4::Items;
-use C4::Biblio;
+use C4::Items qw( ModItemFromMarc ModItem );
+use C4::Biblio qw( GetMarcBiblio );
 
 my $dbh=C4::Context->dbh;
 

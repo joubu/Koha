@@ -22,22 +22,22 @@ use CGI qw ( -utf8 );
 use Carp;
 use JSON qw( from_json );
 
-use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 use C4::Context;
 use C4::Templates qw/themelanguage/;
-use C4::Koha;
-use Koha::DateUtils;
+use C4::Koha qw( GetAuthorisedValues );
+use Koha::DateUtils qw( dt_from_string output_pref );
 use C4::Output;
 use C4::Debug;
-use C4::Log;
+use C4::Log qw( logaction );
 
 use Koha::AuthorisedValues;
 use Koha::Patron::Categories;
 
+our (@ISA, @EXPORT_OK);
 BEGIN {
     require Exporter;
     @ISA    = qw(Exporter);
-    @EXPORT = qw(
+    @EXPORT_OK = qw(
       get_report_types get_report_areas get_report_groups get_columns build_query get_criteria
       save_report get_saved_reports execute_query get_saved_report create_compound run_compound
       get_column_type get_distinct_values save_dictionary get_from_dictionary

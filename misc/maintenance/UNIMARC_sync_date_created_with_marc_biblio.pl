@@ -12,7 +12,7 @@ BEGIN {
     eval { require "$FindBin::Bin/../kohalib.pl" };
 }
 
-use C4::Biblio;
+use C4::Biblio qw( GetMarcBiblio ModBiblio );
 use Getopt::Long;
 
 sub _read_marc_code {

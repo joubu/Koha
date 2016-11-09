@@ -14,7 +14,7 @@ use Koha::Caches;
 
 use C4::Calendar;
 use DateTime;
-use Koha::DateUtils;
+use Koha::DateUtils qw( dt_from_string output_pref );
 
 my $input               = new CGI;
 my $dbh                 = C4::Context->dbh();

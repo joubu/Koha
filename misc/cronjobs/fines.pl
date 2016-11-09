@@ -31,14 +31,14 @@ use warnings;
 use 5.010;
 
 use C4::Context;
-use C4::Overdues;
+use C4::Overdues qw( Getoverdues BorType CalcFine UpdateFine );
 use Getopt::Long;
 use Carp;
 use File::Spec;
 
 use Koha::Calendar;
-use Koha::DateUtils;
-use C4::Log;
+use Koha::DateUtils qw( dt_from_string output_pref );
+use C4::Log qw( logaction cronlogaction );
 
 my $help;
 my $verbose;

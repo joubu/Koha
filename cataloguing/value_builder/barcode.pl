@@ -24,7 +24,7 @@ use Modern::Perl;
 
 use C4::Context;
 use C4::Barcodes::ValueBuilder;
-use Koha::DateUtils;
+use Koha::DateUtils qw( dt_from_string output_pref );
 
 use Algorithm::CheckDigits;
 

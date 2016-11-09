@@ -28,7 +28,6 @@ use C4::Circulation;
 use C4::Biblio;
 use C4::Items;
 use C4::Log;
-use C4::Members;
 use C4::Reserves;
 use C4::Overdues qw(UpdateFine CalcFine);
 use Koha::DateUtils;

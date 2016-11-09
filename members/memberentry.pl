@@ -27,20 +27,20 @@ use CGI qw ( -utf8 );
 use List::MoreUtils qw/uniq/;
 
 # internal modules
-use C4::Auth;
+use C4::Auth qw( get_template_and_user haspermission );
 use C4::Context;
-use C4::Output;
-use C4::Members;
-use C4::Members::Attributes;
-use C4::Members::AttributeTypes;
-use C4::Koha;
+use C4::Output qw( output_html_with_http_headers );
+use C4::Members qw( Generate_Userid checkcardnumber Check_Userid AddMember ModMember get_cardnumber_length );
+use C4::Members qw( Generate_Userid checkcardnumber Check_Userid AddMember ModMember get_cardnumber_length );
+use C4::Members qw( Generate_Userid checkcardnumber Check_Userid AddMember ModMember get_cardnumber_length );
+use C4::Koha qw( GetAuthorisedValues );
 use C4::Log;
-use C4::Letters;
+use C4::Letters qw( SendAlerts );
 use C4::Form::MessagingPreferences;
 use Koha::AuthorisedValues;
-use Koha::Patron::Debarments;
+use Koha::Patron::Debarments qw( GetDebarments DelDebarment AddDebarment );
 use Koha::Cities;
-use Koha::DateUtils;
+use Koha::DateUtils qw( output_pref dt_from_string );
 use Koha::Libraries;
 use Koha::Patrons;
 use Koha::Patron::Categories;
@@ -792,7 +792,7 @@ if ( C4::Context->preference('TranslateNotices') ) {
 
 output_html_with_http_headers $input, $cookie, $template->output;
 
-sub  parse_extended_patron_attributes {
+sub parse_extended_patron_attributes {
     my ($input) = @_;
     my @patron_attr = grep { /^patron_attr_\d+$/ } $input->multi_param();
 

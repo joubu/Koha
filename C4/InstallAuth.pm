@@ -22,15 +22,20 @@ use strict;
 use Digest::MD5 qw(md5_base64);
 use File::Spec;
 
-require Exporter;
 use C4::Context;
-use C4::Output;
+use C4::Output qw( output_html_with_http_headers );
 use C4::Templates;
 use C4::Koha;
 use CGI::Session;
 
-use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
-
+our (@ISA, @EXPORT_OK);
+BEGIN {
+    @ISA    = qw(Exporter);
+    @EXPORT_OK = qw(
+      &checkauth
+      &get_template_and_user
+    );
+}
 
 =head1 NAME
 
@@ -71,12 +76,6 @@ InstallAuth - Authenticates Koha users for Install process
 =over 2
 
 =cut
-
-@ISA    = qw(Exporter);
-@EXPORT = qw(
-  &checkauth
-  &get_template_and_user
-);
 
 =item get_template_and_user
 

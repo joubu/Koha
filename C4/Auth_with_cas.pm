@@ -22,20 +22,29 @@ use warnings;
 
 use C4::Debug;
 use C4::Context;
-use Koha::AuthUtils qw(get_script_name);
+use Koha::AuthUtils qw( get_script_name );
 use Authen::CAS::Client;
 use CGI qw ( -utf8 );
 use FindBin;
 use YAML;
 
 
-use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $debug);
+use vars qw($debug);
+our (@ISA, @EXPORT_OK);
 
 BEGIN {
 	require Exporter;
 	$debug = $ENV{DEBUG};
 	@ISA    = qw(Exporter);
-	@EXPORT = qw(check_api_auth_cas checkpw_cas login_cas logout_cas login_cas_url);
+    @EXPORT_OK = qw(
+        multipleAuth
+        getMultipleAuth
+        logout_cas
+        login_cas
+        login_cas_url
+        checkpw_cas
+        check_api_auth_cas
+    );
 }
 my $defaultcasserver;
 my $casservers;

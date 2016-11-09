@@ -32,11 +32,11 @@ use Modern::Perl;
 
 use CGI qw ( -utf8 );
 use Date::Calc qw(Today Day_of_Year Week_of_Year Day_of_Week Days_in_Year Delta_Days Add_Delta_Days Add_Delta_YM);
-use C4::Auth;
-use C4::Output;
-use C4::Serials;
-use C4::Serials::Frequency;
-use Koha::DateUtils;
+use C4::Auth qw( get_template_and_user );
+use C4::Output qw( output_html_with_http_headers );
+use C4::Serials qw( GetSubscription GetFictiveIssueNumber GetSeq GetSubscriptionIrregularities GetNextDate GetNextSeq );
+use C4::Serials qw( GetSubscription GetFictiveIssueNumber GetSeq GetSubscriptionIrregularities GetNextDate GetNextSeq );
+use Koha::DateUtils qw( output_pref dt_from_string );
 
 my $input = new CGI;
 my ($template, $loggedinuser, $cookie, $flags) = get_template_and_user( {

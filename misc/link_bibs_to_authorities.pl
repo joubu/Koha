@@ -12,7 +12,7 @@ BEGIN {
 }
 
 use C4::Context;
-use C4::Biblio;
+use C4::Biblio qw( GetMarcBiblio LinkBibHeadingsToAuthorities GetFrameworkCode ModBiblio );
 use Getopt::Long;
 use Pod::Usage;
 use Data::Dumper;

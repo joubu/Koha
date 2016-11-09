@@ -22,15 +22,16 @@ use Modern::Perl;
 use DateTime;
 
 use C4::Context;
-use Koha::SimpleMARC;
-
-use vars qw(@ISA @EXPORT);
+use Koha::SimpleMARC qw( field_exists field_equals copy_field copy_and_replace_field update_field move_field delete_field );
 
 use constant DEBUG => 0;
+our ( @ISA, @EXPORT_OK );
 
 BEGIN {
-    @ISA = qw(Exporter);
-    @EXPORT = qw(
+
+    require Exporter;
+    @ISA       = qw( Exporter );
+    @EXPORT_OK = qw(
         &GetModificationTemplates
         &AddModificationTemplate
         &DelModificationTemplate

@@ -9,7 +9,7 @@ use MARC::File::USMARC;
 use MARC::Record;
 use MARC::Batch;
 use C4::Context;
-use C4::Biblio;
+use C4::Biblio qw( GetMarcBiblio );
 use C4::AuthoritiesMarc;
 use Time::HiRes qw(gettimeofday);
 

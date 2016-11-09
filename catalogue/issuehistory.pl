@@ -20,12 +20,11 @@ use strict;
 #use warnings; FIXME - Bug 2505
 
 use CGI qw ( -utf8 );
-use C4::Auth;
-use C4::Output;
+use C4::Auth qw( get_template_and_user );
+use C4::Output qw( output_html_with_http_headers );
 
-use C4::Circulation;    # GetBiblioIssues
-use C4::Biblio;    # GetBiblio
-use C4::Search;		# enabled_staff_search_views
+use C4::Circulation qw( GetBiblioIssues );
+use C4::Search qw( enabled_staff_search_views );
 
 use Koha::Biblios;
 

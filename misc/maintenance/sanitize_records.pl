@@ -21,7 +21,7 @@ use Modern::Perl;
 use C4::Charset qw( SanitizeRecord );
 use C4::Context;
 use DBI;
-use C4::Biblio;
+use C4::Biblio qw( GetMarcBiblio GetFrameworkCode ModBiblio );
 use Getopt::Long;
 use Pod::Usage;
 

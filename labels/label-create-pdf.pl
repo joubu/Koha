@@ -22,7 +22,7 @@ use strict;
 use warnings;
 
 use CGI qw ( -utf8 );
-use C4::Auth;
+use C4::Auth qw( get_template_and_user );
 use C4::Debug;
 use C4::Creators;
 use C4::Labels;

@@ -47,12 +47,12 @@ use strict;
 use warnings;
 use Carp;
 
-use C4::Auth;
-use C4::Output;
+use C4::Auth qw( get_template_and_user );
+use C4::Output qw( output_html_with_http_headers );
 use CGI qw ( -utf8 );
 
-use C4::Acquisition qw/CloseBasketgroup ReOpenBasketgroup GetOrders GetBasketsByBasketgroup GetBasketsByBookseller ModBasketgroup NewBasketgroup DelBasketgroup GetBasketgroups ModBasket GetBasketgroup GetBasket GetBasketGroupAsCSV/;
-use Koha::EDI qw/create_edi_order get_edifact_ean/;
+use C4::Acquisition qw( GetOrders GetOrder GetBasket GetBasketgroup GetBasketsByBasketgroup GetBasketgroups GetBasketsByBookseller ModBasket CloseBasket CloseBasketgroup GetBasketGroupAsCSV DelBasket DelBasketgroup ReOpenBasketgroup ModBasketgroup NewBasket NewBasketgroup );
+use Koha::EDI qw( get_edifact_ean create_edi_order );
 
 use Koha::Biblioitems;
 use Koha::Acquisition::Booksellers;

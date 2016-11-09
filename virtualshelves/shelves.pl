@@ -19,13 +19,12 @@
 
 use Modern::Perl;
 use CGI qw ( -utf8 );
-use C4::Auth;
-use C4::Biblio;
-use C4::Koha;
-use C4::Items;
-use C4::Members;
-use C4::Output;
-use C4::XSLT;
+use C4::Auth qw( get_template_and_user );
+use C4::Biblio qw( GetMarcBiblio GetCOinSBiblio GetRecordValue GetFrameworkCode );
+use C4::Koha qw( getitemtypeimagelocation GetNormalizedUPC GetNormalizedEAN GetNormalizedOCLCNumber GetNormalizedISBN );
+use C4::Items qw( GetItem GetItemsLocationInfo );
+use C4::Output qw( pagination_bar output_html_with_http_headers );
+use C4::XSLT qw( get_xslt_sysprefs XSLTParse4Display );
 
 use Koha::Biblios;
 use Koha::Biblioitems;

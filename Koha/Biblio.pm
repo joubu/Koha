@@ -21,7 +21,7 @@ use Modern::Perl;
 
 use Carp;
 
-use C4::Biblio qw();
+use C4::Biblio qw( GetRecordValue GetMarcBiblio );
 
 use Koha::Database;
 use Koha::DateUtils qw( dt_from_string );

@@ -32,7 +32,7 @@ the new thing that should be used.
 
 =cut
 
-use C4::Biblio; # EmbedItemsInMarcBiblio
+use C4::Biblio qw( GetMarcBiblio );
 use Koha::MetadataIterator;
 use Koha::Database;
 use Modern::Perl;

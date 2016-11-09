@@ -11,7 +11,6 @@ use Test::More tests => 55;
 use MARC::Record;
 use C4::Biblio;
 use C4::Items;
-use C4::Members;
 use C4::Calendar;
 use Koha::Database;
 use Koha::DateUtils qw( dt_from_string output_pref );

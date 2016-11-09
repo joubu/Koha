@@ -5,7 +5,7 @@ use warnings;
 use strict;
 
 use C4::SIP::ILS::Patron;
-use C4::SIP::Sip qw(sipbool);
+use C4::SIP::Sip qw( sipbool );
 use Data::Dumper;
 
 while (1) {

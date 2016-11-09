@@ -30,23 +30,22 @@ use Carp;
 
 use C4::Circulation;
 use C4::Context;
-use C4::Accounts;
-use C4::Log; # logaction
+use C4::Accounts qw( getnextacctno );
+use C4::Log qw( logaction );
 use C4::Debug;
-use Koha::DateUtils;
+use Koha::DateUtils qw( dt_from_string );
 use Koha::Account::Line;
 use Koha::Account::Lines;
 use Koha::IssuingRules;
 use Koha::Libraries;
 
-use vars qw(@ISA @EXPORT);
-
+our (@ISA, @EXPORT_OK);
 BEGIN {
     require Exporter;
     @ISA = qw(Exporter);
 
     # subs to rename (and maybe merge some...)
-    push @EXPORT, qw(
+    @EXPORT_OK = qw(
       &CalcFine
       &Getoverdues
       &checkoverdues
@@ -61,22 +60,10 @@ BEGIN {
       &AddNotifyLine
       &GetOverdueMessageTransportTypes
       &parse_overdues_letter
-    );
 
-    # subs to remove
-    push @EXPORT, qw(
       &BorType
-    );
 
-    # check that an equivalent don't exist already before moving
-
-    # subs to move to Circulation.pm
-    push @EXPORT, qw(
       &GetIssuesIteminfo
-    );
-
-    # subs to move to Biblio.pm
-    push @EXPORT, qw(
       &GetItems
     );
 }

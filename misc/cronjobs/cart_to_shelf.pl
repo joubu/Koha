@@ -28,8 +28,8 @@ cart_to_shelf.pl  cron script to set items with location of CART to original she
 use strict;
 use warnings;
 
-use C4::Items qw/ CartToShelf /;
-use C4::Log;
+use C4::Items qw( CartToShelf );
+use C4::Log qw( logaction cronlogaction );
 
 BEGIN {
 

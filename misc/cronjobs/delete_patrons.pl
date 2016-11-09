@@ -1,14 +1,14 @@
-#!/usr/bin/perl
+:!/usr/bin/perl
 
 use Modern::Perl;
 
 use Pod::Usage;
 use Getopt::Long;
 
-use C4::Members;
-use Koha::DateUtils;
+use C4::Members qw( GetBorrowersToExpunge patronflags );
+use Koha::DateUtils qw( dt_from_string );
 use Koha::Patrons;
-use C4::Log;
+use C4::Log qw( logaction cronlogaction );
 
 my ( $help, $verbose, $not_borrowed_since, $expired_before, $last_seen,
     $category_code, $branchcode, $confirm );

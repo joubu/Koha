@@ -24,7 +24,7 @@ use Carp;
 
 use Koha::Database;
 use DateTime;
-use Koha::DateUtils;
+use Koha::DateUtils qw( dt_from_string );
 use Koha::Items;
 
 use base qw(Koha::Object);

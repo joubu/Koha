@@ -25,7 +25,6 @@ use JSON;
 use base qw( Template::Plugin );
 
 use C4::Context;
-use Koha;
 
 sub AudioAlerts {
     my $dbh = C4::Context->dbh;

@@ -41,17 +41,17 @@ the items attached to the biblio
 
 use Modern::Perl;
 
-use C4::Auth;
+use C4::Auth qw( get_template_and_user );
 use C4::Context;
-use C4::Output;
+use C4::Output qw( parametrized_url output_html_with_http_headers );
 use CGI qw ( -utf8 );
 use MARC::Record;
-use C4::Biblio;
-use C4::Items;
-use C4::Reserves;
+use C4::Biblio qw( CountItemsIssued GetMarcBiblio GetFrameworkCode TransformMarcToKoha GetISBDView GetMarcControlnumber GetMarcISSN );
+use C4::Items qw( GetItem GetItemsInfo GetHiddenItemnumbers );
+use C4::Reserves qw( OnShelfHoldsAllowed );
 use C4::Acquisition;
-use C4::Serials;    # uses getsubscriptionfrom biblionumber
-use C4::Koha;
+use C4::Serials qw( CountSubscriptionFromBiblionumber SearchSubscriptions GetLatestSerials );
+use C4::Koha qw( GetNormalizedUPC GetNormalizedEAN GetNormalizedOCLCNumber GetNormalizedISBN );
 use Koha::ItemTypes;
 use Koha::Patrons;
 use Koha::RecordProcessor;

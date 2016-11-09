@@ -136,7 +136,7 @@ subtest 'IsAuthorisedValueValid' => sub {
     }
 };
 
-subtest 'GetParametersFromSQL+ValidateSQLParameters' => sub  {
+subtest 'GetParametersFromSQL+ValidateSQLParameters' => sub {
     plan tests => 3;
     my $test_query_1 = "
         SELECT date_due

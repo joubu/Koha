@@ -21,7 +21,7 @@ package C4::BackgroundJob;
 use strict;
 #use warnings; FIXME - Bug 2505
 use C4::Context;
-use C4::Auth qw/get_session/;
+use C4::Auth qw( get_session );
 use Digest::MD5;
 
 

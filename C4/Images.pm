@@ -25,13 +25,14 @@ use 5.010;
 use C4::Context;
 use GD;
 
-use vars qw($debug $noimage @ISA @EXPORT);
+use vars qw($debug $noimage);
 
+our (@ISA, @EXPORT_OK);
 BEGIN {
 
     require Exporter;
-    @ISA    = qw(Exporter);
-    @EXPORT = qw(
+    @ISA = qw( Exporter );
+    @EXPORT_OK = qw(
       &PutImage
       &RetrieveImage
       &ListImagesForBiblio

@@ -39,14 +39,14 @@ use Date::Calc qw/Date_to_Days/;
 
 use C4::Context;
 use C4::Circulation;
-use C4::Overdues;
+use C4::Overdues qw( checkoverdues Getoverdues BorType CalcFine GetFine );
 use C4::Calendar qw();    # don't need any exports from Calendar
 use C4::Biblio;
 use C4::Debug;            # supplying $debug and $cgi_debug
-use C4::Log;
+use C4::Log qw( logaction cronlogaction );
 use Getopt::Long;
 use List::MoreUtils qw/none/;
-use Koha::DateUtils;
+use Koha::DateUtils qw( dt_from_string output_pref );
 
 my $help    = 0;
 my $verbose = 0;

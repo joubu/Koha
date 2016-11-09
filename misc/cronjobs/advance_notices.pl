@@ -49,14 +49,11 @@ BEGIN {
     use FindBin;
     eval { require "$FindBin::Bin/../kohalib.pl" };
 }
-use C4::Biblio;
 use C4::Context;
-use C4::Letters;
-use C4::Members;
-use C4::Members::Messaging;
+use C4::Letters qw( EnqueueLetter GetPreparedLetter );
 use C4::Overdues;
-use Koha::DateUtils;
-use C4::Log;
+use Koha::DateUtils qw( dt_from_string output_pref );
+use C4::Log qw( logaction cronlogaction );
 use Koha::Items;
 use Koha::Libraries;
 use Koha::Patrons;

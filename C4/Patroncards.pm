@@ -1,9 +1,13 @@
 package C4::Patroncards;
 
+our ( @ISA, @EXPORT_OK );
+
 BEGIN {
-    use vars qw(@EXPORT @ISA);
-    @ISA = qw(Exporter);
-    our @EXPORT = qw(unpack_UTF8
+
+    require Exporter;
+    @ISA       = qw( Exporter );
+    @EXPORT_OK = qw(
+                     unpack_UTF8
                      text_alignment
                      leading
                      box

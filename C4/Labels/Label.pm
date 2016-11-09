@@ -12,7 +12,7 @@ use Text::Bidi qw( log2vis );
 
 use C4::Context;
 use C4::Debug;
-use C4::Biblio;
+use C4::Biblio qw( GetAuthorisedValueDesc GetMarcFromKohaField GetMarcBiblio );
 
 
 my $possible_decimal = qr/\d{3,}(?:\.\d+)?/; # at least three digits for a DDCN

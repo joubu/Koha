@@ -22,24 +22,22 @@
 use strict;
 #use warnings; FIXME - Bug 2505
 use CGI qw ( -utf8 );
-use C4::Auth;
-use C4::Output;
-use C4::Biblio;
-use C4::Items;
+use C4::Auth qw( get_template_and_user haspermission );
+use C4::Output qw( output_html_with_http_headers );
+use C4::Biblio qw( GetMarcFromKohaField GetFrameworkCode GetMarcStructure GetMarcBiblio TransformMarcToKoha TransformHtmlToXml ModBiblio EmbedItemsInMarcBiblio GetAuthorisedValueDesc IsMarcStructureInternal );
+use C4::Items qw( GetItem ModItem AddItemFromMarc AddItem GetMarcItem DelItem DelItemCheck GetItemnumbersForBiblio ModItemFromMarc GetBarcodeFromItemnumber );
 use C4::Context;
-use C4::Circulation;
-use C4::Koha;
-use C4::ClassSource;
-use Koha::DateUtils;
-use Koha::Items;
+use C4::Circulation qw( LostItem );
+use C4::Koha qw( GetAuthorisedValues );
+use C4::ClassSource qw( GetClassSources GetClassSource );
+use Koha::DateUtils qw( dt_from_string );
 use Koha::ItemTypes;
 use Koha::Libraries;
 use Koha::Patrons;
 use List::MoreUtils qw/any/;
-use C4::Search;
+use C4::Search qw( enabled_staff_search_views );
 use Storable qw(thaw freeze);
 use URI::Escape;
-use C4::Members;
 
 use MARC::File::XML;
 use URI::Escape;

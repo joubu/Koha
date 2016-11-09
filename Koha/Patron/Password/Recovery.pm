@@ -22,12 +22,11 @@ use C4::Context;
 use C4::Letters;
 use Crypt::Eksblowfish::Bcrypt qw(en_base64);
 
-use vars qw(@ISA @EXPORT);
-
+our (@ISA, @EXPORT_OK);
 BEGIN {
     require Exporter;
     @ISA = qw(Exporter);
-    push @EXPORT, qw(
+    @EXPORT_OK = qw(
       &ValidateBorrowernumber
       &SendPasswordRecoveryEmail
       &GetValidLinkInfo

@@ -19,14 +19,19 @@ package Koha::Util::Normalize;
 
 use Modern::Perl;
 
-use parent qw( Exporter );
+our (@ISA, @EXPORT_OK);
+BEGIN {
 
-our @EXPORT = qw(
-  legacy_default
-  remove_spaces
-  upper_case
-  lower_case
-);
+    require Exporter;
+    @ISA = qw( Exporter );
+
+    @EXPORT_OK = qw(
+      legacy_default
+      remove_spaces
+      upper_case
+      lower_case
+    );
+}
 
 =head1 NAME
 

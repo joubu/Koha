@@ -22,20 +22,19 @@ package C4::ShelfBrowser;
 use strict;
 use warnings;
 
-use C4::Biblio;
+use C4::Biblio qw( GetAuthorisedValueDesc GetMarcBiblio GetRecordValue GetFrameworkCode );
 use C4::Context;
-use C4::Koha;
+use C4::Koha qw( GetNormalizedUPC GetNormalizedOCLCNumber GetNormalizedISBN GetNormalizedEAN );
 use Koha::Libraries;
 
-use vars qw(@ISA @EXPORT @EXPORT_OK);
-
+our (@ISA, @EXPORT_OK);
 BEGIN {
 	require Exporter;
 	@ISA    = qw(Exporter);
-	@EXPORT = qw(
-	    &GetNearbyItems
-    );
     @EXPORT_OK = qw(
+        GetNearbyItems
+        GetShelfInfo
+        GetBibData
     );
 }
 

@@ -18,7 +18,7 @@ use C4::SIP::Sip::Checksum qw(checksum);
 
 use base qw(Exporter);
 
-our @EXPORT_OK = qw(y_or_n timestamp add_field maybe_add add_count
+push @EXPORT_OK, qw(y_or_n timestamp add_field maybe_add add_count
     denied sipbool boolspace write_msg
     $error_detection $protocol_version $field_delimiter
     $last_response);

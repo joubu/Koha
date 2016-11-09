@@ -22,7 +22,7 @@ use Modern::Perl;
 use Template::Plugin::Filter;
 use base qw( Template::Plugin::Filter );
 
-use Koha::DateUtils;
+use Koha::DateUtils qw( dt_from_string output_pref );
 our $DYNAMIC = 1;
 
 sub filter {

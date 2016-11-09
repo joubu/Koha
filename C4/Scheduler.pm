@@ -20,14 +20,14 @@ package C4::Scheduler;
 use strict;
 #use warnings; FIXME - Bug 2505
 
-use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 use C4::Context;
 use Schedule::At;
 
+our (@ISA, @EXPORT_OK);
 BEGIN {
 	require Exporter;
 	@ISA = qw(Exporter);
-	@EXPORT =
+	@EXPORT_OK =
 		qw(get_jobs get_at_jobs get_at_job add_at_job remove_at_job);
 }
 

@@ -17,19 +17,19 @@ package C4::Search;
 
 use strict;
 #use warnings; FIXME - Bug 2505
-require Exporter;
+
 use C4::Context;
-use C4::Biblio;    # GetMarcFromKohaField, GetBiblioData
-use C4::Koha;      # getFacets
-use Koha::DateUtils;
+use C4::Biblio qw( TransformMarcToKoha GetMarcFromKohaField GetFrameworkCode GetRecordValue GetMarcBiblio GetAuthorisedValueDesc GetBiblioData );
+use C4::Koha qw( getFacets GetVariationsOfISBN getitemtypeimagelocation GetNormalizedUPC GetNormalizedEAN GetNormalizedOCLCNumber GetNormalizedISBN );
+use Koha::DateUtils qw( output_pref );
 use Koha::Libraries;
 use Lingua::Stem;
 use C4::Search::PazPar2;
 use XML::Simple;
-use C4::XSLT;
-use C4::Reserves;    # GetReserveStatus
+use C4::XSLT qw( get_xslt_sysprefs XSLTParse4Display engine );
+use C4::Reserves qw( GetReserveStatus );
 use C4::Debug;
-use C4::Charset;
+use C4::Charset qw( SetUTF8Flag );
 use Koha::AuthorisedValues;
 use Koha::ItemTypes;
 use Koha::Libraries;
@@ -39,10 +39,29 @@ use URI::Escape;
 use Business::ISBN;
 use MARC::Record;
 use MARC::Field;
-use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $DEBUG);
+use vars qw($DEBUG);
 
+our (@ISA, @EXPORT_OK);
 BEGIN {
     $DEBUG = ($ENV{DEBUG}) ? 1 : 0;
+
+    require Exporter;
+    @ISA    = qw(Exporter);
+    @EXPORT_OK = qw(
+        FindDuplicate
+        SimpleSearch
+        getRecords
+        GetFacets
+        pazGetRecords
+        getIndexes
+        parseQuery
+        buildQuery
+        searchResults
+        enabled_staff_search_views
+        z3950_search_args
+        GetDistinctValues
+        new_record_from_zebra
+    );
 }
 
 =head1 NAME
@@ -60,17 +79,6 @@ This module provides searching functions for Koha's bibliographic databases
 =head1 FUNCTIONS
 
 =cut
-
-@ISA    = qw(Exporter);
-@EXPORT = qw(
-  &FindDuplicate
-  &SimpleSearch
-  &searchResults
-  &getRecords
-  &buildQuery
-  &GetDistinctValues
-  &enabled_staff_search_views
-);
 
 # make all your functions, whether exported or not;
 

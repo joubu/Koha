@@ -24,7 +24,7 @@ use CGI qw ( -utf8 );
 use JSON;
 use autouse 'Data::Dumper' => qw(Dumper);
 
-use C4::Auth;
+use C4::Auth qw( check_api_auth );
 use C4::Context;
 
 my $cgi = CGI->new;

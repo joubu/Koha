@@ -29,7 +29,7 @@ BEGIN {
 # possible modules to use
 use Getopt::Long;
 use C4::Context;
-use C4::Biblio;
+use C4::Biblio qw( GetMarcBiblio ModBiblio );
 use Pod::Usage;
 
 

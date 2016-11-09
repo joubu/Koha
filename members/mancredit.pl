@@ -25,15 +25,13 @@
 use strict;
 use warnings;
 
-use C4::Auth;
-use C4::Output;
+use C4::Auth qw( checkauth get_template_and_user );
+use C4::Output qw( output_html_with_http_headers );
 use CGI qw ( -utf8 );
 
-use C4::Members;
-use C4::Accounts;
-use C4::Items;
-use C4::Members::Attributes qw(GetBorrowerAttributes);
-use Koha::Patrons;
+use C4::Accounts qw( manualinvoice );
+use C4::Items qw( GetItem GetItemnumberFromBarcode );
+use Koha::Patron::Images;
 
 use Koha::Patron::Categories;
 

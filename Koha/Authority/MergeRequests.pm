@@ -24,7 +24,7 @@ use MARC::Record;
 use C4::Context;
 use Koha::Authority::MergeRequest;
 use Koha::Database;
-use Koha::DateUtils;
+use Koha::DateUtils qw( dt_from_string );
 
 use parent qw(Koha::Objects);
 

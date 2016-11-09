@@ -23,14 +23,13 @@ use JSON;
 use List::MoreUtils qw( any each_array uniq );
 use String::Random qw( random_string );
 
-use C4::Auth;
-use C4::Output;
-use C4::Members;
-use C4::Members::Attributes qw( GetBorrowerAttributes );
+use C4::Auth qw( get_template_and_user );
+use C4::Output qw( output_html_with_http_headers );
+use C4::Members qw( get_cardnumber_length checkcardnumber AddMember AddMember_Opac );
 use C4::Form::MessagingPreferences;
 use C4::Scrubber;
 use Email::Valid;
-use Koha::DateUtils;
+use Koha::DateUtils qw( dt_from_string output_pref );
 use Koha::Libraries;
 use Koha::Patron::Attribute::Types;
 use Koha::Patron::Attributes;

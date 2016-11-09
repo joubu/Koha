@@ -6,8 +6,8 @@ use Pod::Usage;
 use Getopt::Long;
 
 use C4::Context;
-use C4::UsageStats;
-use C4::Log;
+use C4::UsageStats qw( NeedUpdate BuildReport ReportToCommunity );
+use C4::Log qw( logaction cronlogaction );
 use POSIX qw(strftime);
 
 my ( $help, $verbose, $force, $quiet );

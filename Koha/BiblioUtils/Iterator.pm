@@ -43,7 +43,7 @@ Returns biblionumber and marc in list context.
 
 =cut
 
-use C4::Biblio;    # :( - for EmbedItemsInMarcBiblio
+use C4::Biblio qw( GetXmlBiblio EmbedItemsInMarcBiblio );
 
 use Carp;
 use MARC::Record;

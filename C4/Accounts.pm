@@ -21,30 +21,28 @@ package C4::Accounts;
 use strict;
 #use warnings; FIXME - Bug 2505
 use C4::Context;
-use C4::Stats;
-use C4::Members;
-use C4::Circulation qw(ReturnLostItem);
-use C4::Log qw(logaction);
+use C4::Stats qw( UpdateStats );
+use C4::Circulation qw( ReturnLostItem LostItem );
+use C4::Log qw( logaction );
 use Koha::Account;
 use Koha::Account::Lines;
 
 use Data::Dumper qw(Dumper);
 
-use vars qw(@ISA @EXPORT);
-
+our (@ISA, @EXPORT_OK);
 BEGIN {
     require Exporter;
-    @ISA    = qw(Exporter);
-    @EXPORT = qw(
-      &manualinvoice
-      &getnextacctno
-      &getcharges
-      &ModNote
-      &getcredits
-      &getrefunds
-      &chargelostitem
-      &ReversePayment
-      &purge_zero_balance_fees
+    @ISA = qw( Exporter );
+    @EXPORT_OK = qw(
+        getnextacctno
+        chargelostitem
+        manualinvoice
+        getcharges
+        ModNote
+        getcredits
+        getrefunds
+        ReversePayment
+        purge_zero_balance_fees
     );
 }
 

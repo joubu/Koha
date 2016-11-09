@@ -32,7 +32,7 @@ BEGIN {
 use Getopt::Long;
 use Pod::Usage;
 use C4::Suggestions;
-use C4::Log;
+use C4::Log qw( logaction cronlogaction );
 
 my ($help, $days);
 

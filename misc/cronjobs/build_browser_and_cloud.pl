@@ -12,13 +12,13 @@ BEGIN {
 
 use C4::Koha;
 use C4::Context;
-use C4::Biblio;
+use C4::Biblio qw( GetMarcBiblio );
 use Date::Calc;
 use Time::HiRes qw(gettimeofday);
 use ZOOM;
 use MARC::File::USMARC;
 use Getopt::Long;
-use C4::Log;
+use C4::Log qw( logaction cronlogaction );
 
 my ( $input_marc_file, $number) = ('',0);
 my ($version, $confirm,$test_parameter,$field,$batch,$max_digits,$cloud_tag);

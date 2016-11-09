@@ -8,8 +8,8 @@ use CGI::Cookie; # need to check cookies before CGI parses the POST request
 use JSON;
 
 use C4::Context;
-use C4::Auth qw/check_cookie_auth/;
-use C4::AuthoritiesMarc;
+use C4::Auth qw( check_cookie_auth );
+use C4::Auth qw( check_cookie_auth );
 
 my %cookies = CGI::Cookie->fetch;
 my ($auth_status, $sessionID) = check_cookie_auth($cookies{'CGISESSID'}->value, { editcatalogue => 'edit_catalogue' });

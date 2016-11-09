@@ -23,7 +23,7 @@
 use strict;
 use warnings;
 use C4::Context;
-use C4::Items;
+use C4::Items qw( GetItem );
 use Data::Dumper;
 use Getopt::Long;
 

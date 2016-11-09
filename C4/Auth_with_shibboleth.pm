@@ -21,20 +21,19 @@ use Modern::Perl;
 
 use C4::Debug;
 use C4::Context;
-use Koha::AuthUtils qw(get_script_name);
+use Koha::AuthUtils qw( get_script_name );
 use Koha::Database;
-use C4::Members qw( AddMember_Auto );
-use C4::Members::Messaging;
+use C4::Members qw( AddMember AddMember_Auto );
 use Carp;
 use CGI;
 
-use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $debug);
-
+use vars qw($debug);
+our (@ISA, @EXPORT_OK);
 BEGIN {
     require Exporter;
     $debug   = $ENV{DEBUG};
     @ISA     = qw(Exporter);
-    @EXPORT =
+    @EXPORT_OK =
       qw(shib_ok logout_shib login_shib_url checkpw_shib get_login_shib);
 }
 

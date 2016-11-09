@@ -30,9 +30,9 @@ BEGIN {
 
 use C4::Context;
 use C4::Debug;
-use C4::Serials;
-use C4::Log;
-use Koha::DateUtils;
+use C4::Serials qw( GetSubscription GetNextDate ModSerialStatus );
+use C4::Log qw( logaction cronlogaction );
+use Koha::DateUtils qw( dt_from_string output_pref );
 
 use Date::Calc qw/Date_to_Days check_date/;
 use Getopt::Long;

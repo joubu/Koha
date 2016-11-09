@@ -29,11 +29,11 @@ use Date::Manip qw/ ParseDate UnixDate DateCalc/;
 use Text::CSV_XS;
 
 use C4::Acquisition;
-use C4::Budgets;
+use C4::Budgets qw( GetBudgetPeriod GetBudget GetPeriodsCount GetBudgetAuthCats GetBudgetHierarchy ModBudgetPlan ModBudget HideCols GetCols CanUserUseBudget GetBudgetsPlanCell GetBudgets );
 use C4::Context;
-use C4::Output;
+use C4::Output qw( output_html_with_http_headers );
 use C4::Koha;
-use C4::Auth;
+use C4::Auth qw( get_template_and_user );
 use C4::Debug;
 use Koha::Acquisition::Currencies;
 

@@ -35,7 +35,7 @@ and authority) records in Koha.
 use Modern::Perl;
 
 use Carp;
-use C4::Biblio;
+use C4::Biblio qw( GetMarcSubfieldStructure );
 use Koha::Util::MARC;
 
 use base qw(Class::Accessor);

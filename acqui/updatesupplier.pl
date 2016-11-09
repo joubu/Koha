@@ -50,7 +50,7 @@ use strict;
 use warnings;
 use List::Util;
 use C4::Context;
-use C4::Auth;
+use C4::Auth qw( checkauth );
 
 use C4::Biblio;
 use C4::Output;

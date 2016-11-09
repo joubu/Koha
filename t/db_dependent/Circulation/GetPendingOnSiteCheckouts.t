@@ -24,7 +24,6 @@ use t::lib::TestBuilder;
 use C4::Biblio;
 use C4::Circulation;
 use C4::Items;
-use C4::Members;
 
 use Koha::Libraries;
 use Koha::Patrons;

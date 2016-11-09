@@ -21,21 +21,21 @@
 use Modern::Perl;
 
 use CGI qw ( -utf8 );
-use C4::Auth;    # checkauth, getborrowernumber.
-use C4::Koha;
-use C4::Circulation;
-use C4::Reserves;
-use C4::Biblio;
-use C4::Items;
-use C4::Output;
+use C4::Auth qw( get_template_and_user );
+use C4::Koha qw( getitemtypeimagesrc getitemtypeimagelocation );
+use C4::Circulation qw( GetTransfers CheckIfIssuedToPatron );
+use C4::Reserves qw( CanItemBeReserved CanBookBeReserved AddReserve GetReservesControlBranch IsAvailableForItemLevelRequest OPACItemHoldsAllowed );
+use C4::Biblio qw( GetBiblioData GetMarcBiblio GetFrameworkCode GetRecordValue );
+use C4::Items qw( GetItem GetItemsInfo GetHostItemsInfo );
+use C4::Output qw( output_html_with_http_headers );
 use C4::Context;
-use C4::Members;
-use C4::Overdues;
+use C4::Members qw( GetMemberAccountRecords );
+use C4::Overdues qw( GetItems );
 use C4::Debug;
 
 use Koha::AuthorisedValues;
 use Koha::Biblios;
-use Koha::DateUtils;
+use Koha::DateUtils qw( dt_from_string output_pref );
 use Koha::Items;
 use Koha::ItemTypes;
 use Koha::Checkouts;

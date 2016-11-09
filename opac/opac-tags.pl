@@ -35,14 +35,14 @@ use Modern::Perl;
 use CGI qw ( -utf8 );
 use CGI::Cookie; # need to check cookies before having CGI parse the POST request
 
-use C4::Auth qw(:DEFAULT check_cookie_auth);
+use C4::Auth qw( check_cookie_auth get_template_and_user );
 use C4::Context;
 use C4::Debug;
-use C4::Output qw(:html :ajax pagination_bar);
+use C4::Output qw( output_with_http_headers is_ajax output_html_with_http_headers );
 use C4::Scrubber;
-use C4::Biblio;
-use C4::Tags qw(add_tag get_approval_rows get_tag_rows remove_tag stratify_tags);
-use C4::XSLT;
+use C4::Biblio qw( GetMarcBiblio GetRecordValue GetFrameworkCode );
+use C4::Tags qw( add_tag remove_tag get_tag_rows get_tag get_approval_rows stratify_tags );
+use C4::XSLT qw( get_xslt_sysprefs XSLTParse4Display );
 
 use Data::Dumper;
 

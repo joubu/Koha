@@ -22,8 +22,8 @@ use strict;
 use CGI qw ( -utf8 );
 use CGI::Cookie;
 use JSON;
-use C4::Auth;
-use C4::Items;
+use C4::Auth qw( check_cookie_auth );
+use C4::Items qw( GetItem GetItemnumberFromBarcode );
 use C4::Context;
 
 my $input        = new CGI;

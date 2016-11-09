@@ -27,25 +27,40 @@ use Carp;
 use Template;
 use Module::Load::Conditional qw(can_load);
 
-use C4::Members;
-use C4::Members::Attributes qw(GetBorrowerAttributes);
-use C4::Log;
+use C4::Members qw( GetNoticeEmailAddress );
+use C4::Log qw( logaction );
 use C4::SMS;
 use C4::Debug;
-use Koha::DateUtils;
+use Koha::DateUtils qw( format_sqldatetime dt_from_string output_pref );
 use Koha::SMS::Providers;
 
 use Koha::Email;
-use Koha::DateUtils qw( format_sqldatetime dt_from_string );
 use Koha::Patrons;
 
-use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
-
+our (@ISA, @EXPORT_OK);
 BEGIN {
     require Exporter;
     @ISA = qw(Exporter);
-    @EXPORT = qw(
-        &GetLetters &GetLettersAvailableForALibrary &GetLetterTemplates &DelLetter &GetPreparedLetter &GetWrappedLetter &addalert &getalert &delalert &findrelatedto &SendAlerts &GetPrintMessages &GetMessageTransportTypes
+    @EXPORT_OK = qw(
+        GetLetters
+        GetLetterTemplates
+        GetLettersAvailableForALibrary
+        getletter
+        DelLetter
+        addalert
+        delalert
+        getalert
+        findrelatedto
+        SendAlerts
+        GetPreparedLetter
+        EnqueueLetter
+        SendQueuedMessages
+        GetRSSMessages
+        GetPrintMessages
+        GetQueuedMessages
+        GetMessageTransportTypes
+        GetMessage
+        ResendMessage
     );
 }
 

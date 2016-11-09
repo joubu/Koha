@@ -13,7 +13,7 @@ BEGIN {
 # Koha modules used
 
 use C4::Context;
-use C4::Biblio;
+use C4::Biblio qw( GetMarcFromKohaField );
 use MARC::Record;
 use MARC::File::USMARC;
 use MARC::File::XML;

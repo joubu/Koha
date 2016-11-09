@@ -20,23 +20,21 @@ package C4::Serials;
 
 use Modern::Perl;
 
-use C4::Auth qw(haspermission);
+use C4::Auth qw( haspermission );
 use C4::Context;
 use DateTime;
 use Date::Calc qw(:all);
 use POSIX qw(strftime);
-use C4::Biblio;
-use C4::Log;    # logaction
+use C4::Biblio qw( GetMarcBiblio GetMarcFromKohaField ModBiblio );
+use C4::Log qw( logaction );
 use C4::Debug;
-use C4::Serials::Frequency;
-use C4::Serials::Numberpattern;
+use C4::Serials::Frequency qw( GetSubscriptionFrequency );
+use C4::Serials::Numberpattern qw( GetSubscriptionNumberpattern );
 use Koha::AdditionalField;
-use Koha::DateUtils;
+use Koha::DateUtils qw( dt_from_string output_pref );
 use Koha::Serial;
 use Koha::Subscriptions;
 use Koha::Subscription::Histories;
-
-use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
 # Define statuses
 use constant {
@@ -60,34 +58,68 @@ use constant MISSING_STATUSES => (
     MISSING_LOST
 );
 
+our (@ISA, @EXPORT_OK);
 BEGIN {
     require Exporter;
     @ISA    = qw(Exporter);
-    @EXPORT = qw(
-      &NewSubscription    &ModSubscription    &DelSubscription
-      &GetSubscription    &CountSubscriptionFromBiblionumber      &GetSubscriptionsFromBiblionumber
-      &SearchSubscriptions
-      &GetFullSubscriptionsFromBiblionumber   &GetFullSubscription &ModSubscriptionHistory
-      &HasSubscriptionStrictlyExpired &HasSubscriptionExpired &GetExpirationDate &abouttoexpire
-      &GetSubscriptionHistoryFromSubscriptionId
-
-      &GetNextSeq &GetSeq &NewIssue           &GetSerials
-      &GetLatestSerials   &ModSerialStatus    &GetNextDate       &GetSerials2
-      &ReNewSubscription  &GetLateOrMissingIssues
-      &GetSerialInformation                   &AddItem2Serial
-      &PrepareSerialsData &GetNextExpected    &ModNextExpected
-      &GetPreviousSerialid
-
-      &GetSuppliersWithLateIssues
-      &GetDistributedTo   &SetDistributedTo
-      &getroutinglist     &delroutingmember   &addroutingmember
-      &reorder_members
-      &check_routing &updateClaim
-      &CountIssues
-      HasItems
-      &GetSubscriptionsFromBorrower
-      &subscriptionCurrentlyOnOrder
-
+    @EXPORT_OK = qw(
+        GetSuppliersWithLateIssues
+        GetSubscriptionHistoryFromSubscriptionId
+        GetSerialStatusFromSerialId
+        GetSerialInformation
+        AddItem2Serial
+        GetSubscription
+        GetFullSubscription
+        PrepareSerialsData
+        GetSubscriptionsFromBiblionumber
+        GetFullSubscriptionsFromBiblionumber
+        SearchSubscriptions
+        GetSerials
+        GetSerials2
+        GetLatestSerials
+        GetPreviousSerialid
+        GetDistributedTo
+        GetNextSeq
+        GetSeq
+        GetExpirationDate
+        CountSubscriptionFromBiblionumber
+        ModSubscriptionHistory
+        ModSerialStatus
+        GetNextExpected
+        ModNextExpected
+        GetSubscriptionIrregularities
+        ModSubscription
+        NewSubscription
+        ReNewSubscription
+        NewIssue
+        HasSubscriptionStrictlyExpired
+        HasSubscriptionExpired
+        SetDistributedto
+        DelSubscription
+        DelIssue
+        GetLateOrMissingIssues
+        updateClaim
+        check_routing
+        addroutingmember
+        reorder_members
+        delroutingmember
+        getroutinglist
+        countissuesfrom
+        CountIssues
+        HasItems
+        abouttoexpire
+        in_array
+        GetSubscriptionsFromBorrower
+        GetFictiveIssueNumber
+        GetNextDate
+        is_barcode_in_use
+        CloseSubscription
+        ReopenSubscription
+        subscriptionCurrentlyOnOrder
+        can_claim_subscription
+        can_edit_subscription
+        can_show_subscription
+        findSerialsByStatus
     );
 }
 

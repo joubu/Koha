@@ -22,8 +22,8 @@ use strict;
 use warnings;
 
 use CGI qw ( -utf8 );
-use C4::Auth;
-use C4::Circulation;
+use C4::Auth qw( get_template_and_user );
+use C4::Circulation qw( GetOfflineOperation ProcessOfflineOperation DeleteOfflineOperation );
 
 my $query = CGI->new;
 

@@ -23,7 +23,7 @@ use warnings;
 $|=1;
 
 use C4::Context;
-use C4::Biblio;
+use C4::Biblio qw( GetMarcBiblio ModBiblio GetFrameworkCode );
 use Getopt::Long;
 
 my ($wherestring, $run, $silent, $want_help);

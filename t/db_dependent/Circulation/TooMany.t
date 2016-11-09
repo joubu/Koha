@@ -19,7 +19,6 @@ use Test::More tests => 6;
 use C4::Context;
 
 use C4::Biblio;
-use C4::Members;
 use C4::Circulation;
 use C4::Items;
 use C4::Context;

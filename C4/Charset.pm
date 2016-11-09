@@ -26,12 +26,11 @@ use C4::Debug;
 use Unicode::Normalize;
 use Encode qw( decode encode is_utf8 );
 
-use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
-
+our (@ISA, @EXPORT_OK);
 BEGIN {
     require Exporter;
     @ISA    = qw(Exporter);
-    @EXPORT = qw(
+    @EXPORT_OK = qw(
         NormalizeString
         IsStringUTF8ish
         MarcToUTF8Record

@@ -21,16 +21,16 @@
 
 use strict;
 #use warnings; FIXME - Bug 2505
-use C4::Koha;
+use C4::Koha qw( GetAuthorisedValues );
 use CGI qw ( -utf8 );
 use HTML::Entities;
-use C4::Biblio;
-use C4::Items;
-use C4::Acquisition;
-use C4::Output;
-use C4::Auth;
-use C4::Serials;
-use C4::Search;		# enabled_staff_search_views
+use C4::Biblio qw( GetBiblioData GetFrameworkCode GetMarcBiblio GetRecordValue );
+use C4::Items qw( GetItem GetItemsInfo GetHostItemsInfo );
+use C4::Acquisition qw( GetOrderFromItemnumber GetOrder GetBasket GetInvoice GetOrders GetOrdersByBiblionumber );
+use C4::Output qw( output_html_with_http_headers );
+use C4::Auth qw( get_template_and_user );
+use C4::Serials qw( CountSubscriptionFromBiblionumber );
+use C4::Search qw( enabled_staff_search_views z3950_search_args );
 
 use Koha::Acquisition::Booksellers;
 use Koha::AuthorisedValues;

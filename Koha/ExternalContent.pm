@@ -23,7 +23,7 @@ use base qw(Class::Accessor);
 
 use Koha;
 use Koha::Patrons;
-use C4::Auth;
+use C4::Auth qw( get_session );
 
 __PACKAGE__->mk_accessors(qw(client koha_session_id koha_patron));
 

@@ -27,15 +27,19 @@ use warnings;
 use JSON qw( to_json );
 
 use C4::Context;
-use Koha::DateUtils;
+use Koha::DateUtils qw( output_pref dt_from_string );
 use Koha::Logger;
 
-use vars qw(@ISA @EXPORT);
+
+our ( @ISA, @EXPORT_OK );
 
 BEGIN {
-        require Exporter;
-        @ISA = qw(Exporter);
-        @EXPORT = qw(&logaction &cronlogaction &GetLogStatus &displaylog &GetLogs);
+
+    require Exporter;
+    @ISA       = qw( Exporter );
+    @EXPORT_OK = qw(
+      &logaction &cronlogaction &GetLogStatus &displaylog &GetLogs
+    );
 }
 
 =head1 NAME

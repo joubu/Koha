@@ -21,12 +21,12 @@ package C4::External::Amazon;
 use strict;
 use warnings;
 
-use vars qw(@ISA @EXPORT);
-
+our (@ISA, @EXPORT_OK);
 BEGIN {
+
     require Exporter;
-    @ISA = qw(Exporter);
-    @EXPORT = qw(
+    @ISA = qw( Exporter );
+    @EXPORT_OK = qw(
         get_amazon_tld
     );
 }

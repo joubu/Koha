@@ -26,8 +26,8 @@ use strict;
 use warnings;
 use CGI qw ( -utf8 );
 use C4::Output;
-use C4::Reserves;
-use C4::Auth;
+use C4::Reserves qw( ModReserve ModReserveCancelAll );
+use C4::Auth qw( get_template_and_user );
 
 my $query = new CGI;
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(

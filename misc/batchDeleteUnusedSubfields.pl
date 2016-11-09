@@ -13,7 +13,7 @@ BEGIN {
 # Koha modules used
 use MARC::Record;
 use C4::Context;
-use C4::Biblio;
+use C4::Biblio qw( GetMarcStructure );
 use Time::HiRes qw(gettimeofday);
 
 use Getopt::Long;

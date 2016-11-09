@@ -23,12 +23,12 @@ use strict;
 
 use Carp;
 use C4::Context;
-use C4::Koha;
-use C4::Biblio;
-use Koha::DateUtils;
+use C4::Koha qw( IsKohaFieldLinked );
+use C4::Biblio qw( GetFrameworkCode GetMarcFromKohaField TransformMarcToKoha ModZebra AddBiblio GetMarcBiblio TransformKohaToMarc GetMarcStructure IsMarcStructureInternal );
+use Koha::DateUtils qw( dt_from_string output_pref );
 use MARC::Record;
-use C4::ClassSource;
-use C4::Log;
+use C4::ClassSource qw( GetClassSort GetClassSources GetClassSource );
+use C4::Log qw( logaction );
 use List::MoreUtils qw/any/;
 use YAML qw/Load/;
 use DateTime::Format::MySQL;
@@ -36,7 +36,7 @@ use Data::Dumper; # used as part of logging item record changes, not just for
                   # debugging; so please don't remove this
 
 use Koha::AuthorisedValues;
-use Koha::DateUtils qw/dt_from_string/;
+use Koha::DateUtils qw( dt_from_string output_pref );
 use Koha::Database;
 
 use Koha::Biblioitems;
@@ -46,7 +46,7 @@ use Koha::SearchEngine;
 use Koha::SearchEngine::Search;
 use Koha::Libraries;
 
-use vars qw(@ISA @EXPORT);
+our (@ISA, @EXPORT_OK);
 
 BEGIN {
 
@@ -54,45 +54,40 @@ BEGIN {
     @ISA = qw( Exporter );
 
     # function exports
-    @EXPORT = qw(
+    @EXPORT_OK = qw(
         GetItem
+        CartToShelf
+        ShelfToCart
         AddItemFromMarc
         AddItem
         AddItemBatchFromMarc
         ModItemFromMarc
-    Item2Marc
         ModItem
-        ModDateLastSeen
         ModItemTransfer
+        ModDateLastSeen
         DelItem
-    
         CheckItemPreSave
-    
         GetItemsForInventory
         GetItemsByBiblioitemnumber
         GetItemsInfo
-	GetItemsLocationInfo
-	GetHostItemsInfo
+        GetItemsLocationInfo
+        GetHostItemsInfo
+        GetLastAcquisitions
         GetItemnumbersForBiblio
-	get_hostitemnumbers_of
+        get_hostitemnumbers_of
         GetItemnumberFromBarcode
         GetBarcodeFromItemnumber
         GetHiddenItemnumbers
+        GetMarcItem
+        Item2Marc
+        MoveItemFromBiblio
         ItemSafeToDelete
         DelItemCheck
-    MoveItemFromBiblio
-    GetLatestAcquisitions
-
-        CartToShelf
-        ShelfToCart
-
-	GetAnalyticsCount
-
+        GetAnalyticsCount
         SearchItemsByField
         SearchItems
-
         PrepareItemrecordDisplay
-
+        ToggleNewStatus
     );
 }
 
@@ -1243,7 +1238,7 @@ sub GetHostItemsInfo {
 
 =cut
 
-sub  GetLastAcquisitions {
+sub GetLastAcquisitions {
 	my ($data,$max) = @_;
 
 	my $itemtype = C4::Context->preference('item-level_itypes') ? 'itype' : 'itemtype';
@@ -2223,7 +2218,7 @@ sub _get_unlinked_subfields_xml {
 
 =cut
 
-sub  _parse_unlinked_item_subfields_from_xml {
+sub _parse_unlinked_item_subfields_from_xml {
     my $xml = shift;
     require C4::Charset;
     return unless defined $xml and $xml ne "";

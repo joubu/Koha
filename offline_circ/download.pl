@@ -21,7 +21,7 @@
 use Modern::Perl;
 use CGI qw ( -utf8 );
 use JSON;
-use C4::Auth;
+use C4::Auth qw( checkauth );
 use C4::Output;
 use C4::Context;
 use C4::Koha;

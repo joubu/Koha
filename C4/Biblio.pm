@@ -29,14 +29,14 @@ use MARC::File::XML;
 use POSIX qw(strftime);
 use Module::Load::Conditional qw(can_load);
 
-use C4::Koha;
-use C4::Log;    # logaction
+use C4::Log qw( logaction );
 use C4::Budgets;
-use C4::ClassSource;
-use C4::Charset;
+use C4::ClassSource qw( GetClassSort );
+use C4::Charset qw( SetUTF8Flag SetMarcUnicodeFlag StripNonXmlChars nsb_clean );
 use C4::Linker;
-use C4::OAI::Sets;
+use C4::OAI::Sets qw( UpdateOAISetsBiblio );
 use C4::Debug;
+use C4::Items qw( AddItem ModItem GetItem GetHiddenItemnumbers GetMarcItem );
 
 use Koha::Caches;
 use Koha::Authority::Types;
@@ -48,9 +48,8 @@ use Koha::ItemTypes;
 use Koha::SearchEngine;
 use Koha::Libraries;
 
-use vars qw(@ISA @EXPORT);
 use vars qw($debug $cgi_debug);
-
+our (@ISA, @EXPORT_OK);
 BEGIN {
 
     require Exporter;
@@ -58,85 +57,58 @@ BEGIN {
 
     # to add biblios
     # EXPORTED FUNCTIONS.
-    push @EXPORT, qw(
-      &AddBiblio
-    );
-
-    # to get something
-    push @EXPORT, qw(
-      GetBiblioData
-      GetMarcBiblio
-      GetBiblioItemData
-      GetBiblioItemInfosOf
-      GetBiblioItemByBiblioNumber
-
-      &GetRecordValue
-
-      &GetISBDView
-
-      &GetMarcControlnumber
-      &GetMarcNotes
-      &GetMarcISBN
-      &GetMarcISSN
-      &GetMarcSubjects
-      &GetMarcAuthors
-      &GetMarcSeries
-      &GetMarcHosts
-      GetMarcUrls
-      &GetUsedMarcStructure
-      &GetXmlBiblio
-      &GetCOinSBiblio
-      &GetMarcPrice
-      &MungeMarcPrice
-      &GetMarcQuantity
-
-      &GetAuthorisedValueDesc
-      &GetMarcStructure
-      &IsMarcStructureInternal
-      &GetMarcFromKohaField
-      &GetMarcSubfieldStructureFromKohaField
-      &GetFrameworkCode
-      &TransformKohaToMarc
-      &PrepHostMarcField
-
-      &CountItemsIssued
-      &CountBiblioInOrders
-    );
-
-    # To modify something
-    push @EXPORT, qw(
-      &ModBiblio
-      &ModZebra
-      &UpdateTotalIssues
-      &RemoveAllNsb
-    );
-
-    # To delete something
-    push @EXPORT, qw(
-      &DelBiblio
-    );
-
-    # To link headings in a bib record
-    # to authority records.
-    push @EXPORT, qw(
-      &BiblioAutoLink
-      &LinkBibHeadingsToAuthorities
-    );
-
-    # Internal functions
-    # those functions are exported but should not be used
-    # they are useful in a few circumstances, so they are exported,
-    # but don't use them unless you are a core developer ;-)
-    push @EXPORT, qw(
-      &ModBiblioMarc
-    );
-
-    # Others functions
-    push @EXPORT, qw(
-      &TransformMarcToKoha
-      &TransformHtmlToMarc
-      &TransformHtmlToXml
-      prepare_host_field
+    @EXPORT_OK = qw(
+        AddBiblio
+        ModBiblio
+        DelBiblio
+        BiblioAutoLink
+        LinkBibHeadingsToAuthorities
+        GetRecordValue
+        GetBiblioData
+        GetBiblioItemData
+        GetBiblioItemByBiblioNumber
+        GetISBDView
+        GetBiblioItemInfosOf
+        IsMarcStructureInternal
+        GetMarcStructure
+        GetUsedMarcStructure
+        GetMarcSubfieldStructure
+        GetMarcFromKohaField
+        GetMarcSubfieldStructureFromKohaField
+        GetMarcBiblio
+        GetXmlBiblio
+        GetCOinSBiblio
+        GetMarcPrice
+        MungeMarcPrice
+        GetMarcQuantity
+        GetAuthorisedValueDesc
+        GetMarcControlnumber
+        GetMarcISBN
+        GetMarcISSN
+        GetMarcNotes
+        GetMarcSubjects
+        GetMarcAuthors
+        GetMarcUrls
+        GetMarcSeries
+        GetMarcHosts
+        UpsertMarcSubfield
+        UpsertMarcControlField
+        GetFrameworkCode
+        TransformKohaToMarc
+        PrepHostMarcField
+        TransformHtmlToXml
+        TransformHtmlToMarc
+        TransformMarcToKoha
+        CountItemsIssued
+        get_koha_field_from_marc
+        TransformMarcToKohaOneField
+        ModZebra
+        EmbedItemsInMarcBiblio
+        ModBiblioMarc
+        CountBiblioInOrders
+        prepare_host_field
+        UpdateTotalIssues
+        RemoveAllNsb
     );
 }
 

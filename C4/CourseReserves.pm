@@ -20,11 +20,11 @@ use Modern::Perl;
 use List::MoreUtils qw(any);
 
 use C4::Context;
-use C4::Items qw(GetItem ModItem);
-use C4::Circulation qw(GetOpenIssue);
+use C4::Items qw( GetItem ModItem );
+use C4::Circulation qw( GetOpenIssue );
 
-use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $DEBUG @FIELDS);
-
+use vars qw($DEBUG @FIELDS);
+our (@ISA, @EXPORT_OK);
 BEGIN {
     require Exporter;
     @ISA       = qw(Exporter);
@@ -49,7 +49,7 @@ BEGIN {
 
       &GetItemCourseReservesInfo
     );
-    %EXPORT_TAGS = ( 'all' => \@EXPORT_OK );
+    #%EXPORT_TAGS = ( 'all' => \@EXPORT_OK );
 
     $DEBUG = 0;
     @FIELDS = ( 'itype', 'ccode', 'holdingbranch', 'location' );

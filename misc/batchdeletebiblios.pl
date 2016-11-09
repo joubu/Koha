@@ -5,7 +5,7 @@ use Getopt::Long;
 use Pod::Usage;
 use IO::File;
 
-use C4::Biblio;
+use C4::Biblio qw( DelBiblio );
 
 my ($help, $files);
 GetOptions(

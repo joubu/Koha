@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-use C4::Search;
+use C4::Search qw( buildQuery );
 
 my @SEARCH = (
     { operators => [

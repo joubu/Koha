@@ -26,8 +26,8 @@ use CGI qw ( -utf8 );
 use C4::Context;
 use C4::Output;
 use C4::Debug;
-use C4::Letters;
-use Koha::DateUtils;
+use C4::Letters qw( GetPreparedLetter EnqueueLetter );
+use Koha::DateUtils qw( dt_from_string output_pref );
 
 use List::MoreUtils qw(any);
 use base qw(Exporter);

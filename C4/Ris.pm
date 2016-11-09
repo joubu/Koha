@@ -63,19 +63,18 @@ package C4::Ris;
 use Modern::Perl;
 
 use List::MoreUtils qw/uniq/;
-use vars qw(@ISA @EXPORT);
 
 use C4::Biblio qw(GetMarcSubfieldStructureFromKohaField);
-use Koha::SimpleMARC qw(read_field);
+use Koha::SimpleMARC qw( read_field );
 
+our ( @ISA, @EXPORT_OK );
 
-@ISA = qw(Exporter);
+BEGIN {
 
-# only export API methods
-
-@EXPORT = qw(
-  &marc2ris
-);
+    require Exporter;
+    @ISA       = qw( Exporter );
+    @EXPORT_OK = qw(&marc2ris);
+}
 
 our $marcprint = 0; # Debug flag;
 

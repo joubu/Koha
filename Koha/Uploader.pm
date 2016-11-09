@@ -72,7 +72,6 @@ use Time::HiRes;
 use base qw(Class::Accessor);
 
 use C4::Context;
-use C4::Koha;
 use Koha::UploadedFile;
 use Koha::UploadedFiles;
 

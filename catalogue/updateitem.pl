@@ -20,12 +20,12 @@
 use strict; 
 use warnings;
 use CGI qw ( -utf8 );
-use C4::Auth;
+use C4::Auth qw( checkauth );
 use C4::Context;
 use C4::Biblio;
-use C4::Items;
+use C4::Items qw( GetItem ModItem );
 use C4::Output;
-use C4::Circulation;
+use C4::Circulation qw( LostItem );
 use C4::Reserves;
 
 my $cgi= new CGI;

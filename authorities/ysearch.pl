@@ -32,10 +32,10 @@ use Modern::Perl;
 use JSON;
 
 use C4::Context;
-use C4::Charset;
-use C4::AuthoritiesMarc;
-use C4::Auth qw/check_cookie_auth/;
-use C4::Output;
+use C4::Charset qw( nsb_clean );
+use C4::Auth qw( check_cookie_auth );
+use C4::Auth qw( check_cookie_auth );
+use C4::Output qw( output_with_http_headers );
 
 my $query = new CGI;
 

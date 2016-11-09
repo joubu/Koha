@@ -25,9 +25,13 @@ use autouse 'Data::Dumper' => qw(Dumper);
 use C4::Context;
 use C4::Debug;
 
+our (@ISA, @EXPORT_OK);
 BEGIN {
-    use base qw(Exporter);
-    our @EXPORT = qw(get_all_templates
+
+    require Exporter;
+    @ISA = qw( Exporter );
+    @EXPORT_OK = qw(
+                     get_all_templates
                      get_all_layouts
                      get_all_profiles
                      get_all_image_names
