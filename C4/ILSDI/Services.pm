@@ -35,7 +35,7 @@ use DateTime;
 use C4::Auth;
 use C4::Members::Attributes qw(GetBorrowerAttributes);
 use Koha::DateUtils;
-use Koha::Issues;
+use Koha::Checkouts;
 
 use Koha::Biblios;
 use Koha::Libraries;
