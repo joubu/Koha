@@ -424,6 +424,13 @@ __PACKAGE__->table("deletedborrowers");
   datetime_undef_if_invalid: 1
   is_nullable: 1
 
+=head2 lang
+
+  data_type: 'varchar'
+  default_value: 'default'
+  is_nullable: 0
+  size: 25
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -601,11 +608,18 @@ __PACKAGE__->add_columns(
     datetime_undef_if_invalid => 1,
     is_nullable => 1,
   },
+  "lang",
+  {
+    data_type => "varchar",
+    default_value => "default",
+    is_nullable => 0,
+    size => 25,
+  },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2016-09-13 17:32:29
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:pcdyzQacTbFDJ9R1k0E8mA
+# Created by DBIx::Class::Schema::Loader v0.07042 @ 2016-12-08 10:15:45
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:u/F6q05mnfMb49WAyKI1YQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

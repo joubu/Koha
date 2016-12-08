@@ -77,6 +77,13 @@ __PACKAGE__->table("letter");
   is_nullable: 0
   size: 20
 
+=head2 lang
+
+  data_type: 'varchar'
+  default_value: 'default'
+  is_nullable: 0
+  size: 25
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -101,6 +108,13 @@ __PACKAGE__->add_columns(
     is_foreign_key => 1,
     is_nullable => 0,
     size => 20,
+  },
+  "lang",
+  {
+    data_type => "varchar",
+    default_value => "default",
+    is_nullable => 0,
+    size => 25,
   },
 );
 
@@ -159,8 +173,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07025 @ 2014-05-02 18:04:32
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:HFUQ+/BKlweHglzOlm0lUQ
+# Created by DBIx::Class::Schema::Loader v0.07042 @ 2016-12-08 10:15:45
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:fqBKGXoxc9MXSghYj6+cLg
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration

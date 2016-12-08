@@ -427,6 +427,13 @@ __PACKAGE__->table("borrowers");
   datetime_undef_if_invalid: 1
   is_nullable: 1
 
+=head2 lang
+
+  data_type: 'varchar'
+  default_value: 'default'
+  is_nullable: 0
+  size: 25
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -615,6 +622,13 @@ __PACKAGE__->add_columns(
     data_type => "datetime",
     datetime_undef_if_invalid => 1,
     is_nullable => 1,
+  },
+  "lang",
+  {
+    data_type => "varchar",
+    default_value => "default",
+    is_nullable => 0,
+    size => 25,
   },
 );
 
@@ -1334,8 +1348,8 @@ Composing rels: L</aqorder_users> -> ordernumber
 __PACKAGE__->many_to_many("ordernumbers", "aqorder_users", "ordernumber");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2016-10-31 10:39:35
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Lc6GQ2E7d+tyzTk3v2sWjQ
+# Created by DBIx::Class::Schema::Loader v0.07042 @ 2016-12-08 10:15:45
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:xTvgxB8ENCv2o5skyvMxPQ
 
 __PACKAGE__->belongs_to(
     "guarantor",
