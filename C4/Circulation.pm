@@ -3378,6 +3378,7 @@ sub SendCirculationAlert {
                 letter_code => $type,
                 branchcode => $branch,
                 message_transport_type => $_,
+                lang => $borrower->{lang},
                 tables => {
                     $issues_table => $item->{itemnumber},
                     'items'       => $item->{itemnumber},
@@ -3395,6 +3396,7 @@ sub SendCirculationAlert {
                 letter_code => $type,
                 branchcode => $branch,
                 message_transport_type => $_,
+                lang => $borrower->{lang},
                 tables => {
                     $issues_table => $item->{itemnumber},
                     'items'       => $item->{itemnumber},

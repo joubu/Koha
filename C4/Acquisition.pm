@@ -3028,6 +3028,7 @@ sub NotifyOrderUsers {
             module      => 'acquisition',
             letter_code => 'ACQ_NOTIF_ON_RECEIV',
             branchcode  => $library->{branchcode},
+            lang        => $borrower->{lang},
             tables      => {
                 'branches'    => $library,
                 'borrowers'   => $borrower,

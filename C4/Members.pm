@@ -1212,6 +1212,8 @@ sub IssueSlip {
     # FIXME Check callers before removing this statement
     #return unless $borrowernumber;
 
+    my $patron = Koha::Patrons->find( $borrowernumber );
+
     my @issues = @{ GetPendingIssues($borrowernumber) };
 
     for my $issue (@issues) {
@@ -1283,6 +1285,7 @@ sub IssueSlip {
         module => 'circulation',
         letter_code => $letter_code,
         branchcode => $branch,
+        lang => $patron->lang,
         tables => {
             'branches'    => $branch,
             'borrowers'   => $borrowernumber,
