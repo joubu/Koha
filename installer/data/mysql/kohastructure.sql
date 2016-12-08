@@ -630,6 +630,7 @@ CREATE TABLE `deletedborrowers` ( -- stores data related to the patrons/borrower
   `checkprevcheckout` varchar(7) NOT NULL default 'inherit', -- produce a warning for this patron if this item has previously been checked out to this patron if 'yes', not if 'no', defer to category setting if 'inherit'.
   `updated_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- time of last change could be useful for synchronization with external systems (among others)
   `lastseen` datetime default NULL, -- last time a patron has been seed (connected at the OPAC or staff interface)
+  `lang` varchar(25) NOT NULL default 'default', -- lang to use to send notices to this patron
   KEY borrowernumber (borrowernumber),
   KEY `cardnumber` (`cardnumber`),
   KEY `sms_provider_id` (`sms_provider_id`)
@@ -1655,6 +1656,7 @@ CREATE TABLE `borrowers` ( -- this table includes information about your patrons
   `checkprevcheckout` varchar(7) NOT NULL default 'inherit', -- produce a warning for this patron if this item has previously been checked out to this patron if 'yes', not if 'no', defer to category setting if 'inherit'.
   `updated_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- time of last change could be useful for synchronization with external systems (among others)
   `lastseen` datetime default NULL, -- last time a patron has been seed (connected at the OPAC or staff interface)
+  `lang` varchar(25) NOT NULL default 'default', -- lang to use to send notices to this patron
   UNIQUE KEY `cardnumber` (`cardnumber`),
   PRIMARY KEY `borrowernumber` (`borrowernumber`),
   KEY `categorycode` (`categorycode`),
@@ -2527,6 +2529,7 @@ CREATE TABLE `letter` ( -- table for all notice templates in Koha
   `title` varchar(200) NOT NULL default '', -- subject line of the notice
   `content` text, -- body text for the notice or slip
   `message_transport_type` varchar(20) NOT NULL DEFAULT 'email', -- transport type for this notice
+  `lang` varchar(25) NOT NULL DEFAULT 'default', -- lang of the notice
   PRIMARY KEY  (`module`,`code`, `branchcode`, `message_transport_type`),
   CONSTRAINT `message_transport_type_fk` FOREIGN KEY (`message_transport_type`)
   REFERENCES `message_transport_types` (`message_transport_type`) ON DELETE CASCADE ON UPDATE CASCADE
