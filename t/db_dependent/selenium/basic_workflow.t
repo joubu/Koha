@@ -41,8 +41,6 @@ our $sample_data = {
 #    }
 #}
 
-open our $fh, '>>', '/tmp/output.txt';
-
 my $driver = Selenium::Remote::Driver->new;
 our $start = gettimeofday;
 our $prev_time = $start;
@@ -56,13 +54,13 @@ like( $driver->get_title(), qr(Patron categories), );
 $driver->find_element('//a[@id="newcategory"]')->click;
 like( $driver->get_title(), qr(New category), );
 fill_form( $driver, $sample_data->{category} );
-$driver->find_element('//input[@type="button"]')->click;
+$driver->find_element('//fieldset[@class="action"]/input[@type="submit"]')->click;
 
 time_diff("add patron category");
 $driver->get($base_url.'/members/memberentry.pl?op=add&amp;categorycode='.$sample_data->{category}{categorycode});
 like( $driver->get_title(), qr(Add .*$sample_data->{category}{description}), );
 fill_form( $driver, $sample_data->{patron} );
-$driver->find_element('//fieldset[@class="action"]/input[@type="submit"]')->click;
+$driver->find_element('//button[@id="saverecord"]')->click;
 like( $driver->get_title(), qr(Patron details for $sample_data->{patron}{surname}), );
 
 ####$driver->get($base_url.'/members/members-home.pl');
@@ -106,7 +104,7 @@ for my $biblionumber ( @biblionumbers ) {
     my $inputs = $driver->find_child_elements($form, '//input[@type="text"]');
     for my $input ( @$inputs ) {
         next if $input->is_hidden();
-        $input->send_keys('t_value_bib'.$biblionumber);
+        #$input->send_keys('t_value_bib'.$biblionumber);
     }
 
     $driver->find_element('//input[@name="add_submit"]')->click;
@@ -114,13 +112,14 @@ for my $biblionumber ( @biblionumbers ) {
 
     $dbh->do(q|UPDATE items SET notforloan=0 WHERE biblionumber=?|, {}, $biblionumber );
     $dbh->do(q|UPDATE biblioitems SET itemtype=? WHERE biblionumber=?|, {}, $itemtype, $biblionumber);
-    $dbh->do(q|UPDATE items SET itype=? WHERE biblionumber=?|, {}, $itemtype, $biblionumber);
+    $dbh->do(q|UPDATE items SET itype=?, barcode=? WHERE biblionumber=?|, {}, $itemtype, 't_value_bib'.$biblionumber, $biblionumber);
 }
 
 time_diff("add items");
 
 my $nb_of_checkouts = 0;
 for my $biblionumber ( @biblionumbers ) {
+    $dbh->do(q|DELETE FROM accountlines WHERE borrowernumber=?|, undef, $borrowernumber);
     $driver->get($base_url."/circ/circulation.pl?borrowernumber=".$borrowernumber);
     $driver->find_element('//input[@id="barcode"]')->send_keys('t_value_bib'.$biblionumber);
     $driver->find_element('//fieldset[@id="circ_circulation_issue"]/button[@type="submit"]')->click;
@@ -140,7 +139,12 @@ for my $biblionumber ( @biblionumbers ) {
 
 time_diff("checkin");
 
-close $fh;
+$driver->get($base_url."/catalogue/search.pl?q=s");
+$driver->get($base_url."/catalogue/search.pl?q=d");
+$driver->get_title;
+
+time_diff("search");
+
 $driver->quit();
 
 END {
