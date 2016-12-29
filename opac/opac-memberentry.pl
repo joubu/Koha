@@ -207,8 +207,8 @@ if ( $action eq 'create' ) {
             C4::Form::MessagingPreferences::handle_form_action($cgi, { borrowernumber => $borrowernumber }, $template, 1, C4::Context->preference('PatronSelfRegistrationDefaultCategory') ) if $borrowernumber && C4::Context->preference('EnhancedMessagingPreferences');
 
             $template->param( password_cleartext => $password );
-            $template->param(
-                borrower => GetMember( borrowernumber => $borrowernumber ) );
+            my $patron = Koha::Patrons->find( $borrowernumber );
+            $template->param( borrower => $patron->unblessed );
             $template->param(
                 PatronSelfRegistrationAdditionalInstructions =>
                   C4::Context->preference(
@@ -219,7 +219,7 @@ if ( $action eq 'create' ) {
 }
 elsif ( $action eq 'update' ) {
 
-    my $borrower = GetMember( borrowernumber => $borrowernumber );
+    my $borrower = Koha::Patrons->find( $borrowernumber )->unblessed;
     die "Wrong CSRF token"
         unless Koha::Token->new->check_csrf({
             session_id => scalar $cgi->cookie('CGISESSID'),
@@ -276,15 +276,15 @@ elsif ( $action eq 'update' ) {
 
             my $m = Koha::Patron::Modification->new( \%borrower_changes )->store();
 
-            $template->param(
-                borrower => GetMember( borrowernumber => $borrowernumber ),
-            );
+            my $patron = Koha::Patrons->find( $borrowernumber );
+            $template->param( borrower => $patron->unblessed );
         }
         else {
+            my $patron = Koha::Patrons->find( $borrowernumber );
             $template->param(
                 action => 'edit',
                 nochanges => 1,
-                borrower => GetMember( borrowernumber => $borrowernumber ),
+                borrower => $patron->unblessed,
                 patron_attribute_classes => GeneratePatronAttributesForm( $borrowernumber, $attributes ),
                 csrf_token => Koha::Token->new->generate_csrf({
                     session_id => scalar $cgi->cookie('CGISESSID'),
@@ -294,7 +294,8 @@ elsif ( $action eq 'update' ) {
     }
 }
 elsif ( $action eq 'edit' ) {    #Display logged in borrower's data
-    my $borrower = GetMember( borrowernumber => $borrowernumber );
+    my $patron = Koha::Patrons->find( $borrowernumber );
+    my $borrower = $patron->unblessed;
 
     $template->param(
         borrower  => $borrower,
@@ -306,8 +307,7 @@ elsif ( $action eq 'edit' ) {    #Display logged in borrower's data
     );
 
     if (C4::Context->preference('OPACpatronimages')) {
-        my $patron_image = Koha::Patron::Images->find($borrower->{borrowernumber});
-        $template->param( display_patron_image => 1 ) if $patron_image;
+        $template->param( display_patron_image => 1 ) if $patron->image;
     }
 
     $template->param( patron_attribute_classes => GeneratePatronAttributesForm( $borrowernumber ) );
@@ -449,7 +449,8 @@ sub ParseCgiForBorrower {
 sub DelUnchangedFields {
     my ( $borrowernumber, %new_data ) = @_;
 
-    my $current_data = GetMember( borrowernumber => $borrowernumber );
+    my $patron = Koha::Patrons->find( $borrowernumber );
+    my $current_data = $patron->unblessed;
 
     foreach my $key ( keys %new_data ) {
         if ( $current_data->{$key} eq $new_data{$key} ) {

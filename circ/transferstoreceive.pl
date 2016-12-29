@@ -39,6 +39,7 @@ use Koha::Items;
 use Koha::Libraries;
 use Koha::DateUtils;
 use Koha::BiblioFrameworks;
+use Koha::Patrons;
 
 my $input = new CGI;
 my $itemnumber = $input->param('itemnumber');
@@ -104,12 +105,13 @@ while ( my $library = $libraries->next ) {
             my $item = Koha::Items->find( $num->{itemnumber} );
             my $holds = $item->current_holds;
             if ( my $first_hold = $holds->next ) {
-                my $getborrower = C4::Members::GetMember( borrowernumber => $first_hold->borrowernumber );
-                $getransf{'borrowernum'}       = $getborrower->{'borrowernumber'};
-                $getransf{'borrowername'}      = $getborrower->{'surname'};
-                $getransf{'borrowerfirstname'} = $getborrower->{'firstname'};
-                $getransf{'borrowermail'}      = $getborrower->{'email'} if $getborrower->{'email'};
-                $getransf{'borrowerphone'}     = $getborrower->{'phone'};
+                my $patron = Koha::Patrons->find( $first_hold->borrowernumber );
+                # FIXME The full patron object should be passed to the template
+                $getransf{'borrowernum'}       = $patron->borrowernumber;
+                $getransf{'borrowername'}      = $patron->surname;
+                $getransf{'borrowerfirstname'} = $patron->firstname;
+                $getransf{'borrowermail'}      = $patron->email if $patron->email;
+                $getransf{'borrowerphone'}     = $patron->phone;
             }
             push( @transferloop, \%getransf );
         }

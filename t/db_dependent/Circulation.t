@@ -35,6 +35,7 @@ use Koha::DateUtils;
 use Koha::Database;
 use Koha::IssuingRules;
 use Koha::Checkouts;
+use Koha::Patrons;
 use Koha::Subscriptions;
 
 my $schema = Koha::Database->schema;
@@ -293,8 +294,8 @@ C4::Context->dbh->do("DELETE FROM accountlines");
     my $hold_waiting_borrowernumber = AddMember(%hold_waiting_borrower_data);
     my $restricted_borrowernumber = AddMember(%restricted_borrower_data);
 
-    my $renewing_borrower = GetMember( borrowernumber => $renewing_borrowernumber );
-    my $restricted_borrower = GetMember( borrowernumber => $restricted_borrowernumber );
+    my $renewing_borrower = Koha::Patrons->find( $renewing_borrowernumber )->unblessed;
+    my $restricted_borrower = Koha::Patrons->find( $restricted_borrowernumber )->unblessed;
 
     my $bibitems       = '';
     my $priority       = '1';
@@ -376,7 +377,7 @@ C4::Context->dbh->do("DELETE FROM accountlines");
     is( $error, 'on_reserve', '(Bug 10663) Cannot renew, reserved (returned error is on_reserve)');
 
     my $reserveid = C4::Reserves::GetReserveId({ biblionumber => $biblionumber, borrowernumber => $reserving_borrowernumber});
-    my $reserving_borrower = GetMember( borrowernumber => $reserving_borrowernumber );
+    my $reserving_borrower = Koha::Patrons->find( $reserving_borrowernumber )->unblessed;
     AddIssue($reserving_borrower, $barcode3);
     my $reserve = $dbh->selectrow_hashref(
         'SELECT * FROM old_reserves WHERE reserve_id = ?',
@@ -768,7 +769,7 @@ C4::Context->dbh->do("DELETE FROM accountlines");
     );
 
     my $a_borrower_borrowernumber = AddMember(%a_borrower_data);
-    my $a_borrower = GetMember( borrowernumber => $a_borrower_borrowernumber );
+    my $a_borrower = Koha::Patrons->find( $a_borrower_borrowernumber )->unblessed;
 
     my $yesterday = DateTime->today(time_zone => C4::Context->tz())->add( days => -1 );
     my $two_days_ahead = DateTime->today(time_zone => C4::Context->tz())->add( days => 2 );
@@ -849,7 +850,8 @@ C4::Context->dbh->do("DELETE FROM accountlines");
 
     my $borrowernumber = AddMember(%a_borrower_data);
 
-    my $issue = AddIssue( GetMember( borrowernumber => $borrowernumber ), $barcode );
+    my $borrower = Koha::Patrons->find( $borrowernumber )->unblessed;
+    my $issue = AddIssue( $borrower, $barcode );
     UpdateFine(
         {
             issue_id       => $issue->id(),
@@ -919,8 +921,8 @@ C4::Context->dbh->do("DELETE FROM accountlines");
         branchcode   => $library2->{branchcode},
     );
 
-    my $borrower1 = GetMember( borrowernumber => $borrowernumber1 );
-    my $borrower2 = GetMember( borrowernumber => $borrowernumber2 );
+    my $borrower1 = Koha::Patrons->find( $borrowernumber1 )->unblessed;
+    my $borrower2 = Koha::Patrons->find( $borrowernumber2 )->unblessed;
 
     my $issue = AddIssue( $borrower1, $barcode1 );
 
@@ -990,7 +992,8 @@ C4::Context->dbh->do("DELETE FROM accountlines");
         branchcode => $branch,
     );
 
-    my $borrower = GetMember( borrowernumber => $borrowernumber );
+    my $borrower = Koha::Patrons->find( $borrowernumber )->unblessed;
+
     my $issue = AddIssue( $borrower, $barcode, undef, undef, undef, undef, { onsite_checkout => 1 } );
     my ( $renewed, $error ) = CanBookBeRenewed( $borrowernumber, $itemnumber );
     is( $renewed, 0, 'CanBookBeRenewed should not allow to renew on-site checkout' );
@@ -1016,7 +1019,7 @@ C4::Context->dbh->do("DELETE FROM accountlines");
 
     my $patron = $builder->build({ source => 'Borrower', value => { branchcode => $library->{branchcode} } } );
 
-    my $issue = AddIssue( GetMember( borrowernumber => $patron->{borrowernumber} ), $barcode );
+    my $issue = AddIssue( $patron, $barcode );
     UpdateFine(
         {
             issue_id       => $issue->id(),
@@ -1316,7 +1319,7 @@ subtest 'MultipleReserves' => sub {
         branchcode => $branch,
     );
     my $renewing_borrowernumber = AddMember(%renewing_borrower_data);
-    my $renewing_borrower = GetMember( borrowernumber => $renewing_borrowernumber );
+    my $renewing_borrower = Koha::Patrons->find( $renewing_borrowernumber )->unblessed;
     my $issue = AddIssue( $renewing_borrower, $barcode1);
     my $datedue = dt_from_string( $issue->date_due() );
     is (defined $issue->date_due(), 1, "item 1 checked out");
