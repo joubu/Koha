@@ -37,6 +37,7 @@ use C4::Reserves;
 use C4::Koha;
 use Koha::DateUtils;
 use Koha::BiblioFrameworks;
+use Koha::Patrons;
 
 my $input = new CGI;
 
@@ -104,7 +105,7 @@ foreach my $num (@getreserves) {
 
     # fix up item type for display
     $gettitle->{'itemtype'} = C4::Context->preference('item-level_itypes') ? $gettitle->{'itype'} : $gettitle->{'itemtype'};
-    my $getborrower = GetMember(borrowernumber => $num->{'borrowernumber'});
+    my $patron = Koha::Patrons->find( $num->{borrowernumber} );
     my $itemtypeinfo = getitemtypeinfo( $gettitle->{'itemtype'} );  # using the fixed up itype/itemtype
     $getreserv{'waitingdate'} = $num->{'waitingdate'};
     my ( $waiting_year, $waiting_month, $waiting_day ) = split (/-/, $num->{'waitingdate'});
@@ -127,9 +128,9 @@ foreach my $num (@getreserves) {
     if ( $homebranch ne $holdingbranch ) {
         $getreserv{'dotransfer'} = 1;
     }
-    $getreserv{'borrowername'}      = $getborrower->{'surname'};
-    $getreserv{'borrowerfirstname'} = $getborrower->{'firstname'};
-    $getreserv{'borrowerphone'}     = $getborrower->{'phone'};
+    $getreserv{'borrowername'}      = $patron->surname;
+    $getreserv{'borrowerfirstname'} = $patron->firstname;
+    $getreserv{'borrowerphone'}     = $patron->phone;
 
     my $borEmail = GetFirstValidEmailAddress( $borrowernum );
 
@@ -193,7 +194,7 @@ sub cancel {
     # if we have a result
     if ($nextreservinfo) {
         my %res;
-        my $borrowerinfo = C4::Members::GetMember( borrowernumber => $nextreservinfo );
+        my $patron = Koha::Patrons->find( $nextreservinfo );
         my $iteminfo = GetBiblioFromItemNumber($item);
         if ( $messages->{'transfert'} ) {
             $res{messagetransfert} = $messages->{'transfert'};
@@ -202,8 +203,8 @@ sub cancel {
 
         $res{message}             = 1;
         $res{nextreservnumber}    = $nextreservinfo;
-        $res{nextreservsurname}   = $borrowerinfo->{'surname'};
-        $res{nextreservfirstname} = $borrowerinfo->{'firstname'};
+        $res{nextreservsurname}   = $patron->surname;
+        $res{nextreservfirstname} = $patron->firstname;
         $res{nextreservitem}      = $item;
         $res{nextreservtitle}     = $iteminfo->{'title'};
         $res{waiting}             = $messages->{'waiting'} ? 1 : 0;

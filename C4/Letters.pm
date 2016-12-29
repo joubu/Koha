@@ -37,6 +37,7 @@ use Koha::SMS::Providers;
 
 use Koha::Email;
 use Koha::DateUtils qw( format_sqldatetime dt_from_string );
+use Koha::Patrons;
 
 use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
@@ -412,8 +413,9 @@ sub SendAlerts {
         # find the list of borrowers to alert
         my $alerts = getalert( '', 'issue', $subscriptionid );
         foreach (@$alerts) {
-            my $borinfo = C4::Members::GetMember('borrowernumber' => $_->{'borrowernumber'});
-            my $email = $borinfo->{email} or next;
+            my $patron = Koha::Patrons->find( $_->{borrowernumber} );
+            next unless $patron; # Just in case
+            my $email = $patron->email or next;
 
 #                    warn "sending issues...";
             my $userenv = C4::Context->userenv;
@@ -426,7 +428,7 @@ sub SendAlerts {
                     'branches'    => $_->{branchcode},
                     'biblio'      => $biblionumber,
                     'biblioitems' => $biblionumber,
-                    'borrowers'   => $borinfo,
+                    'borrowers'   => $patron->unblessed,
                     'subscription' => $subscriptionid,
                     'serial' => $externalid,
                 },
@@ -1048,8 +1050,13 @@ sub SendQueuedMessages {
         }
         elsif ( lc( $message->{'message_transport_type'} ) eq 'sms' ) {
             if ( C4::Context->preference('SMSSendDriver') eq 'Email' ) {
-                my $member = C4::Members::GetMember( 'borrowernumber' => $message->{'borrowernumber'} );
-                my $sms_provider = Koha::SMS::Providers->find( $member->{'sms_provider_id'} );
+                my $patron = Koha::Patrons->find( $message->{borrowernumber} );
+                my $sms_provider = Koha::SMS::Providers->find( $patron->sms_provider_id );
+                unless ( $sms_provider ) {
+                    # Just in case...
+                    warn "Something went wrong, patron " . $patron->borrowernumber . " does not have a sms_provider_id defined";
+                    next MESSAGE;
+                }
                 $message->{to_address} .= '@' . $sms_provider->domain();
                 _send_message_by_email( $message, $params->{'username'}, $params->{'password'}, $params->{'method'} );
             } else {
@@ -1290,10 +1297,10 @@ sub _send_message_by_email {
     my $message = shift or return;
     my ($username, $password, $method) = @_;
 
-    my $member = C4::Members::GetMember( 'borrowernumber' => $message->{'borrowernumber'} );
+    my $patron = Koha::Patrons->find( $message->{borrowernumber} );
     my $to_address = $message->{'to_address'};
     unless ($to_address) {
-        unless ($member) {
+        unless ($patron) {
             warn "FAIL: No 'to_address' and INVALID borrowernumber ($message->{borrowernumber})";
             _set_message_status( { message_id => $message->{'message_id'},
                                    status     => 'failed' } );
@@ -1318,8 +1325,8 @@ sub _send_message_by_email {
     my $branch_email = undef;
     my $branch_replyto = undef;
     my $branch_returnpath = undef;
-    if ($member) {
-        my $library = Koha::Libraries->find( $member->{branchcode} );
+    if ($patron) {
+        my $library = $patron->library;
         $branch_email      = $library->branchemail;
         $branch_replyto    = $library->branchreplyto;
         $branch_returnpath = $library->branchreturnpath;
@@ -1395,9 +1402,9 @@ sub _is_duplicate {
 
 sub _send_message_by_sms {
     my $message = shift or return;
-    my $member = C4::Members::GetMember( 'borrowernumber' => $message->{'borrowernumber'} );
+    my $patron = Koha::Patrons->find( $message->{borrowernumber} );
 
-    unless ( $member->{smsalertnumber} ) {
+    unless ( $patron and $patron->smsalertnumber ) {
         _set_message_status( { message_id => $message->{'message_id'},
                                status     => 'failed' } );
         return;
@@ -1409,7 +1416,7 @@ sub _send_message_by_sms {
         return;
     }
 
-    my $success = C4::SMS->send_sms( { destination => $member->{'smsalertnumber'},
+    my $success = C4::SMS->send_sms( { destination => $patron->smsalertnumber,
                                        message     => $message->{'content'},
                                      } );
     _set_message_status( { message_id => $message->{'message_id'},

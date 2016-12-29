@@ -8,7 +8,7 @@ use C4::Context;
 use C4::Biblio qw( AddBiblio );
 use C4::Circulation qw( AddIssue AddReturn );
 use C4::Items qw( AddItem );
-use C4::Members qw( AddMember GetMember );
+use C4::Members qw( AddMember );
 use Koha::Database;
 use Koha::DateUtils;
 use Koha::Patron::Debarments qw( GetDebarments DelDebarment );
@@ -50,7 +50,7 @@ my $borrowernumber = AddMember(
     categorycode => 'S',
     branchcode => $branchcode,
 );
-my $borrower = GetMember( borrowernumber => $borrowernumber );
+my $borrower = Koha::Patrons->find( $borrowernumber )->unblessed;
 
 my $record = MARC::Record->new();
 $record->append_fields(
