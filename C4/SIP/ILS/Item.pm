@@ -24,6 +24,7 @@ use C4::Reserves;
 use Koha::Database;
 use Koha::Biblios;
 use Koha::Checkouts;
+use Koha::Patrons;
 
 =encoding UTF-8
 
@@ -91,9 +92,9 @@ sub new {
     my $issue = Koha::Checkouts->find( { itemnumber => $item->{itemnumber} } );
     if ($issue) {
         $item->{due_date} = dt_from_string( $issue->date_due, 'sql' )->truncate( to => 'minute' );
+        my $patron = Koha::Patrons->find( $issue->borrowernumber );
+        $item->{patron} = $patron->cardnumber;
     }
-    my $borrower = $issue ? GetMember( borrowernumber => $issue->borrowernumber ) : {};
-	$item->{patron} = $borrower->{'cardnumber'};
     my $biblio = Koha::Biblios->find( $item->{biblionumber } );
     my $holds = $biblio->current_holds->unblessed;
     $item->{hold_queue} = $holds;
@@ -163,29 +164,27 @@ sub hold_patron_id {
 sub hold_patron_name {
     my $self = shift;
     my $borrowernumber = (@_ ? shift: $self->hold_patron_id()) or return;
-    my $holder = GetMember(borrowernumber=>$borrowernumber);
+    my $holder = Koha::Patrons->find( $borrowernumber );
     unless ($holder) {
-        syslog("LOG_ERR", "While checking hold, GetMember failed for borrowernumber '$borrowernumber'");
+        syslog("LOG_ERR", "While checking hold, failed to retrieve the patron with borrowernumber '$borrowernumber'");
         return;
     }
-    my $email = $holder->{email} || '';
-    my $phone = $holder->{phone} || '';
+    my $email = $holder->email || '';
+    my $phone = $holder->phone || '';
     my $extra = ($email and $phone) ? " ($email, $phone)" :  # both populated, employ comma
                 ($email or  $phone) ? " ($email$phone)"   :  # only 1 populated, we don't care which: no comma
                 "" ;                                         # neither populated, empty string
-    my $name = $holder->{firstname} ? $holder->{firstname} . ' ' : '';
-    $name .= $holder->{surname} . $extra;
+    my $name = $holder->firstname ? $holder->firstname . ' ' : '';
+    $name .= $holder->surname . $extra;
     return $name;
 }
 
 sub hold_patron_bcode {
     my $self = shift;
     my $borrowernumber = (@_ ? shift: $self->hold_patron_id()) or return;
-    my $holder = GetMember(borrowernumber => $borrowernumber);
-    if ($holder) {
-        if ($holder->{cardnumber}) {
-            return $holder->{cardnumber};
-        }
+    my $holder = Koha::Patrons->find( $borrowernumber );
+    if ($holder and $holder->cardnumber ) {
+        return $holder->cardnumber;
     }
     return;
 }
@@ -347,8 +346,8 @@ sub available {
 sub _barcode_to_borrowernumber {
     my $known = shift;
     return unless defined $known;
-    my $member = GetMember(cardnumber=>$known) or return;
-    return $member->{borrowernumber};
+    my $patron = Koha::Patrons->find( { cardnumber => $known } ) or return;
+    return $patron->borrowernumber
 }
 sub barcode_is_borrowernumber {    # because hold_queue only has borrowernumber...
     my $self = shift;

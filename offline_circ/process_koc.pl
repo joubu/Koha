@@ -249,7 +249,8 @@ sub kocIssueItem {
 
     $circ->{ 'barcode' } = barcodedecode($circ->{'barcode'}) if( $circ->{'barcode'} && C4::Context->preference('itemBarcodeInputFilter'));
     my $branchcode = C4::Context->userenv->{branch};
-    my $borrower = GetMember( 'cardnumber'=>$circ->{ 'cardnumber' } );
+    my $patron = Koha::Patrons->find( { cardnumber => $circ->{ 'cardnumber' } } );
+    my $borrower = $patron->unblessed;
     my $item = GetBiblioFromItemNumber( undef, $circ->{ 'barcode' } );
     my $issue = Koha::Checkouts->find( { itemnumber => $item->{itemnumber} } );
 
@@ -330,13 +331,13 @@ sub kocReturnItem {
     #warn( Data::Dumper->Dump( [ $circ, $item ], [ qw( circ item ) ] ) );
     my $borrowernumber = _get_borrowernumber_from_barcode( $circ->{'barcode'} );
     if ( $borrowernumber ) {
-        my $borrower = GetMember( 'borrowernumber' => $borrowernumber );
+        my $patron = Koha::Patrons->find( $borrowernumber );
         C4::Circulation::MarkIssueReturned(
             $borrowernumber,
             $item->{'itemnumber'},
             undef,
             $circ->{'date'},
-            $borrower->{'privacy'}
+            $patron->privacy
         );
 
         ModItem({ onloan => undef }, $item->{'biblionumber'}, $item->{'itemnumber'});
@@ -347,10 +348,10 @@ sub kocReturnItem {
             title => $item->{ 'title' },
             biblionumber => $item->{'biblionumber'},
             barcode => $item->{ 'barcode' },
-            borrowernumber => $borrower->{'borrowernumber'},
-            firstname => $borrower->{'firstname'},
-            surname => $borrower->{'surname'},
-            cardnumber => $borrower->{'cardnumber'},
+            borrowernumber => $patron->borrowernumber,
+            firstname => $patron->firstname,
+            surname => $patron->surname,
+            cardnumber => $patron->cardnumber,
             datetime => $circ->{ 'datetime' }
         };
     } else {
