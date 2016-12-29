@@ -51,6 +51,7 @@ use Koha::RecordProcessor;
 use Koha::AuthorisedValues;
 use Koha::Biblios;
 use Koha::Virtualshelves;
+use Koha::Patrons;
 use Koha::Ratings;
 use Koha::Reviews;
 
@@ -646,7 +647,7 @@ if ( not $viewallitems and @items > $max_items_to_display ) {
     );
 } else {
   my $allow_onshelf_holds;
-  my $borrower = GetMember( 'borrowernumber' => $borrowernumber );
+  my $patron = Koha::Patrons->find( $borrowernumber );
   for my $itm (@items) {
     $itm->{holds_count} = $item_reserves{ $itm->{itemnumber} };
     $itm->{priority} = $priority{ $itm->{itemnumber} };
@@ -658,7 +659,7 @@ if ( not $viewallitems and @items > $max_items_to_display ) {
         && !$itemtypes->{$itm->{'itype'}}->{notforloan}
         && $itm->{'itemnumber'};
 
-    $allow_onshelf_holds = C4::Reserves::OnShelfHoldsAllowed( $itm, $borrower )
+    $allow_onshelf_holds = C4::Reserves::OnShelfHoldsAllowed( $itm, $patron->unblessed )
       unless $allow_onshelf_holds;
 
     # get collection code description, too
@@ -830,19 +831,19 @@ if ( C4::Context->preference('reviewson') ) {
         }
     }
     for my $review (@$reviews) {
-        my $borrowerData = GetMember( 'borrowernumber' => $review->{borrowernumber} );
+        my $patron = Koha::Patrons->find( $review->{borrowernumber} );
 
         # setting some borrower info into this hash
-        $review->{title}     = $borrowerData->{'title'};
-        $review->{surname}   = $borrowerData->{'surname'};
-        $review->{firstname} = $borrowerData->{'firstname'};
-        if ( $libravatar_enabled and $borrowerData->{'email'} ) {
-            $review->{avatarurl} = libravatar_url( email => $borrowerData->{'email'}, https => $ENV{HTTPS} );
+        $review->{title}     = $patron->title;
+        $review->{surname}   = $patron->surname;
+        $review->{firstname} = $patron->firstname;
+        if ( $libravatar_enabled and $patron->email ) {
+            $review->{avatarurl} = libravatar_url( email => $patron->email, https => $ENV{HTTPS} );
         }
-        $review->{userid}     = $borrowerData->{'userid'};
-        $review->{cardnumber} = $borrowerData->{'cardnumber'};
+        $review->{userid}     = $patron->userid;
+        $review->{cardnumber} = $patron->cardnumber;
 
-        if ( $borrowerData->{'borrowernumber'} eq $borrowernumber ) {
+        if ( $patron->borrowernumber eq $borrowernumber ) {
             $review->{your_comment} = 1;
             $loggedincommenter = 1;
         }

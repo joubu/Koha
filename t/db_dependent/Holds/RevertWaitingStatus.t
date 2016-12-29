@@ -28,6 +28,7 @@ use C4::Members;
 use C4::Reserves;
 
 use Koha::Libraries;
+use Koha::Patrons;
 
 use t::lib::TestBuilder;
 
@@ -100,7 +101,8 @@ foreach my $borrowernumber (@borrowernumbers) {
 }
 
 ModReserveAffect( $itemnumber, $borrowernumbers[0] );
-C4::Circulation::AddIssue( GetMember( borrowernumber => $borrowernumbers[1] ),
+my $patron = Koha::Patrons->find( $borrowernumbers[1] )->unblessed;
+C4::Circulation::AddIssue( $patron,
     $item_barcode, my $datedue, my $cancelreserve = 'revert' );
 
 my $priorities = $dbh->selectall_arrayref(

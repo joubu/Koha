@@ -30,6 +30,7 @@ use C4::Tags qw( get_tags );
 use C4::XSLT;
 
 use Koha::Biblioitems;
+use Koha::Patrons;
 use Koha::Virtualshelves;
 use Koha::RecordProcessor;
 
@@ -63,7 +64,7 @@ if ( $op eq 'add_form' ) {
 
     if ( $shelf ) {
         $category = $shelf->category;
-        my $patron = GetMember( 'borrowernumber' => $shelf->owner );
+        my $patron = Koha::Patrons->find( $shelf->owner );
         $template->param( owner => $patron, );
         unless ( $shelf->can_be_managed( $loggedinuser ) ) {
             push @messages, { type => 'error', code => 'unauthorized_on_update' };
@@ -253,7 +254,7 @@ if ( $op eq 'view' ) {
                 @cart_list = split(/\//, $cart_list);
             }
 
-            my $borrower = GetMember( borrowernumber => $loggedinuser );
+            my $patron = Koha::Patrons->find( $loggedinuser );
 
             # Lists display falls back to search results configuration
             my $xslfile = C4::Context->preference('OPACXSLTListsDisplay');
@@ -308,7 +309,7 @@ if ( $op eq 'view' ) {
                     });
                 }
 
-                $this_item->{allow_onshelf_holds} = C4::Reserves::OnShelfHoldsAllowed($this_item, $borrower);
+                $this_item->{allow_onshelf_holds} = C4::Reserves::OnShelfHoldsAllowed($this_item, $patron);
 
 
                 if ( grep {$_ eq $biblionumber} @cart_list) {

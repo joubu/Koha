@@ -30,6 +30,8 @@ script to execute returns of books
 use strict;
 use warnings;
 
+# FIXME There are weird things going on with $patron and $borrowernumber in this script
+
 use Carp 'verbose';
 $SIG{ __DIE__ } = sub { Carp::confess( @_ ) };
 
@@ -166,8 +168,8 @@ if ( $query->param('reserve_id') ) {
 #   check if we have other reserves for this document, if we have a return send the message of transfer
     my ( $messages, $nextreservinfo ) = GetOtherReserves($item);
 
-    my $borr = GetMember( borrowernumber => $nextreservinfo );
-    my $name   = $borr->{'surname'} . ", " . $borr->{'title'} . " " . $borr->{'firstname'};
+    my $patron = Koha::Patrons->find( $nextreservinfo );
+    my $name   = $patron->surname . ", " . $patron->title . " " . $patron->firstname;
     if ( $messages->{'transfert'} ) {
         $template->param(
             itemtitle      => $iteminfo->{'title'},
@@ -176,10 +178,10 @@ if ( $query->param('reserve_id') ) {
             iteminfo       => $iteminfo->{'author'},
             name           => $name,
             borrowernumber => $borrowernumber,
-            borcnum        => $borr->{'cardnumber'},
-            borfirstname   => $borr->{'firstname'},
-            borsurname     => $borr->{'surname'},
-            borcategory    => $borr->{'description'},
+            borcnum        => $patron->cardnumber,
+            borfirstname   => $patron->firstname,
+            borsurname     => $patron->surname,
+            borcategory    => $patron->category->description,
             diffbranch     => 1,
         );
     }
@@ -400,23 +402,24 @@ if ( $messages->{'WrongTransfer'} and not $messages->{'WasTransfered'}) {
     );
 
     my $reserve    = $messages->{'ResFound'};
-    my $borr = C4::Members::GetMember( borrowernumber => $reserve->{'borrowernumber'} );
-    my $name = $borr->{'surname'} . ", " . $borr->{'title'} . " " . $borr->{'firstname'};
+    my $patron = Koha::Patrons->find( $reserve->{'borrowernumber'} );
+    my $name = $patron->surname . ", " . $patron->title . " " . $patron->firstname;
     $template->param(
+        # FIXME The full patron object should be passed to the template
             wname           => $name,
-            wborfirstname   => $borr->{'firstname'},
-            wborsurname     => $borr->{'surname'},
-            wborcategory    => $borr->{'description'},
-            wbortitle       => $borr->{'title'},
-            wborphone       => $borr->{'phone'},
-            wboremail       => $borr->{'email'},
-            wborstnum       => $borr->{streetnumber},
-            wboraddress     => $borr->{'address'},
-            wboraddress2    => $borr->{'address2'},
-            wborcity        => $borr->{'city'},
-            wborzip         => $borr->{'zipcode'},
+            wborfirstname   => $patron->firstname,
+            wborsurname     => $patron->surname,
+            wborcategory    => $patron->category->description,
+            wbortitle       => $patron->title,
+            wborphone       => $patron->phone,
+            wboremail       => $patron->email,
+            wborstnum       => $patron->streetnumber,
+            wboraddress     => $patron->address,
+            wboraddress2    => $patron->address2,
+            wborcity        => $patron->city,
+            wborzip         => $patron->zipcode,
             wborrowernumber => $reserve->{'borrowernumber'},
-            wborcnum        => $borr->{'cardnumber'},
+            wborcnum        => $patron->cardnumber,
             wtransfertFrom  => $userenv_branch,
     );
 }
@@ -426,7 +429,7 @@ if ( $messages->{'WrongTransfer'} and not $messages->{'WasTransfered'}) {
 #
 if ( $messages->{'ResFound'}) {
     my $reserve    = $messages->{'ResFound'};
-    my $borr = C4::Members::GetMember( borrowernumber => $reserve->{'borrowernumber'} );
+    my $patron = Koha::Patrons->find( $reserve->{borrowernumber} );
     my $holdmsgpreferences =  C4::Members::Messaging::GetMessagingPreferences( { borrowernumber => $reserve->{'borrowernumber'}, message_name   => 'Hold_Filled' } );
     if ( $reserve->{'ResFound'} eq "Waiting" or $reserve->{'ResFound'} eq "Reserved" ) {
         if ( $reserve->{'ResFound'} eq "Waiting" ) {
@@ -444,22 +447,23 @@ if ( $messages->{'ResFound'}) {
 
         # same params for Waiting or Reserved
         $template->param(
+            # FIXME The full patron object should be passed to the template
             found          => 1,
-            name           => $borr->{'surname'} . ", " . $borr->{'title'} . " " . $borr->{'firstname'},
-            borfirstname   => $borr->{'firstname'},
-            borsurname     => $borr->{'surname'},
-            borcategory    => $borr->{'description'},
-            bortitle       => $borr->{'title'},
-            borphone       => $borr->{'phone'},
-            boremail       => $borr->{'email'},
-            boraddress     => $borr->{'address'},
-            boraddress2    => $borr->{'address2'},
-            borstnum       => $borr->{streetnumber},
-            borcity        => $borr->{'city'},
-            borzip         => $borr->{'zipcode'},
-            borcnum        => $borr->{'cardnumber'},
-            debarred       => $borr->{'debarred'},
-            gonenoaddress  => $borr->{'gonenoaddress'},
+            name           => $patron->surname . ", " . $patron->title . " " . $patron->firstname,
+            borfirstname   => $patron->firstname,
+            borsurname     => $patron->surname,
+            borcategory    => $patron->category->description,
+            bortitle       => $patron->title,
+            borphone       => $patron->phone,
+            boremail       => $patron->email,
+            boraddress     => $patron->address,
+            boraddress2    => $patron->address2,
+            borstnum       => $patron->streetnumber,
+            borcity        => $patron->city,
+            borzip         => $patron->zipcode,
+            borcnum        => $patron->cardnumber,
+            debarred       => $patron->debarred,
+            gonenoaddress  => $patron->gonenoaddress,
             barcode        => $barcode,
             destbranch     => $reserve->{'branchcode'},
             borrowernumber => $reserve->{'borrowernumber'},
@@ -560,19 +564,19 @@ foreach ( sort { $a <=> $b } keys %returneditems ) {
             $ri{hour}   = $duedate->hour();
             $ri{minute}   = $duedate->minute();
             $ri{duedate} = output_pref($duedate);
-            my $b      = C4::Members::GetMember( borrowernumber => $riborrowernumber{$_} );
+            my $patron = Koha::Patrons->find( $riborrowernumber{$_} );
             unless ( $dropboxmode ) {
                 $ri{return_overdue} = 1 if (DateTime->compare($duedate, DateTime->now()) == -1);
             } else {
                 $ri{return_overdue} = 1 if (DateTime->compare($duedate, $dropboxdate) == -1);
             }
-            $ri{borrowernumber} = $b->{'borrowernumber'};
-            $ri{borcnum}        = $b->{'cardnumber'};
-            $ri{borfirstname}   = $b->{'firstname'};
-            $ri{borsurname}     = $b->{'surname'};
-            $ri{bortitle}       = $b->{'title'};
-            $ri{bornote}        = $b->{'borrowernotes'};
-            $ri{borcategorycode}= $b->{'categorycode'};
+            $ri{borrowernumber} = $patron->borrowernumber;
+            $ri{borcnum}        = $patron->cardnumber;
+            $ri{borfirstname}   = $patron->firstname;
+            $ri{borsurname}     = $patron->surname;
+            $ri{bortitle}       = $patron->title;
+            $ri{bornote}        = $patron->borrowernotes;
+            $ri{borcategorycode}= $patron->categorycode;
             $ri{borissuescount} = Koha::Checkouts->count( { borrowernumber => $b->{'borrowernumber'} } );
         }
         else {

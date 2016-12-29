@@ -32,6 +32,7 @@ use C4::Reserves;
 use Koha::Database;
 use Koha::DateUtils;
 use Koha::Library;
+use Koha::Patrons;
 
 BEGIN {
     require_ok('C4::Circulation');
@@ -147,14 +148,14 @@ my $borrower_id1 = C4::Members::AddMember(
     categorycode => $categorycode,
     branchcode   => $branchcode_1
 );
-my $borrower_1 = C4::Members::GetMember(borrowernumber => $borrower_id1);
+my $borrower_1 = Koha::Patrons->find( $borrower_id1 )->unblessed;
 my $borrower_id2 = C4::Members::AddMember(
     firstname    => 'firstname2',
     surname      => 'surname2 ',
     categorycode => $categorycode,
     branchcode   => $branchcode_2,
 );
-my $borrower_2 = C4::Members::GetMember(borrowernumber => $borrower_id2);
+my $borrower_2 = Koha::Patrons->find( $borrower_id2 )->unblessed;
 
 my @USERENV = (
     $borrower_id1, 'test', 'MASTERTEST', 'firstname', $branchcode_1,

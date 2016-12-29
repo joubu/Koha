@@ -31,6 +31,7 @@ use C4::Members;
 use Koha::Database;
 use Koha::DateUtils;
 use Koha::Items;
+use Koha::Patrons;
 
 use MARC::Record;
 use MARC::Field;
@@ -150,7 +151,7 @@ subtest "AddReturn logging on statistics table (item-level_itypes=1)" => sub {
         }
     );
 
-    my $borrower = GetMember( borrowernumber => $borrowernumber );
+    my $borrower = Koha::Patrons->find( $borrowernumber )->unblessed;
     AddIssue( $borrower, $item_with_itemtype->{ barcode } );
     AddReturn( $item_with_itemtype->{ barcode }, $branch );
     # Test item-level itemtype was recorded on the 'statistics' table
@@ -235,7 +236,7 @@ subtest "AddReturn logging on statistics table (item-level_itypes=0)" => sub {
         }
     });
 
-    my $borrower = GetMember( borrowernumber => $borrowernumber );
+    my $borrower = Koha::Patrons->find( $borrowernumber )->unblessed;
 
     AddIssue( $borrower, $item_with_itemtype->{ barcode } );
     AddReturn( $item_with_itemtype->{ barcode }, $branch );
