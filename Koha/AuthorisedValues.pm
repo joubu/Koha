@@ -66,6 +66,39 @@ sub search {
     return $self->SUPER::search( { %$params, %$or, }, $attributes );
 }
 
+sub bench_search_no_cache {
+    my ( $self, $params, $attributes ) = @_;
+    return $self->search;
+}
+
+sub bench_search {
+    my ( $self, $params, $attributes ) = @_;
+
+    my $cache_key = "AVTEST";
+    my $cache  = Koha::Caches->get_instance();
+    my $result = $cache->get_from_cache($cache_key);
+    if ( $result ) {
+        my @simple_avs;
+        for my $av ( @$result ) {
+            push @simple_avs, Koha::Object::Simple::AuthorisedValue->new( $av );
+        }
+        return \@simple_avs;
+    }
+
+    my @avs = $self->search( $params, $attributes );
+
+    my ( @simple_avs, @hashref );
+    for my $av ( @avs ) {
+        my $hashref = $av->unblessed;
+        $hashref->{opac_description} = $av->opac_description;
+        my $simple_av = Koha::Object::Simple::AuthorisedValue->new( $hashref );
+        push @hashref, $hashref;
+        push @simple_avs, $simple_av;
+    }
+    $cache->set_in_cache( $cache_key, \@hashref, { expiry => 5 } );
+    return \@simple_avs;
+}
+
 sub search_by_marc_field {
     my ( $self, $params ) = @_;
     my $frameworkcode = $params->{frameworkcode} || '';

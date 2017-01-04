@@ -93,7 +93,8 @@ sub _new_schema {
             on_connect_do => [
                 $encoding_query || (),
                 $tz_query || (),
-            ]
+            ],
+            cursor_class => 'DBIx::Class::Cursor::Cached',
         }
     );
 
@@ -110,6 +111,13 @@ sub _new_schema {
         $dbh->{RaiseError} = $ENV{DEBUG} ? 1 : 0;
     };
     $dbh->{RaiseError} = 0 if $@;
+
+    my $cache = Koha::Caches->get_instance;
+    $schema->default_resultset_attributes(
+        {
+            cache_object => $cache->memcached_cache
+        }
+    );
 
     return $schema;
 }
