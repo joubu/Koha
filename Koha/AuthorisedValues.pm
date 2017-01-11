@@ -68,7 +68,7 @@ sub search {
 
 sub bench_search_no_cache {
     my ( $self, $params, $attributes ) = @_;
-    return $self->search;
+    return $self->search( $params, $attributes );
 }
 
 sub bench_search {
