@@ -314,6 +314,50 @@ subtest 'loops' => sub {
     };
 };
 
+subtest 'regression tests' => sub {
+    plan tests => 1;
+
+    my $library = $builder->build( { source => 'Branch' } );
+    my $patron  = $builder->build( { source => 'Borrower' } );
+    my $biblio = Koha::Biblio->new({title => 'Test Biblio'})->store->unblessed;
+    my $biblioitem = Koha::Biblioitem->new({biblionumber => $biblio->{biblionumber}})->store()->unblessed;
+    my $item1 = Koha::Item->new(
+        {
+            biblionumber     => $biblio->{biblionumber},
+            biblioitemnumber => $biblioitem->{biblioitemnumber},
+        }
+    )->store->unblessed;
+    my $item2 = Koha::Item->new(
+        {
+            biblionumber     => $biblio->{biblionumber},
+            biblioitemnumber => $biblioitem->{biblioitemnumber},
+        }
+    )->store->unblessed;
+
+    subtest 'ACQ_NOTIF_ON_RECEIV ' => sub {
+        plan tests => 1;
+        my $code = 'ACQ_NOTIF_ON_RECEIV';
+        my $branchcode = $library->{branchcode};
+        my $order = $builder->build({ source => 'Aqorder' });
+
+        my $template = q|
+            Dear <<borrowers.firstname>> <<borrowers.surname>>,
+            The order <<aqorders.ordernumber>> (<<biblio.title>>) has been received.
+            Your library.
+        |;
+        my $params = { code => $code, branchcode => $branchcode, tables => { branches => $library, borrowers => $patron, biblio => $biblio, aqorders => $order } };
+        my $letter = process_letter( { template => $template, %$params });
+        my $tt_template = q|
+            Dear [% borrower.firstname %] [% borrower.surname %],
+            The order [% order.ordernumber %] ([% biblio.title %]) has been received.
+            Your library.
+        |;
+        my $tt_letter = process_letter( { template => $tt_template, %$params });
+
+        is( $tt_letter->{content}, $letter->{content}, );
+    };
+};
+
 sub reset_template {
     my ( $params ) = @_;
     my $template   = $params->{template};
@@ -332,4 +376,25 @@ sub reset_template {
             content                => $template
         }
     )->store;
+}
+
+sub process_letter {
+    my ($params)   = @_;
+    my $template   = $params->{template};
+    my $tables     = $params->{tables};
+    my $substitute = $params->{substitute};
+    my $code       = $params->{code};
+    my $module     = $params->{module} || 'test_module';
+    my $branchcode = $params->{branchcode};
+
+    reset_template( $params );
+
+    my $letter = C4::Letters::GetPreparedLetter(
+        module      => $module,
+        letter_code => $code,
+        branchcode  => '',
+        tables      => $tables,
+        substitute  => $substitute,
+    );
+    return $letter;
 }
