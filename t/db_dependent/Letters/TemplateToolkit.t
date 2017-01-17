@@ -283,7 +283,7 @@ $prepared_letter = GetPreparedLetter(
 is( $prepared_letter->{content}, $modification->id(), 'Patron modification object used correctly' );
 
 subtest 'loops' => sub {
-    plan tests => 1;
+    plan tests => 2;
     my $code = "TEST";
     my $module = "TEST";
 
@@ -296,6 +296,20 @@ subtest 'loops' => sub {
         reset_template( { template => $template, code => $code, module => $module } );
         my $letter = GetPreparedLetter( module => $module, letter_code => $code, loops => { borrowers => [ $patron_1->{borrowernumber}, $patron_2->{borrowernumber} ] } );
         my $expected_letter = join '', ( $patron_1->{surname}, $patron_2->{surname} );
+        is( $letter->{content}, $expected_letter, );
+    };
+
+    subtest 'foreign key is used' => sub {
+        plan tests => 1;
+        my $patron_1 = $builder->build({ source => 'Borrower' });
+        my $patron_2 = $builder->build({ source => 'Borrower' });
+        my $checkout_1 = $builder->build({ source => 'Issue', value => { borrowernumber => $patron_1->{borrowernumber} } } );
+        my $checkout_2 = $builder->build({ source => 'Issue', value => { borrowernumber => $patron_1->{borrowernumber} } } );
+
+        my $template = q|[% FOREACH checkout IN checkouts %][% checkout.issue_id %][% END %]|;
+        reset_template( { template => $template, code => $code, module => $module } );
+        my $letter = GetPreparedLetter( module => $module, letter_code => $code, loops => { issues => [ $checkout_1->{itemnumber}, $checkout_2->{itemnumber} ] } );
+        my $expected_letter = join '', ( $checkout_1->{issue_id}, $checkout_2->{issue_id} );
         is( $letter->{content}, $expected_letter, );
     };
 };
