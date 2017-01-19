@@ -1035,6 +1035,9 @@ sub parse_overdues_letter {
         letter_code => $params->{'letter_code'},
         branchcode => $params->{'branchcode'},
         tables => \%tables,
+        loops => {
+            overdues => [ map { $_->{items}->{itemnumber} } @item_tables ],
+        },
         substitute => $substitute,
         repeat => { item => \@item_tables },
         message_transport_type => $params->{message_transport_type},
