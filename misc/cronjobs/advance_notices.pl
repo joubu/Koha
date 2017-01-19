@@ -256,8 +256,7 @@ UPCOMINGITEM: foreach my $upcoming ( @$upcoming_dues ) {
             $sth->execute($upcoming->{'borrowernumber'},$upcoming->{'itemnumber'},'0');
             my $titles = "";
             while ( my $item_info = $sth->fetchrow_hashref()) {
-              my @item_info = map { $_ =~ /^date|date$/ ? format_date($item_info->{$_}) : $item_info->{$_} || '' } @item_content_fields;
-              $titles .= join("\t",@item_info) . "\n";
+                $titles .= C4::Letters::get_item_content( { item => $item_info, item_content_fields => \@item_content_fields } );
             }
 
             ## Get branch info for borrowers home library.
@@ -290,8 +289,7 @@ UPCOMINGITEM: foreach my $upcoming ( @$upcoming_dues ) {
             $sth->execute($upcoming->{'borrowernumber'},$upcoming->{'itemnumber'},$borrower_preferences->{'days_in_advance'});
             my $titles = "";
             while ( my $item_info = $sth->fetchrow_hashref()) {
-              my @item_info = map { $_ =~ /^date|date$/ ? format_date($item_info->{$_}) : $item_info->{$_} || '' } @item_content_fields;
-              $titles .= join("\t",@item_info) . "\n";
+                $titles .= C4::Letters::get_item_content( { item => $item_info, item_content_fields => \@item_content_fields } );
             }
 
             ## Get branch info for borrowers home library.
@@ -356,8 +354,7 @@ PATRON: while ( my ( $borrowernumber, $digest ) = each %$upcoming_digest ) {
     $sth->execute($borrowernumber,$borrower_preferences->{'days_in_advance'});
     my $titles = "";
     while ( my $item_info = $sth->fetchrow_hashref()) {
-      my @item_info = map { $_ =~ /^date|date$/ ? format_date($item_info->{$_}) : $item_info->{$_} || '' } @item_content_fields;
-      $titles .= join("\t",@item_info) . "\n";
+        $titles .= C4::Letters::get_item_content( { item => $item_info, item_content_fields => \@item_content_fields } );
     }
 
     ## Get branch info for borrowers home library.
@@ -413,8 +410,7 @@ PATRON: while ( my ( $borrowernumber, $digest ) = each %$due_digest ) {
     $sth->execute($borrowernumber,'0');
     my $titles = "";
     while ( my $item_info = $sth->fetchrow_hashref()) {
-      my @item_info = map { $_ =~ /^date|date$/ ? format_date($item_info->{$_}) : $item_info->{$_} || '' } @item_content_fields;
-      $titles .= join("\t",@item_info) . "\n";
+        $titles .= C4::Letters::get_item_content( { item => $item_info, item_content_fields => \@item_content_fields } );
     }
 
     ## Get branch info for borrowers home library.
@@ -493,12 +489,6 @@ sub parse_letter {
         tables     => \%table_params,
         message_transport_type => $params->{message_transport_type},
     );
-}
-
-sub format_date {
-    my $date_string = shift;
-    my $dt=dt_from_string($date_string);
-    return output_pref($dt);
 }
 
 =head2 get_branch_info
