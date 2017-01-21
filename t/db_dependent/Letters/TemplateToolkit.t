@@ -3,6 +3,7 @@
 # This file is part of Koha.
 #
 # Copyright (C) 2016 ByWater Solutions
+# Copyright (C) 2017 Koha Development Team
 #
 # Koha is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -18,7 +19,7 @@
 # along with Koha; if not, see <http://www.gnu.org/licenses>.
 
 use Modern::Perl;
-use Test::More tests => 15;
+use Test::More tests => 16;
 use Test::Warn;
 
 use MARC::Record;
@@ -39,6 +40,7 @@ use Koha::Serial;
 use Koha::Subscription;
 use Koha::Suggestion;
 use Koha::Checkout;
+use Koha::Notice::Templates;
 use Koha::Patron::Modification;
 
 my $schema = Koha::Database->schema;
@@ -279,3 +281,41 @@ $prepared_letter = GetPreparedLetter(
     )
 );
 is( $prepared_letter->{content}, $modification->id(), 'Patron modification object used correctly' );
+
+subtest 'loops' => sub {
+    plan tests => 1;
+    my $code = "TEST";
+    my $module = "TEST";
+
+    subtest 'primary key is AI' => sub {
+        plan tests => 1;
+        my $patron_1 = $builder->build({ source => 'Borrower' });
+        my $patron_2 = $builder->build({ source => 'Borrower' });
+
+        my $template = q|[% FOREACH patron IN borrowers %][% patron.surname %][% END %]|;
+        reset_template( { template => $template, code => $code, module => $module } );
+        my $letter = GetPreparedLetter( module => $module, letter_code => $code, loops => { borrowers => [ $patron_1->{borrowernumber}, $patron_2->{borrowernumber} ] } );
+        my $expected_letter = join '', ( $patron_1->{surname}, $patron_2->{surname} );
+        is( $letter->{content}, $expected_letter, );
+    };
+};
+
+sub reset_template {
+    my ( $params ) = @_;
+    my $template   = $params->{template};
+    my $code       = $params->{code};
+    my $module     = $params->{module} || 'test_module';
+
+    Koha::Notice::Templates->search( { code => $code } )->delete;
+    Koha::Notice::Template->new(
+        {
+            module                 => $module,
+            code                   => $code,
+            branchcode             => '',
+            name                   => $code,
+            title                  => $code,
+            message_transport_type => 'email',
+            content                => $template
+        }
+    )->store;
+}
