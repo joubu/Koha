@@ -6,4 +6,3 @@ values
 (4, 'Hold_Filled', 0),
 (5, 'Item_Check_in', 0),
 (6, 'Item_Checkout', 0);
-

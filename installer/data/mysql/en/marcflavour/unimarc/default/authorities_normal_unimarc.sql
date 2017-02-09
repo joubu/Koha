@@ -819,5 +819,3 @@ INSERT INTO `auth_subfield_structure` (`authtypecode`, `tagfield`, `tagsubfield`
 		('', '886', '2', 'System Code', 'System Code', 0, 0, 8, '', '', '', 0, -5, 0, '', ''),
 		('', '886', 'a', 'Tag of the Source Format Field', 'Tag of the Source Format Field', 1, 0, 8, '', '', '', 0, -5, 0, '', ''),
 		('', '886', 'b', 'Indicators and Subfields of the Source Format Field', 'Indicators and Subfields of the Source Format Field', 1, 0, 8, '', '', '', 0, -5, 0, '', '');
-
-
