@@ -19,7 +19,7 @@
 
 use Modern::Perl;
 
-use Test::More tests => 10;
+use Test::More tests => 11;
 use Test::Warn;
 
 use Koha::Authority::Types;
@@ -114,6 +114,13 @@ subtest 'search_related' => sub {
     is( scalar(@libraries),        2,                       'Koha::Objects->search_related should work as expected' );
     is( $libraries[0]->branchcode, $patron_1->{branchcode}, 'Koha::Objects->search_related should work as expected' );
     is( $libraries[1]->branchcode, $patron_2->{branchcode}, 'Koha::Objects->search_related should work as expected' );
+};
+
+subtest 'get_column' => sub {
+    plan tests => 1;
+    my @cities = Koha::Cities->search;
+    my @city_names = map { $_->city_name } @cities;
+    is_deeply( [ Koha::Cities->search->get_column('city_name')->all ], \@city_names, 'Koha::Objects->get_column should be allowed' );
 };
 
 subtest 'Exceptions' => sub {
