@@ -228,6 +228,17 @@ sub unblessed {
     return [ map { $_->unblessed } $self->as_list ];
 }
 
+=head3 Koha::Objects->get_column
+
+Return all the values of this set for a given column
+
+=cut
+
+sub get_column {
+    my ($self, $column_name) = @_;
+    return $self->_resultset->get_column( $column_name )->all;
+}
+
 =head3 Koha::Objects->_wrap
 
 wraps the DBIC object in a corresponding Koha object
@@ -299,7 +310,7 @@ Currently count, pager, update and delete are covered.
 sub AUTOLOAD {
     my ( $self, @params ) = @_;
 
-    my @known_methods = qw( count pager update delete result_class get_column );
+    my @known_methods = qw( count pager update delete result_class );
     my $method = our $AUTOLOAD;
     $method =~ s/.*:://;
 
