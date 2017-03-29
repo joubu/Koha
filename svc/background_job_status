@@ -6,9 +6,11 @@ use CGI qw ( -utf8 );
 use JSON qw( to_json );
 use C4::Auth qw( check_cookie_auth );
 use Koha::BackgroundJobs;
+use Time::HiRes qw( gettimeofday tv_interval );
 
 my $input = new CGI;
 
+my $t0 = [gettimeofday];
 my ( $auth_status, $sessionID ) = check_cookie_auth(
     $input->cookie('CGISESSID'),
     { tools => 'records_batchmod' },
@@ -23,7 +25,8 @@ my $job_id = $input->param('job_id');
 my $job = Koha::BackgroundJobs->find({job_id => $job_id});
 
 my $i = $input->param("i");
-warn "STATUS $i = " .  $job->job_status . " | " . $job->percentage;
+my $elapsed = tv_interval ($t0);
+warn "STATUS $i = " .  $job->job_status . " | " . $job->percentage . ' |' . $elapsed;
 
 print $input->header(
     -charset    => 'UTF-8',
