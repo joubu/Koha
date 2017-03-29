@@ -1,0 +1,1 @@
+create table background_jobs(id int(11) not null auto_increment, job_id varchar(32) not null, job_status varchar(32), progress int(4), job_type varchar(32), job_size int(4), borrowernumber int(11), data text, unique key(job_id), primary key(id));
