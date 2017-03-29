@@ -1,0 +1,59 @@
+#!/usr/bin/perl
+
+use Modern::Perl;
+
+use CGI qw ( -utf8 );
+use JSON qw( to_json );
+use C4::Auth qw( check_cookie_auth );
+use C4::BackgroundJob;
+use Koha::BackgroundJobs;
+
+my $input = new CGI;
+
+my ( $auth_status, $sessionID ) = check_cookie_auth(
+    $input->cookie('CGISESSID'),
+    { tools => 'records_batchmod' },
+);
+
+if ($auth_status ne "ok") {
+    print $input->header(-type => 'plain', -status => '403 Forbidden');
+    exit;
+}
+
+my $loggedin_borrowernumber = C4::Context->userenv->{number};
+
+my $job_size = 10;
+ my $job = Koha::BackgroundJob->new(
+        {
+            job_status => 'starting',
+            progress => 0,
+            job_type       => 'batch record modification',
+            job_size       => $job_size,
+            borrowernumber => $loggedin_borrowernumber,
+        }
+    )->store;
+
+if (my $pid = fork) {
+    print $input->header(
+        -charset    => 'UTF-8',
+        -type       => 'application/json'
+    );
+    print to_json( { job_id => $job->job_id } );
+} elsif ( defined $pid ) {
+    sleep(1); # Make sure the job has been inserted
+    my $progress = 0;
+    $job->job_status('running')->store;
+    for my $i ( 1 .. $job_size ) {
+        my $progress = $i;
+        $job->progress($progress);
+        $job->store;
+        sleep(1);
+    }
+    $job->job_status('completed')->store;
+    exit 0;
+} else {
+    warn "fork failed while attempting to run tools/batch_record_modification.pl as a background job";
+    exit 0;
+}
+
+exit 0;

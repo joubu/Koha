@@ -2,19 +2,20 @@ var backgroundJobProgressTimer = 0;
 var jobID = '';
 var savedForm;
 var inBackgroundJobProgressTimer = false;
+var i = 0;
 function updateJobProgress() {
     if (inBackgroundJobProgressTimer) {
         return;
     }
+    i = i+1;
     inBackgroundJobProgressTimer = true;
-    $.getJSON("/cgi-bin/koha/tools/background-job-progress.pl?jobID=" + jobID, function(json) {
-        var percentage = json.job_status == 'completed' ? 100 :
-                            json.job_size > 0              ? Math.floor(100 * json.progress / json.job_size) :
-                            100;
-        var bgproperty = (parseInt(percentage/2)*3-300)+"px 0px";
+    $.getJSON("/cgi-bin/koha/svc/background_job_status?job_id=" + encodeURIComponent(jobID) + '&amp;i='+i, function(json) {
+        var percentage = json.percentage;
+        var bgproperty = (parseInt(percentage*2)-300)+"px 0px";
         $("#jobprogress").css("background-position",bgproperty);
         $("#jobprogresspercent").text(percentage);
 
+        console.log(i + ' : ' + percentage);
         if (percentage == 100) {
             clearInterval(backgroundJobProgressTimer); // just in case form submission fails
             completeJob();
@@ -24,6 +25,7 @@ function updateJobProgress() {
 }
 
 function completeJob() {
+    console.log("job complete");
     savedForm.completedJobID.value = jobID;
     savedForm.submit();
 }
@@ -60,11 +62,11 @@ function submitBackgroundJob(f) {
         $("#jobstatus").show();
         $.ajax({
             data: inputs.join('&'),
-            url: f.action,
+            url: '/cgi-bin/koha/svc/background_job_start',
             dataType: 'json',
             type: 'post',
             success: function(json) {
-                jobID = json.jobID;
+                jobID = json.job_id;
                 inBackgroundJobProgressTimer = false;
                 backgroundJobProgressTimer = setInterval("updateJobProgress()", 500);
             },

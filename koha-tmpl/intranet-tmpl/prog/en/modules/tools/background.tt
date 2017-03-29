@@ -1,0 +1,58 @@
+[% PROCESS 'authorities-search-results.inc' %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Tools &rsaquo; Batch record modification</title>
+[% INCLUDE 'doc-head-close.inc' %]
+<link rel="stylesheet" type="text/css" href="[% interface %]/[% theme %]/css/datatables.css" />
+[% INCLUDE 'datatables.inc' %]
+<script type="text/javascript" src="[% interface %]/lib/jquery/plugins/jquery.checkboxes.min.js"></script>
+<script type="text/javascript" src="[% interface %]/[% theme %]/js/background-job-progressbar.js"></script>
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function() {
+  $("#mainformsubmit").click(function(){
+    return submitBackgroundJob(document.getElementById("process"));
+  });
+});
+//]]>
+</script>
+</head>
+<body id="tools_batch_record_modification" class="tools">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'cat-search.inc' %]
+
+<div id="breadcrumbs">
+    <a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo;
+    <a href="/cgi-bin/koha/tools/tools-home.pl">Tools</a> &rsaquo;
+    <a href="/cgi-bin/koha/tools/batch_record_modification.pl">Batch record modification</a>
+</div>
+
+<div id="doc3" class="yui-t2">
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+  <h1>Background mode test</h1>
+
+[% IF finished %]
+FINISHED!
+[% ELSE%]
+      <form action="/cgi-bin/koha/tools/background.pl" method="post" id="process">
+        <fieldset class="action">
+          <input type="hidden" name="op" value="modify" />
+          <input type="button" id="mainformsubmit" value="Modify selected records" class="button" />
+          <input type="hidden" name="runinbackground" id="runinbackground" value="" />
+          <input type="hidden" name="completedJobID" id="completedJobID" value="" />
+          <a class="cancel" href="/cgi-bin/koha/tools/batch_record_modification.pl">Cancel</a>
+        </fieldset>
+        <div id="jobpanel">
+          <div id="jobstatus" class="progress_panel">Job progress: <div id="jobprogress"></div> <span id="jobprogresspercent">0</span>%</div>
+          <div id="jobfailed"></div>
+        </div>
+      </form>
+[% END %]
+</div>
+</div>
+<div class="yui-b">
+  [% INCLUDE 'tools-menu.inc' %]
+</div>
+</div>
+[% INCLUDE 'intranet-bottom.inc' %]

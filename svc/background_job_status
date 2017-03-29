@@ -1,0 +1,40 @@
+#!/usr/bin/perl
+
+use Modern::Perl;
+
+use CGI qw ( -utf8 );
+use JSON qw( to_json );
+use C4::Auth qw( check_cookie_auth );
+use Koha::BackgroundJobs;
+
+my $input = new CGI;
+
+my ( $auth_status, $sessionID ) = check_cookie_auth(
+    $input->cookie('CGISESSID'),
+    { tools => 'records_batchmod' },
+);
+
+if ($auth_status ne "ok") {
+    print $input->header(-type => 'plain', -status => '403 Forbidden');
+    exit;
+}
+
+my $job_id = $input->param('job_id');
+my $job = Koha::BackgroundJobs->find({job_id => $job_id});
+
+my $i = $input->param("i");
+warn "STATUS $i = " .  $job->job_status . " | " . $job->percentage;
+
+print $input->header(
+    -charset    => 'UTF-8',
+    -type       => 'application/json'
+);
+print to_json( {
+    job_id => $job->job_id,
+    status => $job->job_status,
+    progress => $job->progress,
+    job_type => $job->job_type,
+    job_size => $job->job_size,
+    percentage => $job->percentage,
+} );
+exit 0;
