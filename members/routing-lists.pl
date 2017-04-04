@@ -1,4 +1,3 @@
-#!/usr/bin/perl
 
 # Copyright 2012 Prosentient Systems
 #
@@ -48,36 +47,35 @@ my $borrowernumber = $query->param('borrowernumber');
 
 my $branch = C4::Context->userenv->{'branch'};
 
-# get the borrower information.....
-my ( $patron, $patron_info );
-if ($borrowernumber) {
-    $patron = Koha::Patrons->find( $borrowernumber );
-    my $category = $patron->category;
-    my $patron_info = $patron->unblessed;
-    $patron_info->{description} = $category->description;
-    $patron_info->{category_type} = $category->category_type;
+my $logged_in_user = Koha::Patrons->find( $loggedinuser ) or die "Not logged in";
+my $patron         = Koha::Patrons->find( $borrowernumber );
+output_and_exit_if_error( $query, $cookie, $template, { module => 'members', logged_in_user => $logged_in_user, current_patron => $patron } );
 
-  my $count;
-  my @borrowerSubscriptions;
-  ($count, @borrowerSubscriptions) = GetSubscriptionsFromBorrower($borrowernumber );
-  my @subscripLoop;
+my $category = $patron->category;
+my $patron_info = $patron->unblessed;
+$patron_info->{description} = $category->description;
+$patron_info->{category_type} = $category->category_type;
 
-    foreach my $num_res (@borrowerSubscriptions) {
-        my %getSubscrip;
-        $getSubscrip{subscriptionid}	= $num_res->{'subscriptionid'};
-        $getSubscrip{title}			= $num_res->{'title'};
-        $getSubscrip{borrowernumber}		= $num_res->{'borrowernumber'};
-        push( @subscripLoop, \%getSubscrip );
-    }
+my $count;
+my @borrowerSubscriptions;
+($count, @borrowerSubscriptions) = GetSubscriptionsFromBorrower($borrowernumber );
+my @subscripLoop;
 
-    $template->param(
-        countSubscrip => scalar @subscripLoop,
-        subscripLoop  => \@subscripLoop,
-        routinglistview => 1
-    );
-
-    $template->param( adultborrower => 1 ) if ( $patron_info->{category_type} =~ /^(A|I)$/ );
+foreach my $num_res (@borrowerSubscriptions) {
+    my %getSubscrip;
+    $getSubscrip{subscriptionid} = $num_res->{'subscriptionid'};
+    $getSubscrip{title}          = $num_res->{'title'};
+    $getSubscrip{borrowernumber} = $num_res->{'borrowernumber'};
+    push( @subscripLoop, \%getSubscrip );
 }
+
+$template->param(
+    countSubscrip => scalar @subscripLoop,
+    subscripLoop  => \@subscripLoop,
+    routinglistview => 1
+);
+
+$template->param( adultborrower => 1 ) if ( $patron_info->{category_type} =~ /^(A|I)$/ );
 
 ##################################################################################
 

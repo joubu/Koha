@@ -75,13 +75,17 @@ my ($template, $loggedinuser, $cookie)
            debug => ($debug) ? 1 : 0,
        });
 
+my $borrowernumber = $input->param('borrowernumber');
+my $logged_in_user = Koha::Patrons->find( $loggedinuser ) or die "Not logged in";
+my $patron         = Koha::Patrons->find($borrowernumber);
+output_and_exit_if_error( $input, $cookie, $template, { module => 'members', logged_in_user => $logged_in_user, current_patron => $patron } );
+
 if ( C4::Context->preference('SMSSendDriver') eq 'Email' ) {
     my @providers = Koha::SMS::Providers->search();
     $template->param( sms_providers => \@providers );
 }
 
 my $guarantorid    = $input->param('guarantorid');
-my $borrowernumber = $input->param('borrowernumber');
 my $actionType     = $input->param('actionType') || '';
 my $modify         = $input->param('modify');
 my $delete         = $input->param('delete');
@@ -154,7 +158,6 @@ $template->param( "quickadd" => 1 ) if ( $quickadd );
 $template->param( "duplicate" => 1 ) if ( $op eq 'duplicate' );
 $template->param( "checked" => 1 ) if ( defined($nodouble) && $nodouble eq 1 );
 if ( $op eq 'modify' or $op eq 'save' or $op eq 'duplicate' ) {
-    my $patron = Koha::Patrons->find( $borrowernumber );
     $borrower_data = $patron->unblessed;
     $borrower_data->{category_type} = $patron->category->category_type;
 }
@@ -311,7 +314,6 @@ if ($op eq 'save' || $op eq 'insert'){
 
     my $dateofbirth;
     if ($op eq 'save' && $step == 3) {
-        my $patron = Koha::Patrons->find( $borrowernumber );
         $dateofbirth = $patron->dateofbirth;
     }
     else {

@@ -3,9 +3,7 @@
 [% USE Branches %]
 [% INCLUDE 'doc-head-open.inc' %]
 <title>Koha &rsaquo; Patrons &rsaquo;
-[% IF ( unknowuser ) %]
-    Patron does not exist
-[% ELSE %]
+[% UNLESS blocking_error %]
     Statistics for [% INCLUDE 'patron-title.inc' %]
 [% END %]
 </title>
@@ -30,7 +28,7 @@
 <div id="breadcrumbs">
          <a href="/cgi-bin/koha/mainpage.pl">Home</a>
 &rsaquo; <a href="/cgi-bin/koha/members/members-home.pl">Patrons</a>
-&rsaquo; [% IF ( unknowuser ) %]Patron does not exist[% ELSE %]Statistics for [% firstname %] [% surname %] ([% cardnumber %])[% END %]
+&rsaquo; [% UNLESS blocking_error  %]Statistics for [% firstname %] [% surname %] ([% cardnumber %])[% END %]
 </div>
 
 <div id="doc3" class="yui-t1">

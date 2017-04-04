@@ -1,4 +1,5 @@
-	<script type="text/javascript">
+[% INCLUDE 'blocking_errors.inc' %]
+<script type="text/javascript">
 	//<![CDATA[
 	[% IF ( CAN_user_editcatalogue_edit_catalogue ) %]
 	/* this function open a popup to search on z3950 server.  */
