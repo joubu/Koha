@@ -50,6 +50,10 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
 # get borrower details
 my $borrowernumber = $input->param('borrowernumber');
 my $patron         = Koha::Patrons->find( $borrowernumber );
+
+my $logged_in_user = Koha::Patrons->find( $loggedinuser ) or die "Not logged in";
+output_and_exit_if_error( $input, $cookie, $template, { module => 'members', logged_in_user => $logged_in_user, current_patron => $patron } );
+
 my $borrower       = $patron->unblessed;
 my $category       = $patron->category;
 $borrower->{description} = $category->description;

@@ -64,6 +64,9 @@ if ($input->param('borrowernumber')) {
     $data = $patron->unblessed;
 }
 
+my $logged_in_user = Koha::Patrons->find( $loggedinuser ) or die "Not logged in";
+output_and_exit_if_error( $input, $cookie, $template, { module => 'members', logged_in_user => $logged_in_user, current_patron => $patron } );
+
 my $order = 'date_due desc';
 my $limit = 0;
 my $issues = ();
@@ -78,6 +81,7 @@ if ( $borrowernumber eq C4::Context->preference('AnonymousPatron') ){
 
 #   barcode export
 if ( $op eq 'export_barcodes' ) {
+    # FIXME This should be moved out of this script
     if ( $data->{'privacy'} < 2) {
         my $today = output_pref({ dt => dt_from_string, dateformat => 'iso', dateonly => 1 });
         my @barcodes =
