@@ -19,7 +19,7 @@
 
 use Modern::Perl;
 
-use Test::More tests => 6;
+use Test::More tests => 7;
 
 use C4::Circulation;
 use Koha::Item;
@@ -41,6 +41,7 @@ my $new_item_1  = Koha::Item->new(
         homebranch       => $library->{branchcode},
         holdingbranch    => $library->{branchcode},
         barcode          => "a_barcode_for_t",
+        itype            => 'BK',
     }
 )->store;
 my $new_item_2 = Koha::Item->new(
@@ -49,8 +50,12 @@ my $new_item_2 = Koha::Item->new(
         homebranch       => $library->{branchcode},
         holdingbranch    => $library->{branchcode},
         barcode          => "another_barcode_for_t",
+        itype            => 'BK',
     }
 )->store;
+
+C4::Context->_new_userenv('xxx');
+C4::Context->set_userenv(0,0,0,'firstname','surname', $library->{branchcode}, 'Midway Public Library', '', '', '');
 
 like( $new_item_1->itemnumber, qr|^\d+$|, 'Adding a new item should have set the itemnumber' );
 is( Koha::Items->search->count, $nb_of_items + 2, 'The 2 items should have been added' );
@@ -80,6 +85,29 @@ subtest 'biblio' => sub {
     my $biblio = $retrieved_item_1->biblio;
     is( ref( $biblio ), 'Koha::Biblio', 'Koha::Item->bilio should return a Koha::Biblio' );
     is( $biblio->biblionumber, $retrieved_item_1->biblionumber, 'Koha::Item->biblio should return the correct biblio' );
+};
+
+subtest 'checkout' => sub {
+    plan tests => 5;
+    my $item = Koha::Items->find( $new_item_1->itemnumber );
+    # No checkout yet
+    my $checkout = $item->checkout;
+    is( $checkout, undef, 'Koha::Item->checkout should return undef if there is no current checkout on this item' );
+
+    # Add a checkout
+    my $patron = $builder->build({ source => 'Borrower' });
+    C4::Circulation::AddIssue( $patron, $item->barcode );
+    $checkout = $retrieved_item_1->checkout;
+    is( ref( $checkout ), 'Koha::Checkout', 'Koha::Item->checkout should return a Koha::Checkout' );
+    is( $checkout->itemnumber, $item->itemnumber, 'Koha::Item->checkout should return the correct checkout' );
+    is( $checkout->borrowernumber, $patron->{borrowernumber}, 'Koha::Item->checkout should return the correct checkout' );
+
+    # Do the return
+    C4::Circulation::AddReturn( $item->barcode );
+
+    # There is no more checkout on this item, making sure it will not return old checkouts
+    $checkout = $item->checkout;
+    is( $checkout, undef, 'Koha::Item->checkout should return undef if there is no *current* checkout on this item' );
 };
 
 $retrieved_item_1->delete;
