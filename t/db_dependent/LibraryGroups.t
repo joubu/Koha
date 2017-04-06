@@ -4,7 +4,7 @@ use Modern::Perl;
 
 use List::MoreUtils 'any';
 
-use Test::More tests => 14;
+use Test::More tests => 15;
 
 use t::lib::TestBuilder;
 
@@ -80,15 +80,39 @@ ok( !$in_list, 'Method libraries_not_direct_children returns all libraries not d
 $in_list = any { $_->id eq $groupA1_library2->branchcode } @libraries_not_direct_children;
 ok( $in_list, 'Method libraries_not_direct_children returns all libraries not direct descendants of group, library 2 is in the list');
 
+$library1 = Koha::Libraries->find( $library1->{branchcode} );
+$library2 = Koha::Libraries->find( $library2->{branchcode} );
+$library3 = Koha::Libraries->find( $library3->{branchcode} );
 subtest 'Koha::Library->library_groups' => sub {
     plan tests => 4;
-    my $library3 = Koha::Libraries->find( $library3->{branchcode} );
     my $groups = $library3->library_groups;
     is( ref( $groups ), 'Koha::Library::Groups', 'Koha::Library->library_groups should return Koha::Library::Groups' );
     is( $groups->count, 0, 'Library 3 should not be part of any groups');
 
-    my $library1 = Koha::Libraries->find( $library1->{branchcode} );
     $groups = $library1->library_groups;
     is( ref( $groups ), 'Koha::Library::Groups', 'Koha::Library->library_groups should return Koha::Library::Groups' );
     is( $groups->count, 2, 'Library 1 should be part of 2 groups' );
+};
+
+# root_group
+#     + groupA
+#         + groupA1
+#             + groupA1_library2
+#         + groupA_library1
+#         + groupA2
+#     + groupB
+#         + groupB_library1
+
+subtest 'Koha::Library::Group->has_child' => sub {
+    plan tests => 2;
+    is( $groupA->has_child( $library1->branchcode ), 1, 'library1 should be condidered as a child of groupA' );
+    is( $groupB->has_child( $library2->branchcode ), 0, 'library2 should not be considered as a child of groupB' );
+
+    # TODO This is not implemented because not used yet
+    # ->has_child only works with libraries
+    #is( $groupA->has_child( $groupA1 ), 1, 'groupA1 should be condidered as a child of groupA' );
+
+    # FIXME At the time of writing this test fails because the ->children methods does not return more than 1 level of depth
+    # See Bug 15707 comments 166-170+
+    #is( $groupA->has_child( $groupA1_library2->branchcode ), 1, 'groupA1_library2 should be considered as a child of groupA (it is a grandchild)' );
 };
