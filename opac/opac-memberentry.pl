@@ -391,7 +391,7 @@ sub CheckForInvalidFields {
         unless ( Email::Valid->address($borrower->{'email'}) ) {
             push(@invalidFields, "email");
         } elsif ( C4::Context->preference("PatronSelfRegistrationEmailMustBeUnique") ) {
-            my $patrons_with_same_email = Koha::Patrons->search( { email => $borrower->{email} })->count;
+            my $patrons_with_same_email = Koha::Patrons->search( { email => $borrower->{email} })->count; # FIXME Should be search_limited?
             if ( $patrons_with_same_email ) {
                 push @invalidFields, "duplicate_email";
             }
