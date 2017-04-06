@@ -35,6 +35,18 @@ Koha::Library - Koha Library Object class
 
 =cut
 
+=head3 group
+
+Return the Library groups of this library
+
+=cut
+
+sub library_groups {
+    my ( $self ) = @_;
+    my $rs = $self->_result->library_groups;
+    return Koha::Library::Groups->_new_from_dbic( $rs );
+}
+
 =head3 type
 
 =cut
