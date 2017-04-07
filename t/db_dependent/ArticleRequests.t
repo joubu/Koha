@@ -19,12 +19,14 @@ use Modern::Perl;
 
 use POSIX qw(strftime);
 
-use Test::More tests => 49;
+use Test::More tests => 50;
 use Koha::Database;
 
 use Koha::Biblio;
 use Koha::Patron;
 use Koha::Library;
+
+use t::lib::TestBuilder;
 
 BEGIN {
     use_ok('Koha::ArticleRequest');
@@ -35,6 +37,7 @@ BEGIN {
 my $schema = Koha::Database->new()->schema();
 $schema->storage->txn_begin();
 
+my $builder = t::lib::TestBuilder->new;
 my $dbh = C4::Context->dbh;
 $dbh->{RaiseError} = 1;
 
@@ -65,9 +68,14 @@ my $patron   = Koha::Patron->new(
     {
         categorycode => $category->id,
         branchcode   => $branch->id,
+        flags        => 1,# superlibrarian
     }
 )->store();
 ok( $patron->id, 'Koha::Patron created' );
+my $patron_2 = $builder->build({ source => 'Borrower' });
+$patron_2 = Koha::Patrons->find( $patron_2->{borrowernumber} );
+
+my $nb_article_requests = Koha::ArticleRequests->count;
 
 my $article_request = Koha::ArticleRequest->new(
     {
@@ -173,4 +181,27 @@ ok( !$item->can_article_request($patron),   'Item is not requestable with rule t
 is( $item->article_request_type($patron), 'no', 'Item article request type is no' );
 $rule->delete();
 
+subtest 'search_limited' => sub {
+    plan tests => 2;
+    C4::Context->_new_userenv('xxx');
+    my $group_1 = Koha::Library::Group->new( { title => 'TEST Group 1' } )->store;
+    my $group_2 = Koha::Library::Group->new( { title => 'TEST Group 2' } )->store;
+    Koha::Library::Group->new({ parent_id => $group_1->id,  branchcode => $patron->branchcode })->store();
+    Koha::Library::Group->new({ parent_id => $group_2->id,  branchcode => $patron_2->branchcode })->store();
+    set_logged_in_user( $patron ); # Is superlibrarian
+    is( Koha::ArticleRequests->count, 3, 'Koha::ArticleRequests should return all article requests' );
+    is( Koha::ArticleRequests->search_limited->count, 2, 'Koha::ArticleRequests->search_limited should return reviews depending on patron permissions' );
+};
+
 $schema->storage->txn_rollback();
+
+sub set_logged_in_user {
+    my ($patron) = @_;
+    C4::Context->set_userenv(
+        $patron->borrowernumber, $patron->userid,
+        $patron->cardnumber,     'firstname',
+        'surname',               $patron->library->branchcode,
+        'Midway Public Library', $patron->flags,
+        '',                      ''
+    );
+}
