@@ -30,7 +30,7 @@ sub count {
         $values->{validated} = { '!=', undef };
     }
 
-    return $rs->search( $values )->count;
+    return search_limited( $values )->count;
 }
 
 sub can_be_discharged {
@@ -52,9 +52,9 @@ sub is_discharged {
     my $borrowernumber = $params->{borrowernumber};
 
     my $restricted = Koha::Patrons->find( $borrowernumber )->is_debarred;
-    my $validated = get_validated({borrowernumber => $borrowernumber});
+    my @validated = get_validated({borrowernumber => $borrowernumber});
 
-    if ($restricted && $validated) {
+    if ($restricted && @validated) {
         return 1;
     } else {
         return 0;
@@ -161,8 +161,7 @@ sub get_pendings {
         ( defined $branchcode ? ( 'borrower.branchcode' => $branchcode ) : () ),
     };
 
-    my @rs = $rs->search( $cond, { join => 'borrower' } );
-    return \@rs;
+    return search_limited( $cond );
 }
 
 sub get_validated {
@@ -176,9 +175,22 @@ sub get_validated {
         ( defined $branchcode ? ( 'borrower.branchcode' => $branchcode ) : () ),
     };
 
-    my @rs = $rs->search( $cond, { join => 'borrower' } );
-    return \@rs;
+    return search_limited( $cond );
 }
 
+# TODO This module should be based on Koha::Object[s]
+sub search_limited {
+    my ( $params, $attributes ) = @_;
+    my $userenv = C4::Context->userenv;
+    my @restricted_branchcodes;
+    if ( $userenv ) {
+        my $logged_in_user = Koha::Patrons->find( $userenv->{number} );
+        @restricted_branchcodes = $logged_in_user->libraries_where_can_see_patrons;
+    }
+    $params->{'borrower.branchcode'} = { -in => \@restricted_branchcodes } if @restricted_branchcodes;
+    $attributes->{join} = 'borrower';
+
+    return $rs->search( $params, { join => 'borrower' } );
+}
 
 1;
