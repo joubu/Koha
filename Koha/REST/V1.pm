@@ -157,7 +157,7 @@ achieved by defining the operation as follows:
         "x-koha-authorization": {
             "allow-owner": true,
             "permissions": {
-                "borrowers": "1"
+                "borrowers": "edit_borrowers"
             }
         }
     }
