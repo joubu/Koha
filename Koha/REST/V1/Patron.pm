@@ -26,7 +26,8 @@ sub list {
 
     my $user = $c->stash('koha.user');
 
-    my $patrons = Koha::Patrons->search;
+    # FIXME The limited does not work here, the userenv is not set
+    my $patrons = Koha::Patrons->search_limited;
 
     $c->$cb($patrons, 200);
 }
