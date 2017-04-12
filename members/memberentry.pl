@@ -76,9 +76,12 @@ my ($template, $loggedinuser, $cookie)
        });
 
 my $borrowernumber = $input->param('borrowernumber');
-my $logged_in_user = Koha::Patrons->find( $loggedinuser ) or die "Not logged in";
 my $patron         = Koha::Patrons->find($borrowernumber);
-output_and_exit_if_error( $input, $cookie, $template, { module => 'members', logged_in_user => $logged_in_user, current_patron => $patron } );
+my $userenv = C4::Context->userenv;
+if ( $userenv and $userenv->{number} ) { # Allow DB user to create a superlibrarian patron
+    my $logged_in_user = Koha::Patrons->find( $loggedinuser ) or die "Not logged in";
+    output_and_exit_if_error( $input, $cookie, $template, { module => 'members', logged_in_user => $logged_in_user, current_patron => $patron } );
+}
 
 if ( C4::Context->preference('SMSSendDriver') eq 'Email' ) {
     my @providers = Koha::SMS::Providers->search();
@@ -106,8 +109,6 @@ my $step          = $input->param('step') || 0;
 my @errors;
 my $borrower_data;
 my $NoUpdateLogin;
-my $userenv = C4::Context->userenv;
-
 
 ## Deal with debarments
 $template->param(
