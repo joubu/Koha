@@ -78,7 +78,7 @@ my ($template, $loggedinuser, $cookie)
 my $borrowernumber = $input->param('borrowernumber');
 my $patron         = Koha::Patrons->find($borrowernumber);
 my $userenv = C4::Context->userenv;
-if ( $userenv and $userenv->{number} ) { # Allow DB user to create a superlibrarian patron
+if ( $patron and $userenv and $userenv->{number} ) { # Allow DB user to create a superlibrarian patron
     my $logged_in_user = Koha::Patrons->find( $loggedinuser ) or die "Not logged in";
     output_and_exit_if_error( $input, $cookie, $template, { module => 'members', logged_in_user => $logged_in_user, current_patron => $patron } );
 }
