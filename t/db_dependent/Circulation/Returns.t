@@ -301,7 +301,7 @@ subtest 'Handle ids duplication' => sub {
 
     my $original_checkout = AddIssue( $patron->unblessed, $item->{barcode}, dt_from_string->subtract( days => 50 ) );
     $builder->build({ source => 'OldIssue', value => { issue_id => $original_checkout->issue_id } });
-    my $old_checkout = Koha::Old::Checkouts->find( $original_checkout->issue_id );
+    my $old_checkout = Koha::OldIssues->find( $original_checkout->issue_id );
 
     AddRenewal( $patron->borrowernumber, $item->{itemnumber} );
 

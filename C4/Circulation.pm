@@ -43,6 +43,7 @@ use Koha::Account;
 use Koha::AuthorisedValues;
 use Koha::DateUtils;
 use Koha::Calendar;
+use Koha::Issues;
 use Koha::IssuingRules;
 use Koha::Items;
 use Koha::Patrons;
@@ -2171,21 +2172,21 @@ sub MarkIssueReturned {
 
         $dbh->do( $query, undef, @bind );
 
-        my $issue = Koha::Checkouts->find( $issue_id ); # FIXME should be fetched earlier
+        my $issue = Koha::Issues->find( $issue_id ); # FIXME should be fetched earlier
 
         # Create the old_issues entry
         my $old_checkout_data = $issue->unblessed;
 
-        if ( Koha::Old::Checkouts->find( $issue_id ) ) {
-            my $new_issue_id = ( Koha::Old::Checkouts->search(
+        if ( Koha::OldIssues->find( $issue_id ) ) {
+            my $new_issue_id = ( Koha::OldIssues->search(
                 {},
                 { columns => [ { max_issue_id => { max => 'issue_id' } } ] }
-            )->get_column('max_issue_id') )[0];
+            )->_resultset->get_column('max_issue_id') )[0];
             $new_issue_id++;
             $issue_id = $new_issue_id;
         }
         $old_checkout_data->{issue_id} = $issue_id;
-        my $old_checkout = Koha::Old::Checkout->new($old_checkout_data)->store;
+        my $old_checkout = Koha::OldIssue->new($old_checkout_data)->store;
 
         # Update the fines
         $dbh->do(q|UPDATE accountlines SET issue_id = ? WHERE issue_id = ?|, undef, $old_checkout->issue_id, $issue->issue_id);
