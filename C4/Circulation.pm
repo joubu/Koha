@@ -2181,7 +2181,7 @@ sub MarkIssueReturned {
             my $new_issue_id = ( Koha::OldIssues->search(
                 {},
                 { columns => [ { max_issue_id => { max => 'issue_id' } } ] }
-            )->_resultset->get_column('max_issue_id') )[0];
+            )->get_column('max_issue_id') )[0];
             $new_issue_id++;
             $issue_id = $new_issue_id;
         }

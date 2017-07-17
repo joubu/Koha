@@ -275,7 +275,7 @@ subtest "AddReturn logging on statistics table (item-level_itypes=0)" => sub {
 };
 
 subtest 'Handle ids duplication' => sub {
-    plan tests => 4;
+    plan tests => 5;
 
     t::lib::Mocks::mock_preference( 'item-level_itypes', 1 );
     t::lib::Mocks::mock_preference( 'CalculateFinesOnReturn', 1 );
@@ -314,6 +314,7 @@ subtest 'Handle ids duplication' => sub {
     is( $account_lines->count, 2, 'Two account lines should exist on new issue_id' );
 
     isnt( $original_checkout->issue_id, $new_checkout->{issue_id}, 'AddReturn should return the issue with the new issue_id' );
+    is( $original_checkout->issue_id + 1, $new_checkout->{issue_id}, 'issue_id must have been incremented' ); # Note that this test may fail in very weird case
     isnt( $old_checkout->itemnumber, $item->{itemnumber}, 'If an item is checked-in, it should be moved to old_issues even if the issue_id already existed in the table' );
 };
 
