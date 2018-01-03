@@ -28,6 +28,16 @@ sub search_dbic {
         )->all
     ];
 }
+sub search_dbic_cursor {
+    my ($biblionumber) = @_;
+    my $rs = Koha::Database->new->schema->resultset('Item')->search(
+            { biblionumber => $biblionumber },
+        );
+    my @items;
+    while ( my $item = $rs->next ) {
+        push @items, $item;
+    }
+}
 
 my ($t0, $elapsed);
 $t0 = [gettimeofday];
@@ -43,3 +53,10 @@ for my $biblionumber (@$biblionumbers ) {
 }
 $elapsed = tv_interval ( $t0, [gettimeofday]);
 print "DBIC=${elapsed}s\n";
+
+$t0 = [gettimeofday];
+for my $biblionumber (@$biblionumbers ) {
+    search_dbic_cursor($biblionumber);
+}
+$elapsed = tv_interval ( $t0, [gettimeofday]);
+print "DBIC cursor=${elapsed}s\n";
