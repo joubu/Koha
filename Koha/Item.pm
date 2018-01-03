@@ -235,6 +235,14 @@ sub current_holds {
     return Koha::Holds->_new_from_dbic($hold_rs);
 }
 
+sub unblessed {
+    my ($self) = @_;
+    my $itype = $self->effective_itemtype;
+    my $h = $self->SUPER->unblessed;
+    $h->{itype} = $itype;
+    return $h;
+}
+
 =head3 type
 
 =cut
