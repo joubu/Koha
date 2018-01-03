@@ -2,6 +2,7 @@
 use Modern::Perl;
 use C4::Context;
 use Koha::Database;
+use Koha::XS::Items;
 use t::lib::Mocks;
 use Time::HiRes qw(gettimeofday tv_interval);
 
@@ -39,6 +40,12 @@ sub search_dbic_cursor {
     }
 }
 
+sub search_koha_xs {
+    my ($biblionumber) = @_;
+    my $items = Koha::XS::Items->search({ biblionumber => $biblionumber });
+    return $items;
+}
+
 my ($t0, $elapsed);
 $t0 = [gettimeofday];
 for my $biblionumber (@$biblionumbers ) {
@@ -60,3 +67,10 @@ for my $biblionumber (@$biblionumbers ) {
 }
 $elapsed = tv_interval ( $t0, [gettimeofday]);
 print "DBIC cursor=${elapsed}s\n";
+
+$t0 = [gettimeofday];
+for my $biblionumber (@$biblionumbers ) {
+    search_koha_xs($biblionumber);
+}
+$elapsed = tv_interval ( $t0, [gettimeofday]);
+print "Koha::XS=${elapsed}s\n";
