@@ -180,6 +180,7 @@ if ($borrowernumber_hold && !$action) {
     }
 
     my $is_debarred = $patron->is_debarred;
+    my $amount_outstanding = $patron->account->balance;
     $template->param(
                 borrowernumber      => $patron->borrowernumber,
                 borrowersurname     => $patron->surname,
@@ -198,7 +199,7 @@ if ($borrowernumber_hold && !$action) {
                 messages            => $messages,
                 warnings            => $warnings,
                 restricted          => $is_debarred,
-                amount_outstanding  => GetMemberAccountRecords($patron->borrowernumber),
+                amount_outstanding  => $amount_outstanding,
     );
 }
 

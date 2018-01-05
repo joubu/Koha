@@ -51,6 +51,7 @@ use C4::Biblio;
 use C4::Form::MessagingPreferences;
 use List::MoreUtils qw/uniq/;
 use C4::Members::Attributes qw(GetBorrowerAttributes);
+use Koha::Account::Lines;
 use Koha::AuthorisedValues;
 use Koha::CsvProfiles;
 use Koha::Patron::Debarments qw(GetDebarments);
@@ -219,18 +220,12 @@ else {
 my $library = Koha::Libraries->find( $data->{branchcode})->unblessed;
 @{$data}{keys %$library} = values %$library; # merge in all branch columns
 
-my ( $total, $accts, $numaccts) = GetMemberAccountRecords( $borrowernumber );
-
 # If printing a page, send the account informations to the template
 if ($print eq "page") {
-    foreach my $accountline (@$accts) {
-        $accountline->{amount} = sprintf '%.2f', $accountline->{amount};
-        $accountline->{amountoutstanding} = sprintf '%.2f', $accountline->{amountoutstanding};
-
-        if ($accountline->{accounttype} ne 'F' && $accountline->{accounttype} ne 'FU'){
-            $accountline->{printtitle} = 1;
-        }
-    }
+    my $accts = Koha::Account::Lines->search(
+        { borrowernumber => $patron->borrowernumber, amountoutstanding => { '>' => 0 } },
+        { order_by       => { -desc => 'accountlines_id' } }
+    );
     $template->param( accounts => $accts );
 }
 
@@ -337,6 +332,7 @@ if ( C4::Context->preference("ExportCircHistory") ) {
 my ( $subtag, $region ) = split '-', $patron->lang;
 my $translated_language = C4::Languages::language_get_description( $subtag, $subtag, 'language' );
 
+my $total = $patron->account->balance;
 $template->param(
     patron          => $patron,
     translated_language => $translated_language,

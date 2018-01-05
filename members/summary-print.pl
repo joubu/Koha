@@ -53,14 +53,11 @@ my $data = $patron->unblessed;
 $data->{description} = $category->description;
 $data->{category_type} = $category->category_type;
 
-my ( $total, $accts, $numaccts ) = GetMemberAccountRecords($borrowernumber);
-foreach my $accountline (@$accts) {
-    if (   $accountline->{accounttype} ne 'F'
-        && $accountline->{accounttype} ne 'FU' )
-    {
-        $accountline->{printtitle} = 1;
-    }
-}
+my $total = $patron->account->balance;
+my $accts = Koha::Account::Lines->search(
+    { borrowernumber => $patron->borrowernumber },
+    { order_by       => { -desc => 'accountlines_id' } }
+);
 
 our $totalprice = 0;
 
