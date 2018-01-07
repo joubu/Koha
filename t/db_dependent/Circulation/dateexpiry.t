@@ -55,7 +55,6 @@ sub can_book_be_issued {
             }
         }
     );
-    $patron->{flags} = C4::Members::patronflags( $patron );
     my $duration = gettimeofday();
     my ( $issuingimpossible, $needsconfirmation ) = C4::Circulation::CanBookBeIssued( $patron, $item->{barcode} );
     $duration = gettimeofday() - $duration;
@@ -71,7 +70,6 @@ sub can_book_be_issued {
             }
         }
     );
-    $patron->{flags} = C4::Members::patronflags( $patron );
     ( $issuingimpossible, $needsconfirmation ) = C4::Circulation::CanBookBeIssued( $patron, $item->{barcode} );
     is( $issuingimpossible->{EXPIRED}, 1, 'The patron should be considered as expired if dateexpiry is 0000-00-00' );
 
@@ -85,7 +83,6 @@ sub can_book_be_issued {
             },
         }
     );
-    $patron->{flags} = C4::Members::patronflags( $patron );
     ( $issuingimpossible, $needsconfirmation ) = C4::Circulation::CanBookBeIssued( $patron, $item->{barcode} );
     is( not( exists $issuingimpossible->{EXPIRED} ), 1, 'The patron should not be considered as expired if dateexpiry is tomorrow' );
 
