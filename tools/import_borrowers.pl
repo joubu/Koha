@@ -234,11 +234,11 @@ if ( $uploadborrowers && length($uploadborrowers) > 0 ) {
         $borrower{dateenrolled} ||= $today;
         $borrower{dateexpiry}   ||= Koha::Patron::Categories->find( $borrower{categorycode} )->get_expiry_date( $borrower{dateenrolled} );
         my $borrowernumber;
-        my $member;
+        my ( $member, $patron );
         if ( ($matchpoint eq 'cardnumber') && ($borrower{'cardnumber'}) ) {
-            $member = Koha::Patrons->find( { cardnumber => $borrower{'cardnumber'} } );
+            $patron = Koha::Patrons->find( { cardnumber => $borrower{'cardnumber'} } );
         } elsif ( ($matchpoint eq 'userid') && ($borrower{'userid'}) ) {
-            $member = Koha::Patrons->find( { userid => $borrower{'userid'} } );
+            $patron = Koha::Patrons->find( { userid => $borrower{'userid'} } );
         } elsif ($extended) {
             if (defined($matchpoint_attr_type)) {
                 foreach my $attr (@$patron_attributes) {
@@ -251,8 +251,8 @@ if ( $uploadborrowers && length($uploadborrowers) > 0 ) {
             }
         }
 
-        if ($member) {
-            $member = $member->unblessed;
+        if ($patron) {
+            $member = $patron->unblessed;
             $borrowernumber = $member->{'borrowernumber'};
         } else {
             $member = {};
@@ -291,7 +291,7 @@ if ( $uploadborrowers && length($uploadborrowers) > 0 ) {
             # Check if the userid provided does not exist yet
             if (  exists $borrower{userid}
                      and $borrower{userid}
-                 and not Check_Userid( $borrower{userid}, $borrower{borrowernumber} ) ) {
+                 and not $patron->userid($borrower{userid})->has_valid_userid ) {
                 push @errors, { duplicate_userid => 1, userid => $borrower{userid} };
                 $invalid++;
                 next LINE;
