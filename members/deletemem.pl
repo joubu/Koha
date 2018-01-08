@@ -71,18 +71,14 @@ if ( C4::Context->preference('NorwegianPatronDBEnable') && C4::Context->preferen
     }
 }
 
-my $issues = GetPendingIssues($member);     # FIXME: wasteful call when really, we only want the count
-my $countissues = scalar(@$issues);
-
 my $patron = Koha::Patrons->find( $member );
 unless ( $patron ) {
     print $input->redirect("/cgi-bin/koha/circ/circulation.pl?borrowernumber=$member");
     exit;
 }
+my $countissues = $patron->pending_checkouts->count;
 my $charges = $patron->account->non_issues_charges;
 my $userenv = C4::Context->userenv;
-
- 
 
 if ($patron->category->category_type eq "S") {
     unless(C4::Auth::haspermission($userenv->{'id'},{'staffaccess'=>1})) {
