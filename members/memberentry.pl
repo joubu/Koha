@@ -151,8 +151,10 @@ $template->param( "add" => 1 ) if ( $op eq 'add' );
 $template->param( "quickadd" => 1 ) if ( $quickadd );
 $template->param( "duplicate" => 1 ) if ( $op eq 'duplicate' );
 $template->param( "checked" => 1 ) if ( defined($nodouble) && $nodouble eq 1 );
+my $patron;
 if ( $op eq 'modify' or $op eq 'save' or $op eq 'duplicate' ) {
-    my $patron = Koha::Patrons->find( $borrowernumber );
+
+    $patron = Koha::Patrons->find( $borrowernumber );
     unless ( $patron ) {
         print $input->redirect("/cgi-bin/koha/circ/circulation.pl?borrowernumber=$borrowernumber");
         exit;
@@ -160,6 +162,8 @@ if ( $op eq 'modify' or $op eq 'save' or $op eq 'duplicate' ) {
 
     $borrower_data = $patron->unblessed;
     $borrower_data->{category_type} = $patron->category->category_type;
+} else {
+    $patron = Koha::Patron->new;
 }
 my $categorycode  = $input->param('categorycode') || $borrower_data->{'categorycode'};
 my $category_type = $input->param('category_type') || '';
@@ -281,12 +285,17 @@ $newdata{'lang'}    = $input->param('lang')    if defined($input->param('lang'))
 if ( ( defined $newdata{'userid'} && $newdata{'userid'} eq '' ) || $check_BorrowerUnwantedField =~ /userid/ ) {
     if ( ( defined $newdata{'firstname'} ) && ( defined $newdata{'surname'} ) ) {
         # Full page edit, firstname and surname input zones are present
-        $newdata{'userid'} = Generate_Userid( $borrowernumber, $newdata{'firstname'}, $newdata{'surname'} );
+        $patron->firstname($newdata{firstname});
+        $patron->surname($newdata{surname});
+        $newdata{'userid'} = $patron->generate_userid;
     }
     elsif ( ( defined $data{'firstname'} ) && ( defined $data{'surname'} ) ) {
         # Partial page edit (access through "Details"/"Library details" tab), firstname and surname input zones are not used
         # Still, if the userid field is erased, we can create a new userid with available firstname and surname
-        $newdata{'userid'} = Generate_Userid( $borrowernumber, $data{'firstname'}, $data{'surname'} );
+        # FIXME clean thiscode newdata vs data is very confusing
+        $patron->firstname($data{firstname});
+        $patron->surname($data{surname});
+        $newdata{'userid'} = $patron->generate_userid;
     }
     else {
         $newdata{'userid'} = $data{'userid'};
