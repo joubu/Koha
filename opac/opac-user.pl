@@ -58,8 +58,9 @@ BEGIN {
     }
 }
 
-my $cas_logout_required = C4::Context->preference('casAuthentication')
-  and C4::Auth_with_ldap::logout_required($query);
+# CAS single logout handling
+# Will print header and exit
+C4::Context->preference('casAuthentication') and C4::Auth_with_ldap::logout_if_required($query);
 
 my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
     {
@@ -70,12 +71,6 @@ my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
         debug           => 1,
     }
 );
-
-if ($cas_logout_required){
-    print $query->header;
-    exit;
-}
-
 
 my %renewed = map { $_ => 1 } split( ':', $query->param('renewed') );
 
